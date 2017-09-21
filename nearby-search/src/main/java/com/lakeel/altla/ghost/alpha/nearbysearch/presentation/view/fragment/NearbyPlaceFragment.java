@@ -1,14 +1,11 @@
 package com.lakeel.altla.ghost.alpha.nearbysearch.presentation.view.fragment;
 
-import com.google.gson.Gson;
-
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.nearbysearch.R;
 import com.lakeel.altla.ghost.alpha.nearbysearch.place.Place;
 import com.lakeel.altla.ghost.alpha.nearbysearch.place.PlaceWebApi;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.ActivityScopeContext;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.module.Names;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.helper.BundleHelper;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.helper.FragmentHelper;
 
@@ -26,7 +23,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,10 +36,6 @@ public final class NearbyPlaceFragment extends Fragment {
 
     @Inject
     DeferredManager deferredManager;
-
-    @Named(Names.PLACE_WEB_API_GSON)
-    @Inject
-    Gson gson;
 
     @BindView(R.id.text_view_details_json)
     TextView textViewDetailsJson;
@@ -112,7 +104,7 @@ public final class NearbyPlaceFragment extends Fragment {
     }
 
     private void setPlace(@NonNull Place place) {
-        textViewDetailsJson.setText(gson.toJson(place));
+        textViewDetailsJson.setText(placeWebApi.getGson().toJson(place));
     }
 
     public interface FragmentContext {

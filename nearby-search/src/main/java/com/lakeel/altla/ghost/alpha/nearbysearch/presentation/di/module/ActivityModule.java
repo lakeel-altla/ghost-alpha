@@ -2,23 +2,12 @@ package com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.module;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.ghost.alpha.nearbysearch.BuildConfig;
 import com.lakeel.altla.ghost.alpha.nearbysearch.place.PlacePhotoApiUriFactory;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.PlaceType;
 import com.lakeel.altla.ghost.alpha.nearbysearch.place.PlaceWebApi;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.Scope;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.DetailsResponse;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.DetailsResponseStatusHandler;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.PlaceTypeHandler;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.PlaceWebService;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.ScopeHandler;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.SearchResponse;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.SearchResponseStatusHandler;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.ActivityScope;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.helper.DebugPreferences;
 
@@ -36,8 +25,6 @@ import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 public final class ActivityModule {
@@ -85,38 +72,17 @@ public final class ActivityModule {
     @ActivityScope
     @Provides
     OkHttpClient provideOkHttpClient() {
-        return new OkHttpClient.Builder()
-                .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                .build();
-    }
-
-    @Named(Names.PLACE_WEB_API_GSON)
-    @ActivityScope
-    @Provides
-    Gson providePlaceWebApiGson() {
-        return new GsonBuilder()
-                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .registerTypeAdapter(PlaceType.class, PlaceTypeHandler.INSTANCE)
-                .registerTypeAdapter(Scope.class, ScopeHandler.INSTANCE)
-                .registerTypeAdapter(SearchResponse.Status.class, SearchResponseStatusHandler.INSTANCE)
-                .registerTypeAdapter(DetailsResponse.Status.class, DetailsResponseStatusHandler.INSTANCE)
-                .disableHtmlEscaping()
-                .setPrettyPrinting()
-                .create();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        if (BuildConfig.DEBUG) {
+            builder.addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY));
+        }
+        return builder.build();
     }
 
     @ActivityScope
     @Provides
-    PlaceWebApi providePlaceWebApi(@Named(Names.GOOGLE_API_KEY) String key,
-                                   OkHttpClient httpClient,
-                                   @Named(Names.PLACE_WEB_API_GSON) Gson gson) {
-
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL_MAPS_API)
-                                                  .client(httpClient)
-                                                  .addConverterFactory(GsonConverterFactory.create(gson))
-                                                  .build();
-
-        return new PlaceWebApi(key, retrofit.create(PlaceWebService.class));
+    PlaceWebApi providePlaceWebApi(@Named(Names.GOOGLE_API_KEY) String key, OkHttpClient httpClient) {
+        return new PlaceWebApi(key, httpClient);
     }
 
     @ActivityScope

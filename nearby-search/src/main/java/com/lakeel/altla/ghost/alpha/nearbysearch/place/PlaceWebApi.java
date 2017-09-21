@@ -1,10 +1,18 @@
 package com.lakeel.altla.ghost.alpha.nearbysearch.place;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.DetailsResponse;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.DetailsResponseStatusHandler;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.PlaceTypeHandler;
 import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.PlaceWebService;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.ScopeHandler;
 import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.SearchResponse;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.SearchResponseStatusHandler;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,20 +23,48 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public final class PlaceWebApi {
 
     private static final Log LOG = LogFactory.getLog(PlaceWebApi.class);
 
+    private static final String BASE_URL_MAPS_API = "https://maps.googleapis.com/maps/api/";
+
     private String key;
+
+    private Gson gson;
 
     private PlaceWebService service;
 
-    public PlaceWebApi(@NonNull String key, @NonNull PlaceWebService service) {
+    public PlaceWebApi(@NonNull String key, @NonNull OkHttpClient httpClient) {
         this.key = key;
-        this.service = service;
+
+        gson = new GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapter(PlaceType.class, PlaceTypeHandler.INSTANCE)
+                .registerTypeAdapter(Scope.class, ScopeHandler.INSTANCE)
+                .registerTypeAdapter(SearchResponse.Status.class, SearchResponseStatusHandler.INSTANCE)
+                .registerTypeAdapter(DetailsResponse.Status.class, DetailsResponseStatusHandler.INSTANCE)
+                .disableHtmlEscaping()
+                .setPrettyPrinting()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL_MAPS_API)
+                                                  .client(httpClient)
+                                                  .addConverterFactory(GsonConverterFactory.create(gson))
+                                                  .build();
+
+        this.service = retrofit.create(PlaceWebService.class);
+    }
+
+    @NonNull
+    public Gson getGson() {
+        return gson;
     }
 
     @NonNull
