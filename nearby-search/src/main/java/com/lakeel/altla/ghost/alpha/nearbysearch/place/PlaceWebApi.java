@@ -181,15 +181,4 @@ public final class PlaceWebApi {
             super(cause);
         }
     }
-
-    public final class DetailsStatusException extends PlaceWebApiException {
-
-        @NonNull
-        public final DetailsResponse.Status status;
-
-        private DetailsStatusException(@NonNull DetailsResponse.Status status) {
-            super(status.name());
-            this.status = status;
-        }
-    }
 }
