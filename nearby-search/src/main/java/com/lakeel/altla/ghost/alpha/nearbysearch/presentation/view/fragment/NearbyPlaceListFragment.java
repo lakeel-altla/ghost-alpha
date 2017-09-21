@@ -18,7 +18,6 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.nearbysearch.R;
 import com.lakeel.altla.ghost.alpha.nearbysearch.place.Photo;
 import com.lakeel.altla.ghost.alpha.nearbysearch.place.Place;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.PlacePhotoApiUriFactory;
 import com.lakeel.altla.ghost.alpha.nearbysearch.place.PlaceWebApi;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.helper.DebugPreferences;
@@ -77,9 +76,6 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
 
     @Inject
     PlaceWebApi placeWebApi;
-
-    @Inject
-    PlacePhotoApiUriFactory placePhotoApiUriFactory;
 
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
@@ -459,8 +455,7 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
 
             if (item.place.photos != null && 0 < item.place.photos.size()) {
                 Photo photo = item.place.photos.get(0);
-                String photoReference = photo.photoReference;
-                Uri uri = placePhotoApiUriFactory.create(photoReference, photo.width, photo.height);
+                Uri uri = placeWebApi.createPhotoUri(photo.photoReference, photo.width, photo.height);
                 LOG.v("Loading the photo: %s", uri);
                 picasso.load(uri)
                        .into(holder.imageViewPhoto);

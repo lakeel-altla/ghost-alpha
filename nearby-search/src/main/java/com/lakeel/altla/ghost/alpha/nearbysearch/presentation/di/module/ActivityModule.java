@@ -3,10 +3,7 @@ package com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.module;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.nearbysearch.BuildConfig;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.PlacePhotoApiUriFactory;
 import com.lakeel.altla.ghost.alpha.nearbysearch.place.PlaceWebApi;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.ActivityScope;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.helper.DebugPreferences;
@@ -28,10 +25,6 @@ import okhttp3.logging.HttpLoggingInterceptor;
 
 @Module
 public final class ActivityModule {
-
-    private static final Log LOG = LogFactory.getLog(ActivityModule.class);
-
-    private static final String BASE_URL_MAPS_API = "https://maps.googleapis.com/maps/api/";
 
     private Activity activity;
 
@@ -83,11 +76,5 @@ public final class ActivityModule {
     @Provides
     PlaceWebApi providePlaceWebApi(@Named(Names.GOOGLE_API_KEY) String key, OkHttpClient httpClient) {
         return new PlaceWebApi(key, httpClient);
-    }
-
-    @ActivityScope
-    @Provides
-    PlacePhotoApiUriFactory providePlacePhotoApiUriFactory(@Named(Names.GOOGLE_API_KEY) String key) {
-        return new PlacePhotoApiUriFactory(key);
     }
 }

@@ -14,6 +14,8 @@ import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.ScopeHandler;
 import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.SearchResponse;
 import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.SearchResponseStatusHandler;
 
+import android.net.Uri;
+import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -34,6 +36,10 @@ public final class PlaceWebApi {
     private static final Log LOG = LogFactory.getLog(PlaceWebApi.class);
 
     private static final String BASE_URL_MAPS_API = "https://maps.googleapis.com/maps/api/";
+
+    private static final String BASE_URL_PHOTO_API = "https://maps.googleapis.com/maps/api/place/photo";
+
+    private static final int MAX_PHOTO_SIZE = 1600;
 
     private String key;
 
@@ -169,6 +175,25 @@ public final class PlaceWebApi {
         } catch (IOException e) {
             throw new PlaceWebApiException(e);
         }
+    }
+
+    @NonNull
+    public Uri createPhotoUri(@NonNull String photoReference,
+                              @IntRange(to = MAX_PHOTO_SIZE) int maxWidth,
+                              @IntRange(to = MAX_PHOTO_SIZE) int maxHeight) {
+
+        if (maxWidth <= 0 && maxHeight <= 0) {
+            throw new IllegalArgumentException("Either 'maxWidth' or 'maxHeight' must be greater than 0.");
+        }
+
+        StringBuilder builder = new StringBuilder(BASE_URL_PHOTO_API);
+        builder.append("?key=").append(key)
+               .append("&photoreference=").append(photoReference);
+
+        if (0 < maxWidth) builder.append("&maxwidth=").append(maxWidth);
+        if (0 < maxHeight) builder.append("&maxheight=").append(maxHeight);
+
+        return Uri.parse(builder.toString());
     }
 
     public class PlaceWebApiException extends RuntimeException {
