@@ -1,6 +1,6 @@
-package com.lakeel.altla.ghost.alpha.nearbysearch.place.model.service;
+package com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit;
 
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.Place;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.Place;
 
 import java.util.List;
 

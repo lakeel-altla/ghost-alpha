@@ -1,10 +1,10 @@
-package com.lakeel.altla.ghost.alpha.nearbysearch.place.model;
+package com.lakeel.altla.ghost.alpha.nearbysearch.place;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.service.DetailsResponse;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.service.PlaceWebService;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.service.SearchResponse;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.DetailsResponse;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.PlaceWebService;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.SearchResponse;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

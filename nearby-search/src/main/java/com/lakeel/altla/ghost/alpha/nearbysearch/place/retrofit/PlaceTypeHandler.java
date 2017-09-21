@@ -1,4 +1,4 @@
-package com.lakeel.altla.ghost.alpha.nearbysearch.place.model.service;
+package com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -10,7 +10,7 @@ import com.google.gson.JsonSerializer;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.PlaceType;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.PlaceType;
 
 import java.lang.reflect.Type;
 

@@ -1,4 +1,4 @@
-package com.lakeel.altla.ghost.alpha.nearbysearch.place.model;
+package com.lakeel.altla.ghost.alpha.nearbysearch.place;
 
 import android.net.Uri;
 import android.support.annotation.IntRange;

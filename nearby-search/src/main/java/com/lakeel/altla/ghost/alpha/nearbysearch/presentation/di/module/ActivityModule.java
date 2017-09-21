@@ -8,17 +8,17 @@ import com.google.gson.GsonBuilder;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.PlacePhotoApiUriFactory;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.PlaceType;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.PlaceWebApi;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.Scope;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.service.DetailsResponse;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.service.DetailsResponseStatusHandler;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.service.PlaceTypeHandler;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.service.PlaceWebService;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.service.ScopeHandler;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.service.SearchResponse;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.model.service.SearchResponseStatusHandler;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.PlacePhotoApiUriFactory;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.PlaceType;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.PlaceWebApi;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.Scope;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.DetailsResponse;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.DetailsResponseStatusHandler;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.PlaceTypeHandler;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.PlaceWebService;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.ScopeHandler;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.SearchResponse;
+import com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit.SearchResponseStatusHandler;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.ActivityScope;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.helper.DebugPreferences;
 

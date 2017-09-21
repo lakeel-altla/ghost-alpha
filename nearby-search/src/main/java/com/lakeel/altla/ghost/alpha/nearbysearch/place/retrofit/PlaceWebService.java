@@ -1,4 +1,4 @@
-package com.lakeel.altla.ghost.alpha.nearbysearch.place.model.service;
+package com.lakeel.altla.ghost.alpha.nearbysearch.place.retrofit;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
