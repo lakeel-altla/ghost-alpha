@@ -384,7 +384,7 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
         LOG.v("Searching nearby places: latitude = %f, longitude = %f, radius = %d, language = %s",
               latitude, longitude, radius, null);
 
-        List<Place> places = placeWebApi.nearbySearch(latitude, longitude, radius, null);
+        List<Place> places = placeWebApi.searchPlaces(latitude, longitude, radius, null);
 
         LOG.v("Searched nearby places.");
 

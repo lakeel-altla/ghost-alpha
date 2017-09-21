@@ -19,7 +19,7 @@ public interface PlaceWebService {
     Call<SearchResponse> nearbySearchByPageToken(@NonNull @Query("key") String key,
                                                  @NonNull @Query("pagetoken") String pageToken);
 
-    @GET("place/details/json")
+    @GET("place/getPlace/json")
     Call<DetailsResponse> details(@NonNull @Query("key") String key,
                                   @NonNull @Query("placeid") String placeId,
                                   @Nullable @Query("language") String language);

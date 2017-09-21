@@ -92,9 +92,9 @@ public final class NearbyPlaceFragment extends Fragment {
         fragmentContext.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
 
         deferredManager.when(() -> {
-            Place place = placeWebApi.details(placeId, null);
+            Place place = placeWebApi.getPlace(placeId, null);
             if (place == null) {
-                LOG.w("No details: placeId = %s", placeId);
+                LOG.w("No getPlace: placeId = %s", placeId);
             } else {
                 getActivity().runOnUiThread(() -> {
                     setPlace(place);

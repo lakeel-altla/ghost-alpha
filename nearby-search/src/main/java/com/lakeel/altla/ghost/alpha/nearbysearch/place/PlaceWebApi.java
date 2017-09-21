@@ -68,7 +68,7 @@ public final class PlaceWebApi {
     }
 
     @NonNull
-    public List<Place> nearbySearch(double latitude, double longitude, int radius, @Nullable String language) {
+    public List<Place> searchPlaces(double latitude, double longitude, int radius, @Nullable String language) {
 
         String location = latitude + "," + longitude;
         if (language == null) language = Locale.getDefault().getLanguage();
@@ -87,7 +87,7 @@ public final class PlaceWebApi {
                     } else {
                         List<Place> results = new ArrayList<>();
                         results.addAll(searchResponse.results);
-                        nearbySearchByPageToken(searchResponse.nextPageToken, results);
+                        fetchNextPage(searchResponse.nextPageToken, results);
                         return results;
                     }
                 case ZERO_RESULTS:
@@ -105,7 +105,7 @@ public final class PlaceWebApi {
         }
     }
 
-    private void nearbySearchByPageToken(@NonNull String pageToken, @NonNull List<Place> outResults) {
+    private void fetchNextPage(@NonNull String pageToken, @NonNull List<Place> outResults) {
 
         Call<SearchResponse> call = service.nearbySearchByPageToken(key, pageToken);
 
@@ -118,7 +118,7 @@ public final class PlaceWebApi {
                 case OK:
                     outResults.addAll(searchResponse.results);
                     if (searchResponse.nextPageToken != null) {
-                        nearbySearchByPageToken(searchResponse.nextPageToken, outResults);
+                        fetchNextPage(searchResponse.nextPageToken, outResults);
                     }
                     break;
                 case ZERO_RESULTS:
@@ -139,7 +139,7 @@ public final class PlaceWebApi {
     }
 
     @Nullable
-    public Place details(@NonNull String placeId, @Nullable String language) {
+    public Place getPlace(@NonNull String placeId, @Nullable String language) {
 
         if (language == null) language = Locale.getDefault().getLanguage();
 
