@@ -87,7 +87,7 @@ public final class PlaceWebApi {
                     } else {
                         List<Place> results = new ArrayList<>();
                         results.addAll(searchResponse.results);
-                        fetchNextPage(searchResponse.nextPageToken, results);
+                        getNextPage(searchResponse.nextPageToken, results);
                         return results;
                     }
                 case ZERO_RESULTS:
@@ -105,7 +105,7 @@ public final class PlaceWebApi {
         }
     }
 
-    private void fetchNextPage(@NonNull String pageToken, @NonNull List<Place> outResults) {
+    private void getNextPage(@NonNull String pageToken, @NonNull List<Place> outResults) {
 
         Call<SearchResponse> call = service.nearbySearchByPageToken(key, pageToken);
 
@@ -118,7 +118,7 @@ public final class PlaceWebApi {
                 case OK:
                     outResults.addAll(searchResponse.results);
                     if (searchResponse.nextPageToken != null) {
-                        fetchNextPage(searchResponse.nextPageToken, outResults);
+                        getNextPage(searchResponse.nextPageToken, outResults);
                     }
                     break;
                 case ZERO_RESULTS:
