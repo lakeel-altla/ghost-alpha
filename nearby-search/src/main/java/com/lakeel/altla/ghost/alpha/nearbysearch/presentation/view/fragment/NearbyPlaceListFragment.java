@@ -127,7 +127,15 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_nearby_place_list, container, false);
+        return inflater.inflate(R.layout.fragment_nearby_place_list, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        View view = getView();
+        if (view == null) return;
 
         ButterKnife.bind(this, view);
 
@@ -193,8 +201,6 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
 
             }
         });
-
-        return view;
     }
 
     @Override

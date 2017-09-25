@@ -12,6 +12,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -85,7 +86,16 @@ public final class DebugSettingsFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_debug_settings, container, false);
+        return inflater.inflate(R.layout.fragment_debug_settings, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        View view = getView();
+        if (view == null) return;
+
         ButterKnife.bind(this, view);
 
         fragmentContext.setTitle(R.string.title_debug);
@@ -154,8 +164,6 @@ public final class DebugSettingsFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-
-        return view;
     }
 
     @NonNull

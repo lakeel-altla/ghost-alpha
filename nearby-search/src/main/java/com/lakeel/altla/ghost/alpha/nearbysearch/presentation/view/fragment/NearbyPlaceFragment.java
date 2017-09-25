@@ -78,9 +78,17 @@ public final class NearbyPlaceFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_nearby_place, container, false);
-        ButterKnife.bind(this, view);
-        return view;
+        return inflater.inflate(R.layout.fragment_nearby_place, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        View view = getView();
+        if (view != null) {
+            ButterKnife.bind(this, view);
+        }
     }
 
     @Override
