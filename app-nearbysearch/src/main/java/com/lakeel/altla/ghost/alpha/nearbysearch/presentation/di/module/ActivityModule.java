@@ -4,9 +4,9 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
 import com.lakeel.altla.ghost.alpha.nearbysearch.BuildConfig;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.PlaceWebApi;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.ActivityScope;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.helper.DebugPreferences;
+import com.lakeel.altla.ghost.alpha.google.place.web.PlaceWebApi;
 
 import org.jdeferred.DeferredManager;
 import org.jdeferred.android.AndroidDeferredManager;

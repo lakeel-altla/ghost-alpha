@@ -14,6 +14,18 @@ buildscript {
 }
 
 allprojects {
+    ext {
+        compileSdkVersion = 26
+        buildToolsVersion = "26.0.1"
+        minSdkVersion = 19
+        targetSdkVersion = 26
+        supportVersion = '26.1.0'
+        gmsVersion = '11.0.4'
+        retrofitVersion = '2.3.0'
+        androidLogVersion = '0.0.2'
+        daggerVersion = '2.10'
+        butterknifeVersion = '8.8.1'
+    }
     repositories {
         jcenter()
         maven { url 'https://maven.google.com' }

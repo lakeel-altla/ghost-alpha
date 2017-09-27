@@ -3,11 +3,11 @@ package com.lakeel.altla.ghost.alpha.nearbysearch.presentation.view.fragment;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.nearbysearch.R;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.Place;
-import com.lakeel.altla.ghost.alpha.nearbysearch.place.PlaceWebApi;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.helper.BundleHelper;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.helper.FragmentHelper;
+import com.lakeel.altla.ghost.alpha.google.place.web.Place;
+import com.lakeel.altla.ghost.alpha.google.place.web.PlaceWebApi;
 
 import org.jdeferred.DeferredManager;
 
