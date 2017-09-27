@@ -160,9 +160,6 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
                 marker = googleMap.addMarker(new MarkerOptions().position(queryLocation));
             }
 
-            // Enable the location layer.
-            googleMap.setMyLocationEnabled(true);
-
             googleMap.setOnMapClickListener(latLng -> {
                 if (debugPreferences.isManualLocationUpdatesEnabled()) {
                     setMyLocation(latLng);
@@ -194,11 +191,11 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
                 return false;
             });
 
-            if (!debugPreferences.isManualLocationUpdatesEnabled()) {
-                if (!fragmentContext.checkLocationPermission()) {
-                    fragmentContext.requestLocationPermission();
-                }
-
+            if (fragmentContext.checkLocationPermission()) {
+                // Enable the location layer.
+                googleMap.setMyLocationEnabled(true);
+            } else {
+                fragmentContext.requestLocationPermission();
             }
         });
     }
