@@ -1,1 +1,1 @@
-include ':app-nearbysearch', ':lib-google-place-web-service', ':lib-geohash'
+include ':app-nearbysearch', ':lib-google-place-web-service', ':lib-geohash', ':app-virtualobject'
