@@ -1,4 +1,4 @@
-package com.lakeel.altla.ghost.alpha.nearbysearch.presentation.view.fragment;
+package com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationAvailability;
@@ -16,9 +16,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.nearbysearch.R;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.ActivityScopeContext;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.helper.DebugPreferences;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.helper.OnLocationUpdatesAvailableListener;
+import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScopeContext;
+import com.lakeel.altla.ghost.alpha.nearbysearch.helper.OnLocationUpdatesAvailableListener;
+import com.lakeel.altla.ghost.alpha.nearbysearch.helper.DebugPreferences;
 import com.lakeel.altla.ghost.alpha.google.place.web.Photo;
 import com.lakeel.altla.ghost.alpha.google.place.web.Place;
 import com.lakeel.altla.ghost.alpha.google.place.web.PlaceWebApi;

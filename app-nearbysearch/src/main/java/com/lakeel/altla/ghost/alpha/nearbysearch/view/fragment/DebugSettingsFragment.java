@@ -1,10 +1,10 @@
-package com.lakeel.altla.ghost.alpha.nearbysearch.presentation.view.fragment;
+package com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.nearbysearch.R;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.ActivityScopeContext;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.helper.DebugPreferences;
+import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScopeContext;
+import com.lakeel.altla.ghost.alpha.nearbysearch.helper.DebugPreferences;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 

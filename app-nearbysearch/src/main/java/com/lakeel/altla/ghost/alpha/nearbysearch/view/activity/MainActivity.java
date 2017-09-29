@@ -1,4 +1,4 @@
-package com.lakeel.altla.ghost.alpha.nearbysearch.presentation.view.activity;
+package com.lakeel.altla.ghost.alpha.nearbysearch.view.activity;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -11,14 +11,14 @@ import com.google.android.gms.location.SettingsClient;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.nearbysearch.R;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.app.MyApplication;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.ActivityScopeContext;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.component.ActivityComponent;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.module.ActivityModule;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.helper.OnLocationUpdatesAvailableListener;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.view.fragment.DebugSettingsFragment;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.view.fragment.NearbyPlaceFragment;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.view.fragment.NearbyPlaceListFragment;
+import com.lakeel.altla.ghost.alpha.nearbysearch.app.MyApplication;
+import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScopeContext;
+import com.lakeel.altla.ghost.alpha.nearbysearch.di.component.ActivityComponent;
+import com.lakeel.altla.ghost.alpha.nearbysearch.di.module.ActivityModule;
+import com.lakeel.altla.ghost.alpha.nearbysearch.helper.OnLocationUpdatesAvailableListener;
+import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.DebugSettingsFragment;
+import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.NearbyPlaceFragment;
+import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.NearbyPlaceListFragment;
 
 import android.app.Activity;
 import android.content.Intent;

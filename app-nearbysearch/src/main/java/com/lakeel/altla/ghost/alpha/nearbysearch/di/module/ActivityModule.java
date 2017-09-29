@@ -1,11 +1,11 @@
-package com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.module;
+package com.lakeel.altla.ghost.alpha.nearbysearch.di.module;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
 import com.lakeel.altla.ghost.alpha.nearbysearch.BuildConfig;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.ActivityScope;
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.helper.DebugPreferences;
+import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScope;
+import com.lakeel.altla.ghost.alpha.nearbysearch.helper.DebugPreferences;
 import com.lakeel.altla.ghost.alpha.google.place.web.PlaceWebApi;
 
 import org.jdeferred.DeferredManager;

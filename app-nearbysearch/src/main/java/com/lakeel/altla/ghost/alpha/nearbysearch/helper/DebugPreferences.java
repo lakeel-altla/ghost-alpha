@@ -1,4 +1,4 @@
-package com.lakeel.altla.ghost.alpha.nearbysearch.presentation.helper;
+package com.lakeel.altla.ghost.alpha.nearbysearch.helper;
 
 import com.google.android.gms.location.LocationRequest;
 

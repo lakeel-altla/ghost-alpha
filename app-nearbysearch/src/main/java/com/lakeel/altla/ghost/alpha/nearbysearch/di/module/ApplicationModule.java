@@ -1,6 +1,6 @@
-package com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.module;
+package com.lakeel.altla.ghost.alpha.nearbysearch.di.module;
 
-import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.app.MyApplication;
+import com.lakeel.altla.ghost.alpha.nearbysearch.app.MyApplication;
 
 import android.content.res.Resources;
 import android.support.annotation.NonNull;

@@ -1,4 +1,4 @@
-package com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di;
+package com.lakeel.altla.ghost.alpha.nearbysearch.di;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

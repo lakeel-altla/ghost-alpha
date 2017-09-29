@@ -1,4 +1,4 @@
-package com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.module;
+package com.lakeel.altla.ghost.alpha.nearbysearch.di.module;
 
 public final class Names {
 
