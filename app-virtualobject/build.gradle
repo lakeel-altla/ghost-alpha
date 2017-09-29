@@ -5,7 +5,7 @@ android {
     compileSdkVersion project.ext.compileSdkVersion
     buildToolsVersion project.ext.buildToolsVersion
     defaultConfig {
-        applicationId "com.lakeel.altla.ghost.alpha.nearbysearch"
+        applicationId "com.lakeel.altla.ghost.alpha.virtualobject"
         minSdkVersion project.ext.minSdkVersion
         targetSdkVersion project.ext.targetSdkVersion
         versionCode 1
