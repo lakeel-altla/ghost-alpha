@@ -1,6 +1,5 @@
 package com.lakeel.altla.ghost.alpha.nearbysearch.presentation.di.module;
 
-import com.lakeel.altla.ghost.alpha.nearbysearch.R;
 import com.lakeel.altla.ghost.alpha.nearbysearch.presentation.app.MyApplication;
 
 import android.content.res.Resources;
@@ -31,6 +30,6 @@ public class ApplicationModule {
     @Singleton
     @Provides
     String provideGoogleApiKey() {
-        return application.getString(R.string.google_api_key);
+        return application.getString(com.lakeel.altla.ghost.alpha.res.R.string.google_api_key);
     }
 }

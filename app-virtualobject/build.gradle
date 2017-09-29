@@ -28,5 +28,6 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile "com.google.android.gms:play-services-maps:$gmsVersion"
     compile "com.google.dagger:dagger:$daggerVersion"
+    compile project(path: ':lib-res')
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
 }
