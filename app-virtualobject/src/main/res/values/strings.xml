@@ -1,3 +1,14 @@
 <resources>
+
     <string name="app_name">Ghost Virtual Objects</string>
+
+    <string name="title_nearby_object_list">Nearby Places</string>
+
+    <string name="action_debug_settings">Debug Settings</string>
+
+    <string name="toast_location_settings_inadequate">Location settings are inadequate, and cannot be fixed here. Fix in
+        Settings.
+    </string>
+    <string name="rationale_location">TODO</string>
+
 </resources>

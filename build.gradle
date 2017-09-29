@@ -25,6 +25,7 @@ allprojects {
         androidLogVersion = '0.0.2'
         daggerVersion = '2.10'
         butterknifeVersion = '8.8.1'
+        easypermissionsVersion = '1.0.1'
     }
     repositories {
         jcenter()
