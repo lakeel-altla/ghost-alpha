@@ -73,12 +73,6 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     @Inject
     FusedLocationProviderClient fusedLocationProviderClient;
 
-    RecyclerView recyclerView;
-
-    MapView mapView;
-
-    TextView textViewAccuracyValue;
-
     private FragmentContext fragmentContext;
 
     private LocationCallback locationCallback;
@@ -86,6 +80,12 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     private LocationRequest locationRequest;
 
     private final List<Item> items = new ArrayList<>();
+
+    private RecyclerView recyclerView;
+
+    private MapView mapView;
+
+    private TextView textViewAccuracyValue;
 
     @Nullable
     private LatLng queryLocation;
@@ -125,13 +125,11 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (getView() == null) throw new IllegalStateException("The root view could not be found.");
 
-        View view = getView();
-        if (view != null) {
-            recyclerView = view.findViewById(R.id.recycler_view);
-            mapView = view.findViewById(R.id.map_view);
-            textViewAccuracyValue = view.findViewById(R.id.text_view_accuracy_value);
-        }
+        recyclerView = getView().findViewById(R.id.recycler_view);
+        textViewAccuracyValue = getView().findViewById(R.id.text_view_accuracy_value);
+        mapView = getView().findViewById(R.id.map_view);
 
         recyclerView.setAdapter(new Adapter());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

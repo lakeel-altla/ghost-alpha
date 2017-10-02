@@ -22,7 +22,6 @@ import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.NearbyObjectList
 import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
@@ -84,14 +83,6 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @Override
     public ActivityComponent getActivityComponent() {
         return activityComponent;
     }
@@ -106,7 +97,7 @@ public final class MainActivity extends AppCompatActivity
         }
     }
 
-    //    @Override
+    @Override
     public void setHomeAsUpIndicator(@DrawableRes int resId) {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
