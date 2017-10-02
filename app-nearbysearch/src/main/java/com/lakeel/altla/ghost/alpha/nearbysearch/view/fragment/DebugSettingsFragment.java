@@ -98,7 +98,7 @@ public final class DebugSettingsFragment extends Fragment {
 
         ButterKnife.bind(this, view);
 
-        fragmentContext.setTitle(R.string.title_debug);
+        fragmentContext.setTitle(R.string.title_debug_settings);
         fragmentContext.setDisplayHomeAsUpEnabled(true);
         fragmentContext.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
 
