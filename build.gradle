@@ -26,6 +26,10 @@ allprojects {
         daggerVersion = '2.10'
         butterknifeVersion = '8.8.1'
         easypermissionsVersion = '1.0.1'
+        discreteSeekbarVersion = '1.0.1'
+        jdeferredVersion = '1.2.6'
+        picassoVersion = '2.5.2'
+        junitVersion = '4.12'
     }
     repositories {
         jcenter()

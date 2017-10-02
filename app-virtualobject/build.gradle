@@ -31,10 +31,10 @@ dependencies {
     compile "com.google.android.gms:play-services-location:$gmsVersion"
     compile "com.google.android.gms:play-services-maps:$gmsVersion"
     compile "com.google.dagger:dagger:$daggerVersion"
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'org.jdeferred:jdeferred-android-aar:1.2.6'
+    compile "com.squareup.picasso:picasso:$picassoVersion"
+    compile "org.jdeferred:jdeferred-android-aar:$jdeferredVersion"
     compile "pub.devrel:easypermissions:$easypermissionsVersion"
-    compile 'org.adw.library:discrete-seekbar:1.0.1'
+    compile "org.adw.library:discrete-seekbar:$discreteSeekbarVersion"
     compile "com.lakeel.altla:android-log:$androidLogVersion"
     compile project(path: ':lib-res')
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"

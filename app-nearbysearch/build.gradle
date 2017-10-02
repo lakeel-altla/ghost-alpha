@@ -32,10 +32,10 @@ dependencies {
     compile "com.google.android.gms:play-services-maps:$gmsVersion"
     compile "com.google.dagger:dagger:$daggerVersion"
     compile "com.jakewharton:butterknife:$butterknifeVersion"
+    compile "com.squareup.picasso:picasso:$picassoVersion"
+    compile "org.jdeferred:jdeferred-android-aar:$jdeferredVersion"
+    compile "org.adw.library:discrete-seekbar:$discreteSeekbarVersion"
     compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'org.jdeferred:jdeferred-android-aar:1.2.6'
-    compile 'org.adw.library:discrete-seekbar:1.0.1'
     compile project(path: ':lib-res')
     compile project(path: ':lib-google-place-web-service')
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
