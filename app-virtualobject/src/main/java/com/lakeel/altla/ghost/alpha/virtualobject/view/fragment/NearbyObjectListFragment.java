@@ -130,7 +130,7 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         if (view != null) {
             recyclerView = view.findViewById(R.id.recycler_view);
             mapView = view.findViewById(R.id.map_view);
-            textViewAccuracyValue = view.findViewById(R.id.text_view_accuracy);
+            textViewAccuracyValue = view.findViewById(R.id.text_view_accuracy_value);
         }
 
         recyclerView.setAdapter(new Adapter());
