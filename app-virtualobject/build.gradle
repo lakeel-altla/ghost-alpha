@@ -34,6 +34,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'org.jdeferred:jdeferred-android-aar:1.2.6'
     compile "pub.devrel:easypermissions:$easypermissionsVersion"
+    compile 'org.adw.library:discrete-seekbar:1.0.1'
     compile "com.lakeel.altla:android-log:$androidLogVersion"
     compile project(path: ':lib-res')
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"

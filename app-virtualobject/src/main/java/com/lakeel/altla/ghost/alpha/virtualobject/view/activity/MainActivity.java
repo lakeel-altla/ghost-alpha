@@ -16,6 +16,7 @@ import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.component.ActivityComponent;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.module.ActivityModule;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.OnLocationUpdatesAvailableListener;
+import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.DebugSettingsFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.NearbyObjectListFragment;
 
 import android.content.IntentSender;
@@ -38,7 +39,8 @@ import pub.devrel.easypermissions.EasyPermissions;
 public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
                    EasyPermissions.PermissionCallbacks,
-                   NearbyObjectListFragment.FragmentContext {
+                   NearbyObjectListFragment.FragmentContext,
+                   DebugSettingsFragment.FragmentContext {
 
     private static final Log LOG = LogFactory.getLog(MainActivity.class);
 
@@ -177,6 +179,11 @@ public final class MainActivity extends AppCompatActivity
         } else {
             NavUtils.navigateUpFromSameTask(this);
         }
+    }
+
+    @Override
+    public void showDebugSettingsView() {
+        replaceFragmentAndAddToBackStack(DebugSettingsFragment.newInstance());
     }
 
     private void replaceFragment(Fragment fragment) {
