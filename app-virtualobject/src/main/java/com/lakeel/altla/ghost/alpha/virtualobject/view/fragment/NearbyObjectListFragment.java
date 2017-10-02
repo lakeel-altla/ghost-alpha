@@ -38,9 +38,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import pub.devrel.easypermissions.EasyPermissions;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
 public final class NearbyObjectListFragment extends Fragment implements OnLocationUpdatesAvailableListener {
 
     private static final Log LOG = LogFactory.getLog(NearbyObjectListFragment.class);
+
+    private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     private static final int MILLIS_1000 = 1000;
 
@@ -195,11 +201,10 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         super.onResume();
         mapView.onResume();
 
-        if (fragmentContext.checkLocationPermission()) {
+        if (checkLocationPermission()) {
             // TODO
-//            initializeLocationRequest();
         } else {
-            fragmentContext.requestLocationPermission();
+            requestLocationPermission();
         }
     }
 
@@ -238,6 +243,14 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
     public void onLocationUpdatesAvailable() {
 //        if (!debugPreferences.isManualLocationUpdatesEnabled()) {
 //            if (fragmentContext.checkLocationPermission()) {
@@ -263,6 +276,17 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
 //        }
     }
 
+    boolean checkLocationPermission() {
+        return EasyPermissions.hasPermissions(getContext(), ACCESS_FINE_LOCATION);
+    }
+
+    private void requestLocationPermission() {
+        EasyPermissions.requestPermissions(this,
+                                           getString(R.string.rationale_location),
+                                           REQUEST_LOCATION_PERMISSION,
+                                           ACCESS_FINE_LOCATION);
+    }
+
     public interface FragmentContext {
 
         void setTitle(@StringRes int resId);
@@ -270,10 +294,6 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         void setDisplayHomeAsUpEnabled(boolean enabled);
 
         void invalidateOptionsMenu();
-
-        boolean checkLocationPermission();
-
-        void requestLocationPermission();
 
         void checkLocationSettings(LocationRequest locationRequest);
 

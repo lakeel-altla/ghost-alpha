@@ -35,16 +35,12 @@ import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-
 public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
                    EasyPermissions.PermissionCallbacks,
                    NearbyObjectListFragment.FragmentContext {
 
     private static final Log LOG = LogFactory.getLog(MainActivity.class);
-
-    private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     private static final int REQUEST_CHECK_SETTINGS = 2;
 
@@ -116,19 +112,6 @@ public final class MainActivity extends AppCompatActivity
         } else {
             LOG.w("ActionBar is null.");
         }
-    }
-
-    @Override
-    public boolean checkLocationPermission() {
-        return EasyPermissions.hasPermissions(this, ACCESS_FINE_LOCATION);
-    }
-
-    @Override
-    public void requestLocationPermission() {
-        EasyPermissions.requestPermissions(this,
-                                           getString(R.string.rationale_location),
-                                           REQUEST_LOCATION_PERMISSION,
-                                           ACCESS_FINE_LOCATION);
     }
 
     @Override
