@@ -25,9 +25,6 @@ import android.widget.TextView;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 import static java.lang.String.format;
 
 public final class DebugSettingsFragment extends Fragment {
@@ -36,33 +33,6 @@ public final class DebugSettingsFragment extends Fragment {
 
     @Inject
     DebugPreferences debugPreferences;
-
-    @BindView(R.id.switch_google_map_visible)
-    Switch switchGoogleMapVisible;
-
-    @BindView(R.id.text_view_search_radius_value)
-    TextView textViewSearchRadiusValue;
-
-    @BindView(R.id.seek_bar_search_radius)
-    DiscreteSeekBar seekBarSearchRadius;
-
-    @BindView(R.id.text_view_location_updates_interval_value)
-    TextView textViewLocationUpdatesIntervalValue;
-
-    @BindView(R.id.seek_bar_location_updates_interval)
-    DiscreteSeekBar seekBarLocationUpdatesInterval;
-
-    @BindView(R.id.text_view_location_updates_distance_value)
-    TextView textViewLocationUpdatesDistanceValue;
-
-    @BindView(R.id.seek_bar_location_updates_distance)
-    DiscreteSeekBar seekBarLocationUpdatesDistance;
-
-    @BindView(R.id.switch_manual_location_updates_enabled)
-    Switch switchManualLocationUpdatesEnabled;
-
-    @BindView(R.id.spinner_location_request_priority)
-    Spinner spinnerLocationRequestPriority;
 
     private FragmentContext fragmentContext;
 
@@ -92,11 +62,26 @@ public final class DebugSettingsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (getView() == null) throw new IllegalStateException("The root view could not be found.");
 
-        View view = getView();
-        if (view == null) return;
-
-        ButterKnife.bind(this, view);
+        TextView textViewSearchRadiusValue = getView().findViewById(
+                R.id.text_view_search_radius_value);
+        Switch switchGoogleMapVisible = getView().findViewById(
+                R.id.switch_google_map_visible);
+        DiscreteSeekBar seekBarSearchRadius = getView().findViewById(
+                R.id.seek_bar_search_radius);
+        TextView textViewLocationUpdatesIntervalValue = getView().findViewById(
+                R.id.text_view_location_updates_interval_value);
+        DiscreteSeekBar seekBarLocationUpdatesInterval = getView().findViewById(
+                R.id.seek_bar_location_updates_interval);
+        TextView textViewLocationUpdatesDistanceValue = getView().findViewById(
+                R.id.text_view_location_updates_distance_value);
+        DiscreteSeekBar seekBarLocationUpdatesDistance = getView().findViewById(
+                R.id.seek_bar_location_updates_distance);
+        Switch switchManualLocationUpdatesEnabled = getView().findViewById(
+                R.id.switch_manual_location_updates_enabled);
+        Spinner spinnerLocationRequestPriority = getView().findViewById(
+                R.id.spinner_location_request_priority);
 
         fragmentContext.setTitle(R.string.title_debug_settings);
         fragmentContext.setDisplayHomeAsUpEnabled(true);

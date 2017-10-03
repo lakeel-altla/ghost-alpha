@@ -24,7 +24,6 @@ allprojects {
         retrofitVersion = '2.3.0'
         androidLogVersion = '0.0.2'
         daggerVersion = '2.10'
-        butterknifeVersion = '8.8.1'
         easypermissionsVersion = '1.0.1'
         discreteSeekbarVersion = '1.0.1'
         jdeferredVersion = '1.2.6'

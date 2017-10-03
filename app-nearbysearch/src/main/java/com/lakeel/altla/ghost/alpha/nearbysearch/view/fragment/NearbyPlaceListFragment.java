@@ -53,9 +53,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
 public final class NearbyPlaceListFragment extends Fragment implements OnLocationUpdatesAvailableListener {
 
     private static final Log LOG = LogFactory.getLog(NearbyPlaceListFragment.class);
@@ -78,16 +75,13 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
     @Inject
     PlaceWebApi placeWebApi;
 
-    @BindView(R.id.recycler_view)
-    RecyclerView recyclerView;
-
-    @BindView(R.id.map_view)
-    MapView mapView;
-
-    @BindView(R.id.text_view_accuracy_value)
-    TextView textViewAccuracyValue;
-
     private FragmentContext fragmentContext;
+
+    private RecyclerView recyclerView;
+
+    private MapView mapView;
+
+    private TextView textViewAccuracyValue;
 
     private LocationCallback locationCallback;
 
@@ -134,11 +128,11 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (getView() == null) throw new IllegalStateException("The root view could not be found.");
 
-        View view = getView();
-        if (view == null) return;
-
-        ButterKnife.bind(this, view);
+        recyclerView = getView().findViewById(R.id.recycler_view);
+        mapView = getView().findViewById(R.id.map_view);
+        textViewAccuracyValue = getView().findViewById(R.id.text_view_accuracy_value);
 
         recyclerView.setAdapter(new Adapter());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -492,21 +486,20 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
 
         class ViewHolder extends RecyclerView.ViewHolder {
 
-            @BindView(R.id.image_view_photo)
             ImageView imageViewPhoto;
 
-            @BindView(R.id.image_view_icon)
             ImageView imageViewIcon;
 
-            @BindView(R.id.text_view_name)
             TextView textViewName;
 
-            @BindView(R.id.text_view_distance)
             TextView textViewDistance;
 
             ViewHolder(@NonNull View itemView) {
                 super(itemView);
-                ButterKnife.bind(this, itemView);
+                imageViewPhoto = itemView.findViewById(R.id.image_view_photo);
+                imageViewIcon = itemView.findViewById(R.id.image_view_icon);
+                textViewName = itemView.findViewById(R.id.text_view_name);
+                textViewDistance = itemView.findViewById(R.id.text_view_distance);
             }
         }
     }
