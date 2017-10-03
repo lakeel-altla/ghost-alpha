@@ -15,18 +15,19 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
-import com.lakeel.altla.ghost.alpha.nearbysearch.R;
-import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScopeContext;
-import com.lakeel.altla.ghost.alpha.nearbysearch.helper.OnLocationUpdatesAvailableListener;
-import com.lakeel.altla.ghost.alpha.nearbysearch.helper.DebugPreferences;
 import com.lakeel.altla.ghost.alpha.google.place.web.Photo;
 import com.lakeel.altla.ghost.alpha.google.place.web.Place;
 import com.lakeel.altla.ghost.alpha.google.place.web.PlaceWebApi;
+import com.lakeel.altla.ghost.alpha.nearbysearch.R;
+import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScopeContext;
+import com.lakeel.altla.ghost.alpha.nearbysearch.helper.DebugPreferences;
+import com.lakeel.altla.ghost.alpha.nearbysearch.helper.OnLocationUpdatesAvailableListener;
 import com.squareup.picasso.Picasso;
 
 import org.jdeferred.DeferredManager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -441,9 +442,20 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
                 int position = recyclerView.getChildAdapterPosition(v);
                 Item item = items.get(position);
                 String placeId = item.place.placeId;
-                String name = item.place.name;
-                fragmentContext.showNearbyPlaceView(placeId, name);
-                fragmentContext.invalidateOptionsMenu();
+                double latitude = item.place.geometry.location.lat;
+                double longitude = item.place.geometry.location.lng;
+
+                String uriString = "https://www.google.com/maps/search/?api=1&query=" +
+                                   latitude + "," + longitude +
+                                   "&query_place_id=" + placeId;
+                Uri uri = Uri.parse(uriString);
+
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+
+//                String name = item.place.name;
+//                fragmentContext.showNearbyPlaceView(placeId, name);
+//                fragmentContext.invalidateOptionsMenu();
             });
 
             return new Adapter.ViewHolder(itemView);
