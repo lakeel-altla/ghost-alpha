@@ -82,6 +82,8 @@ public final class DebugSettingsFragment extends Fragment {
                 R.id.switch_manual_location_updates_enabled);
         Spinner spinnerLocationRequestPriority = getView().findViewById(
                 R.id.spinner_location_request_priority);
+        Switch switchPlaceDetailsView = getView().findViewById(
+                R.id.switch_place_details_view_enabled);
 
         fragmentContext.setTitle(R.string.title_debug_settings);
         fragmentContext.setDisplayHomeAsUpEnabled(true);
@@ -118,7 +120,6 @@ public final class DebugSettingsFragment extends Fragment {
             }
         });
 
-        // TODO
         int locationUpdateDistance = debugPreferences.getLocationUpdatesDistance();
         textViewLocationUpdatesDistanceValue.setText(formatTextViewLocationUpdatesDistance(locationUpdateDistance));
         seekBarLocationUpdatesDistance.setMin(DebugPreferences.RANGE_LOCATION_UPDATES_DISTANCE.min);
@@ -148,6 +149,11 @@ public final class DebugSettingsFragment extends Fragment {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
+        });
+
+        switchPlaceDetailsView.setChecked(debugPreferences.isPlaceDetailsViewEnabled());
+        switchPlaceDetailsView.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            debugPreferences.setPlaceDetailsViewEnabled(isChecked);
         });
     }
 

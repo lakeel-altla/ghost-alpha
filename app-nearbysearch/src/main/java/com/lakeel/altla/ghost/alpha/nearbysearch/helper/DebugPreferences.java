@@ -31,6 +31,8 @@ public final class DebugPreferences {
 
     private static final String KEY_LOCATION_REQUEST_PRIORITY = "locationRequestPriority";
 
+    private static final String KEY_PLACE_DETAILS_VIEW_ENABLED = "placeDetailsViewEnabled";
+
     private SharedPreferences preferences;
 
     public DebugPreferences(SharedPreferences preferences) {
@@ -127,5 +129,15 @@ public final class DebugPreferences {
             }
         }
         throw new IllegalArgumentException("'priority' is out of range: priority = " + priority);
+    }
+
+    public boolean isPlaceDetailsViewEnabled() {
+        return preferences.getBoolean(KEY_PLACE_DETAILS_VIEW_ENABLED, false);
+    }
+
+    public void setPlaceDetailsViewEnabled(boolean enabled) {
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean(KEY_PLACE_DETAILS_VIEW_ENABLED, enabled);
+        editor.apply();
     }
 }
