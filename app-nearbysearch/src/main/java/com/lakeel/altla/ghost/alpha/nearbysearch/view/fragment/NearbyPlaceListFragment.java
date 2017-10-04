@@ -15,6 +15,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.ghost.alpha.google.maps.urls.SearchUrlBuilder;
 import com.lakeel.altla.ghost.alpha.google.place.web.Photo;
 import com.lakeel.altla.ghost.alpha.google.place.web.Place;
 import com.lakeel.altla.ghost.alpha.google.place.web.PlaceWebApi;
@@ -447,9 +448,7 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
                     double latitude = item.place.geometry.location.lat;
                     double longitude = item.place.geometry.location.lng;
 
-                    String uriString = "https://www.google.com/maps/search/?api=1&query=" +
-                                       latitude + "," + longitude +
-                                       "&query_place_id=" + placeId;
+                    String uriString = new SearchUrlBuilder(latitude, longitude).setPlaceId(placeId).build();
                     Uri uri = Uri.parse(uriString);
 
                     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
