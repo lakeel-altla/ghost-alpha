@@ -7,6 +7,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -37,13 +38,43 @@ public final class LocationPickerActivity extends AppCompatActivity
                    GoogleMap.OnMapClickListener,
                    GoogleMap.OnMyLocationButtonClickListener {
 
-    public static final String KEY_LATITUDE = "latitude";
-
-    public static final String KEY_LONGITUDE = "longitude";
-
     private static final Log LOG = LogFactory.getLog(LocationPickerActivity.class);
 
-    private static final float DEFAULT_ZOOM_LEVEL = 17;
+    private static final String KEY_LATITUDE = "latitude";
+
+    private static final String KEY_LONGITUDE = "longitude";
+
+    private static final String KEY_DEFAULT_ZOOM = "defaultZoom";
+
+    private static final String KEY_MY_LOCATION_ENABLED = "myLocationEnabled";
+
+    private static final String KEY_BUILDINGS_ENABLED = "buildingsEnabled";
+
+    private static final String KEY_INDOOR_ENABLED = "indoorEnabled";
+
+    private static final String KEY_TRAFFIC_ENABLED = "trafficEnabled";
+
+    private static final String KEY_MAP_TOOLBAR_ENABLED = "mapToolbarEnabled";
+
+    private static final String KEY_ZOOM_CONTROLS_ENABLED = "zoomControlsEnabled";
+
+    private static final String KEY_MY_LOCATION_BUTTON_ENABLED = "myLocationButtonEnabled";
+
+    private static final String KEY_COMPASS_ENABLED = "compassEnabled";
+
+    private static final String KEY_INDOOR_LEVEL_PICKER_ENABLED = "indoorLevelPickerEnabled";
+
+    private static final String KEY_ROTATE_GESTURES_ENABLED = "rotateGesturesEnabled";
+
+    private static final String KEY_SCROLL_GESTURES_ENABLED = "scrollGesturesEnabled";
+
+    private static final String KEY_TILT_GESTURES_ENABLED = "tiltGesturesEnabled";
+
+    private static final String KEY_ZOOM_GESTURES_ENABLED = "zoomGesturesEnabled";
+
+    private static final String KEY_ALL_GESTURES_ENABLED = "allGesturesEnabled";
+
+    private static final float DEFAULT_ZOOM = 17;
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
@@ -57,8 +88,40 @@ public final class LocationPickerActivity extends AppCompatActivity
 
     private LatLng location;
 
+    private float defaultZoom;
+
+    private boolean myLocationEnabled;
+
+    private boolean buildingsEnabled;
+
+    private boolean indoorEnabled;
+
+    private boolean trafficEnabled;
+
+    private boolean maxZoomPreference;
+
+    private boolean mapToolbarEnabled;
+
+    private boolean zoomControlsEnabled;
+
+    private boolean myLocationButtonEnabled;
+
+    private boolean compassEnabled;
+
+    private boolean indoorLevelPickerEnabled;
+
+    private boolean rotateGesturesEnabled;
+
+    private boolean scrollGesturesEnabled;
+
+    private boolean tiltGesturesEnabled;
+
+    private boolean zoomGesturesEnabled;
+
+    private boolean allGesturesEnabled;
+
     @Nullable
-    public static LatLng getLatLng(@NonNull Intent intent) {
+    public static LatLng getLocation(@NonNull Intent intent) {
         Bundle extras = intent.getExtras();
         if (extras == null) {
             return null;
@@ -92,6 +155,23 @@ public final class LocationPickerActivity extends AppCompatActivity
                 double longitude = extras.getDouble(KEY_LONGITUDE);
                 location = new LatLng(latitude, longitude);
             }
+            defaultZoom = extras.getFloat(KEY_DEFAULT_ZOOM);
+
+            myLocationEnabled = extras.getBoolean(KEY_MY_LOCATION_ENABLED);
+            buildingsEnabled = extras.getBoolean(KEY_BUILDINGS_ENABLED);
+            indoorEnabled = extras.getBoolean(KEY_INDOOR_ENABLED);
+            trafficEnabled = extras.getBoolean(KEY_TRAFFIC_ENABLED);
+
+            mapToolbarEnabled = extras.getBoolean(KEY_MAP_TOOLBAR_ENABLED);
+            zoomControlsEnabled = extras.getBoolean(KEY_ZOOM_CONTROLS_ENABLED);
+            myLocationButtonEnabled = extras.getBoolean(KEY_MY_LOCATION_BUTTON_ENABLED);
+            compassEnabled = extras.getBoolean(KEY_COMPASS_ENABLED);
+            indoorLevelPickerEnabled = extras.getBoolean(KEY_INDOOR_LEVEL_PICKER_ENABLED);
+            rotateGesturesEnabled = extras.getBoolean(KEY_ROTATE_GESTURES_ENABLED);
+            scrollGesturesEnabled = extras.getBoolean(KEY_SCROLL_GESTURES_ENABLED);
+            tiltGesturesEnabled = extras.getBoolean(KEY_TILT_GESTURES_ENABLED);
+            zoomGesturesEnabled = extras.getBoolean(KEY_ZOOM_GESTURES_ENABLED);
+            allGesturesEnabled = extras.getBoolean(KEY_ALL_GESTURES_ENABLED);
         }
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -191,20 +271,34 @@ public final class LocationPickerActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
 
-        googleMap.getUiSettings().setMapToolbarEnabled(false);
-        googleMap.getUiSettings().setZoomControlsEnabled(true);
-        googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        UiSettings uiSettings = googleMap.getUiSettings();
+        uiSettings.setMapToolbarEnabled(mapToolbarEnabled);
+        uiSettings.setZoomControlsEnabled(zoomControlsEnabled);
+        uiSettings.setMyLocationButtonEnabled(myLocationButtonEnabled);
+        uiSettings.setCompassEnabled(compassEnabled);
+        uiSettings.setIndoorLevelPickerEnabled(indoorLevelPickerEnabled);
+        uiSettings.setAllGesturesEnabled(allGesturesEnabled);
+        uiSettings.setRotateGesturesEnabled(rotateGesturesEnabled);
+        uiSettings.setScrollGesturesEnabled(scrollGesturesEnabled);
+        uiSettings.setTiltGesturesEnabled(tiltGesturesEnabled);
+        uiSettings.setZoomGesturesEnabled(zoomGesturesEnabled);
 
         updateLocation(location, true);
 
         googleMap.setOnMapClickListener(this);
         googleMap.setOnMyLocationButtonClickListener(this);
 
-        if (checkLocationPermission()) {
-            // Enable the location layer.
-            googleMap.setMyLocationEnabled(true);
-        } else {
-            requestLocationPermission();
+        googleMap.setBuildingsEnabled(buildingsEnabled);
+        googleMap.setIndoorEnabled(indoorEnabled);
+        googleMap.setTrafficEnabled(trafficEnabled);
+
+        if (myLocationEnabled) {
+            if (checkLocationPermission()) {
+                // Enable the location layer.
+                googleMap.setMyLocationEnabled(true);
+            } else {
+                requestLocationPermission();
+            }
         }
     }
 
@@ -249,7 +343,7 @@ public final class LocationPickerActivity extends AppCompatActivity
 
             CameraUpdate cameraUpdate;
             if (adjustZoomLevel) {
-                cameraUpdate = CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM_LEVEL);
+                cameraUpdate = CameraUpdateFactory.newLatLngZoom(location, defaultZoom);
             } else {
                 cameraUpdate = CameraUpdateFactory.newLatLng(location);
             }
@@ -278,6 +372,36 @@ public final class LocationPickerActivity extends AppCompatActivity
 
         private Double longitude;
 
+        private Float defaultZoom = DEFAULT_ZOOM;
+
+        private boolean myLocationEnabled;
+
+        private boolean buildingsEnabled;
+
+        private boolean indoorEnabled;
+
+        private boolean trafficEnabled;
+
+        private boolean mapToolbarEnabled;
+
+        private boolean zoomControlsEnabled;
+
+        private boolean myLocationButtonEnabled;
+
+        private boolean compassEnabled;
+
+        private boolean indoorLevelPickerEnabled;
+
+        private boolean rotateGesturesEnabled;
+
+        private boolean scrollGesturesEnabled;
+
+        private boolean tiltGesturesEnabled;
+
+        private boolean zoomGesturesEnabled;
+
+        private boolean allGesturesEnabled;
+
         public Builder(@NonNull Context context) {
             this.context = context;
         }
@@ -290,6 +414,100 @@ public final class LocationPickerActivity extends AppCompatActivity
         }
 
         @NonNull
+        public Builder setDefaultZoom(float defaultZoom) {
+            this.defaultZoom = defaultZoom;
+            return this;
+        }
+
+        @NonNull
+        public Builder setMyLocationEnabled(boolean myLocationEnabled) {
+            this.myLocationEnabled = myLocationEnabled;
+            return this;
+        }
+
+        @NonNull
+        public Builder setBuildingsEnabled(boolean buildingsEnabled) {
+            this.buildingsEnabled = buildingsEnabled;
+            return this;
+        }
+
+        @NonNull
+        public Builder setIndoorEnabled(boolean indoorEnabled) {
+            this.indoorEnabled = indoorEnabled;
+            return this;
+        }
+
+        @NonNull
+        public Builder setTrafficEnabled(boolean trafficEnabled) {
+            this.trafficEnabled = trafficEnabled;
+            return this;
+        }
+
+        @NonNull
+        public Builder setMapToolbarEnabled(boolean mapToolbarEnabled) {
+            this.mapToolbarEnabled = mapToolbarEnabled;
+            return this;
+        }
+
+        @NonNull
+        public Builder setZoomControlsEnabled(boolean zoomControlsEnabled) {
+            this.zoomControlsEnabled = zoomControlsEnabled;
+            return this;
+        }
+
+        @NonNull
+        public Builder setMyLocationButtonEnabled(boolean myLocationButtonEnabled) {
+            this.myLocationButtonEnabled = myLocationButtonEnabled;
+            return this;
+        }
+
+        @NonNull
+        public Builder setCompassEnabled(boolean compassEnabled) {
+            this.compassEnabled = compassEnabled;
+            return this;
+        }
+
+        @NonNull
+        public Builder setIndoorLevelPickerEnabled(boolean indoorLevelPickerEnabled) {
+            this.indoorLevelPickerEnabled = indoorLevelPickerEnabled;
+            return this;
+        }
+
+        @NonNull
+        public Builder setRotateGesturesEnabled(boolean rotateGesturesEnabled) {
+            this.rotateGesturesEnabled = rotateGesturesEnabled;
+            return this;
+        }
+
+        @NonNull
+        public Builder setScrollGesturesEnabled(boolean scrollGesturesEnabled) {
+            this.scrollGesturesEnabled = scrollGesturesEnabled;
+            return this;
+        }
+
+        @NonNull
+        public Builder setTiltGesturesEnabled(boolean tiltGesturesEnabled) {
+            this.tiltGesturesEnabled = tiltGesturesEnabled;
+            return this;
+        }
+
+        @NonNull
+        public Builder setZoomGesturesEnabled(boolean zoomGesturesEnabled) {
+            this.zoomGesturesEnabled = zoomGesturesEnabled;
+            return this;
+        }
+
+        @NonNull
+        public Builder setAllGesturesEnabled(boolean allGesturesEnabled) {
+            this.allGesturesEnabled = allGesturesEnabled;
+            rotateGesturesEnabled = allGesturesEnabled;
+            scrollGesturesEnabled = allGesturesEnabled;
+            tiltGesturesEnabled = allGesturesEnabled;
+            zoomGesturesEnabled = allGesturesEnabled;
+            return this;
+        }
+
+        @NonNull
         public Intent build() {
             Intent intent = new Intent(context, LocationPickerActivity.class);
 
@@ -297,6 +515,23 @@ public final class LocationPickerActivity extends AppCompatActivity
                 intent.putExtra(KEY_LATITUDE, latitude);
                 intent.putExtra(KEY_LONGITUDE, longitude);
             }
+            intent.putExtra(KEY_DEFAULT_ZOOM, defaultZoom);
+
+            intent.putExtra(KEY_MY_LOCATION_ENABLED, myLocationEnabled);
+            intent.putExtra(KEY_BUILDINGS_ENABLED, buildingsEnabled);
+            intent.putExtra(KEY_INDOOR_ENABLED, indoorEnabled);
+            intent.putExtra(KEY_TRAFFIC_ENABLED, trafficEnabled);
+
+            intent.putExtra(KEY_MAP_TOOLBAR_ENABLED, mapToolbarEnabled);
+            intent.putExtra(KEY_ZOOM_CONTROLS_ENABLED, zoomControlsEnabled);
+            intent.putExtra(KEY_MY_LOCATION_BUTTON_ENABLED, myLocationButtonEnabled);
+            intent.putExtra(KEY_COMPASS_ENABLED, compassEnabled);
+            intent.putExtra(KEY_INDOOR_LEVEL_PICKER_ENABLED, indoorLevelPickerEnabled);
+            intent.putExtra(KEY_ROTATE_GESTURES_ENABLED, rotateGesturesEnabled);
+            intent.putExtra(KEY_SCROLL_GESTURES_ENABLED, scrollGesturesEnabled);
+            intent.putExtra(KEY_TILT_GESTURES_ENABLED, tiltGesturesEnabled);
+            intent.putExtra(KEY_ZOOM_GESTURES_ENABLED, zoomGesturesEnabled);
+            intent.putExtra(KEY_ALL_GESTURES_ENABLED, allGesturesEnabled);
 
             return intent;
         }

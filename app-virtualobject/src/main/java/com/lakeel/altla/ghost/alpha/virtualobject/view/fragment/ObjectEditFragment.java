@@ -123,7 +123,18 @@ public final class ObjectEditFragment extends Fragment {
             }
 
             googleMap.setOnMapClickListener(latLng -> {
-                LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getContext());
+                LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getContext())
+                        .setMyLocationEnabled(true)
+                        .setBuildingsEnabled(false)
+                        .setIndoorEnabled(true)
+                        .setTrafficEnabled(false)
+                        .setMapToolbarEnabled(false)
+                        .setZoomControlsEnabled(true)
+                        .setMyLocationButtonEnabled(true)
+                        .setCompassEnabled(true)
+                        .setIndoorLevelPickerEnabled(true)
+                        .setAllGesturesEnabled(true);
+
                 if (location != null) {
                     builder.setLocation(location.latitude, location.longitude);
                 }
@@ -211,7 +222,7 @@ public final class ObjectEditFragment extends Fragment {
 
         if (requestCode == REQUEST_CODE_LOCATION_PICKER) {
             if (resultCode == Activity.RESULT_OK) {
-                updateLocation(LocationPickerActivity.getLatLng(data), true);
+                updateLocation(LocationPickerActivity.getLocation(data), true);
             } else {
                 LOG.d("Picking a location is cancelled.");
             }
