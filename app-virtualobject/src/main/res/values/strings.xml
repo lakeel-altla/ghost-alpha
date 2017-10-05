@@ -28,5 +28,9 @@
     <string name="format_text_view_location_updates_distance_value">%d meter</string>
 
     <string name="edit_text_uri">URL (required)</string>
+    <string name="text_view_location">Location</string>
+    <string name="title_object_edit">Edit</string>
+    <string name="action_save">Save</string>
+    <string name="action_add_object">Add object</string>
 
 </resources>

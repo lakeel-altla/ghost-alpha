@@ -7,6 +7,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
         classpath 'me.tatarka:gradle-retrolambda:3.2.5'
+        classpath 'com.google.gms:google-services:3.1.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -20,7 +21,7 @@ allprojects {
         minSdkVersion = 19
         targetSdkVersion = 26
         supportVersion = '26.1.0'
-        gmsVersion = '11.0.4'
+        gmsVersion = '11.4.2'
         retrofitVersion = '2.3.0'
         androidLogVersion = '0.0.2'
         daggerVersion = '2.10'

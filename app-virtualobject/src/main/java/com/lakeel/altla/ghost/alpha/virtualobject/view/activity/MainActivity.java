@@ -18,10 +18,12 @@ import com.lakeel.altla.ghost.alpha.virtualobject.di.module.ActivityModule;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.OnLocationUpdatesAvailableListener;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.DebugSettingsFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.NearbyObjectListFragment;
+import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.ObjectEditFragment;
 
 import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
@@ -35,13 +37,18 @@ import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+
 public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
                    EasyPermissions.PermissionCallbacks,
                    NearbyObjectListFragment.FragmentContext,
+                   ObjectEditFragment.FragmentContext,
                    DebugSettingsFragment.FragmentContext {
 
     private static final Log LOG = LogFactory.getLog(MainActivity.class);
+
+    private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     private static final int REQUEST_CHECK_SETTINGS = 2;
 
@@ -108,6 +115,26 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public boolean checkLocationPermission() {
+        return EasyPermissions.hasPermissions(this, ACCESS_FINE_LOCATION);
+    }
+
+    @Override
+    public void requestLocationPermission() {
+        EasyPermissions.requestPermissions(this,
+                                           getString(R.string.rationale_location),
+                                           REQUEST_LOCATION_PERMISSION,
+                                           ACCESS_FINE_LOCATION);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
     public void onPermissionsGranted(int requestCode, List<String> perms) {
         LOG.v("onPermissionsGranted(): %d, %s", requestCode, perms);
     }
@@ -163,18 +190,23 @@ public final class MainActivity extends AppCompatActivity
         onLocationUpdatesAvailableListeners.remove(listener);
     }
 
-    //    @Override
+    @Override
+    public void showObjectEditView() {
+        replaceFragmentAndAddToBackStack(ObjectEditFragment.newInstance());
+    }
+
+    @Override
+    public void showDebugSettingsView() {
+        replaceFragmentAndAddToBackStack(DebugSettingsFragment.newInstance());
+    }
+
+    @Override
     public void backView() {
         if (0 < getSupportFragmentManager().getBackStackEntryCount()) {
             getSupportFragmentManager().popBackStack();
         } else {
             NavUtils.navigateUpFromSameTask(this);
         }
-    }
-
-    @Override
-    public void showDebugSettingsView() {
-        replaceFragmentAndAddToBackStack(DebugSettingsFragment.newInstance());
     }
 
     private void replaceFragment(Fragment fragment) {

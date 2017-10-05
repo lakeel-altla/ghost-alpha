@@ -5,7 +5,6 @@ import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -48,15 +47,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import pub.devrel.easypermissions.EasyPermissions;
-
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-
 public final class NearbyObjectListFragment extends Fragment implements OnLocationUpdatesAvailableListener {
 
     private static final Log LOG = LogFactory.getLog(NearbyObjectListFragment.class);
-
-    private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     private static final int MILLIS_1000 = 1000;
 
@@ -138,6 +131,7 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         mapView.getMapAsync(googleMap -> {
             this.googleMap = googleMap;
 
+            googleMap.getUiSettings().setMapToolbarEnabled(false);
             googleMap.getUiSettings().setZoomControlsEnabled(true);
             googleMap.getUiSettings().setMyLocationButtonEnabled(debugPreferences.isManualLocationUpdatesEnabled());
 
@@ -160,7 +154,7 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
 
             googleMap.setOnMyLocationButtonClickListener(() -> {
                 if (debugPreferences.isManualLocationUpdatesEnabled()) {
-                    if (checkLocationPermission()) {
+                    if (fragmentContext.checkLocationPermission()) {
                         fusedLocationProviderClient
                                 .getLastLocation()
                                 .addOnSuccessListener(getActivity(), location -> {
@@ -177,17 +171,17 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
                                     LOG.e("Failed to get the last location.", e);
                                 });
                     } else {
-                        requestLocationPermission();
+                        fragmentContext.requestLocationPermission();
                     }
                 }
                 return false;
             });
 
-            if (checkLocationPermission()) {
+            if (fragmentContext.checkLocationPermission()) {
                 // Enable the location layer.
                 googleMap.setMyLocationEnabled(true);
             } else {
-                requestLocationPermission();
+                fragmentContext.requestLocationPermission();
             }
         });
     }
@@ -228,10 +222,10 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         super.onResume();
         mapView.onResume();
 
-        if (checkLocationPermission()) {
+        if (fragmentContext.checkLocationPermission()) {
             initializeLocationRequest();
         } else {
-            requestLocationPermission();
+            fragmentContext.requestLocationPermission();
         }
     }
 
@@ -261,6 +255,9 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.action_add_object:
+                fragmentContext.showObjectEditView();
+                return true;
             case R.id.action_debug:
                 fragmentContext.showDebugSettingsView();
                 return true;
@@ -270,17 +267,9 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @Override
     public void onLocationUpdatesAvailable() {
         if (!debugPreferences.isManualLocationUpdatesEnabled()) {
-            if (checkLocationPermission()) {
+            if (fragmentContext.checkLocationPermission()) {
                 locationCallback = new LocationCallback() {
                     @Override
                     public void onLocationResult(LocationResult locationResult) {
@@ -298,20 +287,9 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
                 };
                 fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
             } else {
-                requestLocationPermission();
+                fragmentContext.requestLocationPermission();
             }
         }
-    }
-
-    private boolean checkLocationPermission() {
-        return EasyPermissions.hasPermissions(getContext(), ACCESS_FINE_LOCATION);
-    }
-
-    private void requestLocationPermission() {
-        EasyPermissions.requestPermissions(this,
-                                           getString(R.string.rationale_location),
-                                           REQUEST_LOCATION_PERMISSION,
-                                           ACCESS_FINE_LOCATION);
     }
 
     private void initializeLocationRequest() {
@@ -335,11 +313,8 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     }
 
     private void setMyLocation(@NonNull LatLng latLng) {
-        LOG.i("The location is resolved: latitude,longitude = %f,%f", latLng.latitude, latLng.longitude);
-
         if (googleMap != null) {
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(latLng);
-            googleMap.moveCamera(cameraUpdate);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
             if (marker != null) {
                 marker.remove();
@@ -422,11 +397,17 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
 
         void invalidateOptionsMenu();
 
+        boolean checkLocationPermission();
+
+        void requestLocationPermission();
+
         void checkLocationSettings(LocationRequest locationRequest);
 
         void addOnLocationUpdatesAvailableListener(OnLocationUpdatesAvailableListener listener);
 
         void removeOnLocationUpdatesAvailableListener(OnLocationUpdatesAvailableListener listener);
+
+        void showObjectEditView();
 
         void showDebugSettingsView();
     }

@@ -3,6 +3,7 @@
           package="com.lakeel.altla.ghost.alpha.virtualobject">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
@@ -18,6 +19,14 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name="com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity"
+                  android:label="@string/title_location_picker"
+                  android:windowSoftInputMode="adjustPan"
+                  android:parentActivityName=".view.activity.MainActivity">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value=".view.activity.MainActivity"/>
         </activity>
         <meta-data android:name="com.google.android.geo.API_KEY"
                    android:value="@string/google_api_key"/>
