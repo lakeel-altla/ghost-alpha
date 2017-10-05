@@ -162,7 +162,7 @@ public final class ObjectEditFragment extends Fragment {
         mapView.onStart();
 
         fragmentContext.setTitle(R.string.title_object_edit);
-        fragmentContext.setDisplayHomeAsUpEnabled(false);
+        fragmentContext.setDisplayHomeAsUpEnabled(true);
         fragmentContext.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         setHasOptionsMenu(true);
         fragmentContext.invalidateOptionsMenu();
