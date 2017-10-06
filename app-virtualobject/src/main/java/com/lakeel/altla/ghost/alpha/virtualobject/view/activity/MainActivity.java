@@ -7,9 +7,11 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
+import com.google.firebase.auth.FirebaseAuth;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.app.MyApplication;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
@@ -58,6 +60,8 @@ public final class MainActivity extends AppCompatActivity
 
     private ActivityComponent activityComponent;
 
+    private FirebaseAuth firebaseAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         activityComponent = MyApplication.getApplicationComponent(this)
@@ -72,6 +76,16 @@ public final class MainActivity extends AppCompatActivity
         setDisplayHomeAsUpEnabled(true);
 
         settingsClient = LocationServices.getSettingsClient(this);
+
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth.signInAnonymously()
+                    .addOnSuccessListener(this, authResult -> {
+                        LOG.i("Signed in anonymously: userId = %s",
+                              CurrentUser.getInstance().getRequiredUserId());
+                    })
+                    .addOnFailureListener(this, e -> {
+                        LOG.e("Failed to sign-in anonymously.", e);
+                    });
 
         if (savedInstanceState == null) {
             replaceFragment(NearbyObjectListFragment.newInstance());

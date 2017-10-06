@@ -39,6 +39,8 @@ dependencies {
     compile "com.lakeel.altla:android-log:$androidLogVersion"
     compile project(path: ':lib-res')
     compile project(path: ':lib-locationpicker')
+    compile project(path: ':lib-auth')
+    compile project(path: ':lib-api-virtualobject')
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
 }
 

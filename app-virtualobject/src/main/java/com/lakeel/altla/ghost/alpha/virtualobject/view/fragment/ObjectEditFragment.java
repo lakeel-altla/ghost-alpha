@@ -8,9 +8,14 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObject;
+import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
@@ -208,7 +213,41 @@ public final class ObjectEditFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                // TODO: save
+                if (location == null) throw new IllegalStateException("'location' is null.");
+
+                VirtualObject virtualObject = new VirtualObject();
+                virtualObject.setUserId(CurrentUser.getInstance().getRequiredUserId());
+                virtualObject.setUriString(textInputEditTextUri.getEditableText().toString());
+                virtualObject.setGeoPoint(new GeoPoint(location.latitude, location.longitude));
+
+                FirebaseFirestore.getInstance()
+                                 .collection("userVirtualObjects")
+                                 .document(virtualObject.getKey())
+                                 .set(virtualObject)
+                                 .addOnSuccessListener(aVoid -> {
+                                     LOG.i("Set the user virtual object.");
+                                 })
+                                 .addOnFailureListener(e -> {
+                                     LOG.e("Failed to set the user virtual object.", e);
+                                 });
+
+                FirebaseFirestore.getInstance()
+                                 .collection("userVirtualObjects")
+                                 .whereEqualTo("userId", CurrentUser.getInstance().getRequiredUserId())
+                                 .orderBy("value")
+                                 .startAt("abc")
+                                 .endAt("efg")
+                                 .get()
+                                 .addOnSuccessListener(snapshots -> {
+                                     LOG.i("Got user virtual objects.");
+                                     for (DocumentSnapshot snapshot : snapshots) {
+                                         LOG.v("snapshot.value = %s", snapshot.getString("value"));
+                                     }
+                                 })
+                                 .addOnFailureListener(e -> {
+                                     LOG.e("Failed to get user virtual objects.", e);
+                                 });
+
                 fragmentContext.backView();
                 return true;
             default:
