@@ -14,7 +14,8 @@
                  android:roundIcon="@mipmap/ic_launcher_round"
                  android:supportsRtl="true"
                  android:theme="@style/AppTheme">
-        <activity android:name=".view.activity.MainActivity">
+        <activity android:name=".view.activity.MainActivity"
+                  android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -27,6 +28,7 @@
         </activity>
         <activity android:name="com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity"
                   android:label="@string/title_location_picker"
+                  android:launchMode="singleInstance"
                   android:windowSoftInputMode="adjustPan"
                   android:parentActivityName=".view.activity.MainActivity">
             <meta-data
