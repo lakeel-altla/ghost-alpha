@@ -35,5 +35,7 @@
     <string name="action_add_object">Add object</string>
     <string name="toast_save_error">Failed to save.</string>
     <string name="toast_saved">Saved.</string>
+    <string name="toast_invalid_intent_received">Received an invalid data</string>
+    <string name="input_error_uri">Input a valid URL.</string>
 
 </resources>

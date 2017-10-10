@@ -19,6 +19,11 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <intent-filter>
+                <data android:mimeType="text/plain"/>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
         </activity>
         <activity android:name="com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity"
                   android:label="@string/title_location_picker"

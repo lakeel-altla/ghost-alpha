@@ -19,6 +19,7 @@ import com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.module.Names;
+import com.lakeel.altla.ghost.alpha.virtualobject.helper.PatternHelper;
 
 import android.app.Activity;
 import android.content.Context;
@@ -29,7 +30,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,6 +53,8 @@ public final class ObjectEditFragment extends Fragment {
 
     private static final float DEFAULT_ZOOM_LEVEL = 17;
 
+    private static final String ARG_URI_STRING = "uriString";
+
     @Inject
     FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -60,6 +66,8 @@ public final class ObjectEditFragment extends Fragment {
     VirtualObjectApi virtualObjectApi;
 
     private FragmentContext fragmentContext;
+
+    private TextInputLayout textInputLayoutUri;
 
     private TextInputEditText textInputEditTextUri;
 
@@ -79,6 +87,15 @@ public final class ObjectEditFragment extends Fragment {
     @NonNull
     public static ObjectEditFragment newInstance() {
         return new ObjectEditFragment();
+    }
+
+    @NonNull
+    public static ObjectEditFragment newInstance(@NonNull String uriString) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ARG_URI_STRING, uriString);
+        ObjectEditFragment fragment = new ObjectEditFragment();
+        fragment.setArguments(bundle);
+        return fragment;
     }
 
     @Override
@@ -104,8 +121,25 @@ public final class ObjectEditFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         if (getView() == null) throw new IllegalStateException("The root view could not be found.");
 
+        textInputLayoutUri = getView().findViewById(R.id.text_input_layout_uri);
         textInputEditTextUri = getView().findViewById(R.id.text_input_edit_text_uri);
         mapView = getView().findViewById(R.id.map_view);
+
+        textInputEditTextUri.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                validateUri();
+                fragmentContext.invalidateOptionsMenu();
+            }
+        });
 
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(googleMap -> {
@@ -154,7 +188,25 @@ public final class ObjectEditFragment extends Fragment {
             });
         });
 
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            String uriString = bundle.getString(ARG_URI_STRING);
+            if (uriString != null) {
+                textInputEditTextUri.setText(uriString);
+            }
+        }
+
+        validateUri();
+
         saving = false;
+    }
+
+    private void validateUri() {
+        Editable editable = textInputEditTextUri.getText();
+        String text = editable.toString();
+        String uriString = PatternHelper.parseUriString(text);
+        String error = (uriString != null) ? null : getString(R.string.input_error_uri);
+        textInputLayoutUri.setError(error);
     }
 
     @Override
@@ -164,7 +216,17 @@ public final class ObjectEditFragment extends Fragment {
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_save).setEnabled(!saving);
+        boolean uriStringSpecified = false;
+        Editable editable = textInputEditTextUri.getText();
+        if (editable != null) {
+            String text = editable.toString();
+            String uriString = PatternHelper.parseUriString(text);
+            uriStringSpecified = (uriString != null);
+        }
+
+        boolean saveEnabled = !saving && uriStringSpecified;
+
+        menu.findItem(R.id.action_save).setEnabled(saveEnabled);
         super.onPrepareOptionsMenu(menu);
     }
 
@@ -225,6 +287,9 @@ public final class ObjectEditFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                fragmentContext.backToMainView();
+                return true;
             case R.id.action_save:
                 if (location == null) throw new IllegalStateException("'location' is null.");
 
@@ -239,11 +304,13 @@ public final class ObjectEditFragment extends Fragment {
                 virtualObjectApi.saveUserObject(virtualObject, aVoid -> {
                     LOG.v("Saved an object: key = %s", virtualObject.getKey());
                     Toast.makeText(getContext(), R.string.toast_saved, Toast.LENGTH_SHORT).show();
-                    fragmentContext.backView();
+//                    fragmentContext.backView();
+                    fragmentContext.backToMainView();
                 }, e -> {
                     LOG.e("Failed to save an object.", e);
                     Toast.makeText(getContext(), R.string.toast_save_error, Toast.LENGTH_SHORT).show();
-                    fragmentContext.backView();
+//                    fragmentContext.backView();
+                    fragmentContext.backToMainView();
                 });
                 return true;
             default:
@@ -300,6 +367,8 @@ public final class ObjectEditFragment extends Fragment {
         boolean checkLocationPermission();
 
         void requestLocationPermission();
+
+        void backToMainView();
 
         void backView();
     }
