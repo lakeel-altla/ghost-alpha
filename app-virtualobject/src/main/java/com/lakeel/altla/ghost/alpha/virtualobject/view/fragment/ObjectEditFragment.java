@@ -258,12 +258,6 @@ public final class ObjectEditFragment extends Fragment {
     public void onResume() {
         super.onResume();
         mapView.onResume();
-
-//        if (fragmentContext.checkLocationPermission()) {
-////            initializeLocationRequest();
-//        } else {
-//            fragmentContext.requestLocationPermission();
-//        }
     }
 
     @Override
@@ -287,9 +281,6 @@ public final class ObjectEditFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                fragmentContext.backToMainView();
-                return true;
             case R.id.action_save:
                 if (location == null) throw new IllegalStateException("'location' is null.");
 
@@ -304,13 +295,11 @@ public final class ObjectEditFragment extends Fragment {
                 virtualObjectApi.saveUserObject(virtualObject, aVoid -> {
                     LOG.v("Saved an object: key = %s", virtualObject.getKey());
                     Toast.makeText(getContext(), R.string.toast_saved, Toast.LENGTH_SHORT).show();
-//                    fragmentContext.backView();
-                    fragmentContext.backToMainView();
+                    fragmentContext.backView();
                 }, e -> {
                     LOG.e("Failed to save an object.", e);
                     Toast.makeText(getContext(), R.string.toast_save_error, Toast.LENGTH_SHORT).show();
-//                    fragmentContext.backView();
-                    fragmentContext.backToMainView();
+                    fragmentContext.backView();
                 });
                 return true;
             default:
@@ -367,8 +356,6 @@ public final class ObjectEditFragment extends Fragment {
         boolean checkLocationPermission();
 
         void requestLocationPermission();
-
-        void backToMainView();
 
         void backView();
     }

@@ -18,11 +18,11 @@ import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.component.ActivityComponent;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.module.ActivityModule;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.OnLocationUpdatesAvailableListener;
-import com.lakeel.altla.ghost.alpha.virtualobject.helper.PatternHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.DebugSettingsFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.NearbyObjectListFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.ObjectEditFragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
@@ -64,6 +64,13 @@ public final class MainActivity extends AppCompatActivity
 
     private FirebaseAuth firebaseAuth;
 
+    @NonNull
+    public static Intent createStartActivityIntent(@NonNull Context context) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        return intent;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         activityComponent = MyApplication.getApplicationComponent(this)
@@ -82,52 +89,23 @@ public final class MainActivity extends AppCompatActivity
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.signInAnonymously()
                     .addOnSuccessListener(this, authResult -> {
-                        LOG.i("Signed in anonymously: userId = %s",
-                              CurrentUser.getInstance().getRequiredUserId());
+                        LOG.i("Signed in anonymously: userId = %s", CurrentUser.getInstance().getRequiredUserId());
                     })
                     .addOnFailureListener(this, e -> {
                         LOG.e("Failed to sign-in anonymously.", e);
                     });
 
         if (savedInstanceState == null) {
-
-            Intent intent = getIntent();
-            String action = intent.getAction();
-
-            if (Intent.ACTION_MAIN.equals(action)) {
-                replaceFragment(NearbyObjectListFragment.newInstance());
-            } else if (Intent.ACTION_SEND.equals(action)) {
-                String extraText = intent.getExtras().getString(Intent.EXTRA_TEXT);
-                if (extraText == null) {
-                    LOG.e("'Intent.EXTRA_TEXT' is null.");
-                    Toast.makeText(this, R.string.toast_invalid_intent_received, Toast.LENGTH_SHORT).show();
-                    finish();
-                    return;
-                }
-
-                String uriString = PatternHelper.parseUriString(extraText);
-                if (uriString == null) {
-                    LOG.e("'Intent.EXTRA_TEXT' is not a URL string: %s", extraText);
-                    Toast.makeText(this, R.string.toast_invalid_intent_received, Toast.LENGTH_SHORT).show();
-                    finish();
-                    return;
-                }
-
-                // TODO: pase the string as a rich link.
-
-                replaceFragment(ObjectEditFragment.newInstance(uriString));
-            } else {
-                throw new IllegalStateException("An unexpected action is specified: intent = " + intent);
-            }
+            replaceFragment(NearbyObjectListFragment.newInstance());
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-//            case android.R.id.home:
-//                backView();
-//                return true;
+            case android.R.id.home:
+                backView();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -242,15 +220,6 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public void showDebugSettingsView() {
         replaceFragmentAndAddToBackStack(DebugSettingsFragment.newInstance());
-    }
-
-    @Override
-    public void backToMainView() {
-        if (0 < getSupportFragmentManager().getBackStackEntryCount()) {
-            getSupportFragmentManager().popBackStack();
-        } else {
-            replaceFragment(NearbyObjectListFragment.newInstance());
-        }
     }
 
     @Override
