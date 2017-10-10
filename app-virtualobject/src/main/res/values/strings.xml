@@ -26,11 +26,14 @@
     <string name="format_text_view_search_radius_value">%d meter</string>
     <string name="format_text_view_location_updates_interval_value">%d sec.</string>
     <string name="format_text_view_location_updates_distance_value">%d meter</string>
+    <string name="format_nearby_object_distance">%.1f m</string>
 
     <string name="edit_text_uri">URL (required)</string>
     <string name="text_view_location">Location</string>
     <string name="title_object_edit">Edit</string>
     <string name="action_save">Save</string>
     <string name="action_add_object">Add object</string>
+    <string name="toast_save_error">Failed to save.</string>
+    <string name="toast_saved">Saved.</string>
 
 </resources>

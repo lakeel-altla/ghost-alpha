@@ -8,13 +8,12 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObject;
+import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
@@ -37,6 +36,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -56,6 +56,9 @@ public final class ObjectEditFragment extends Fragment {
     @Inject
     String googleApiKey;
 
+    @Inject
+    VirtualObjectApi virtualObjectApi;
+
     private FragmentContext fragmentContext;
 
     private TextInputEditText textInputEditTextUri;
@@ -70,6 +73,8 @@ public final class ObjectEditFragment extends Fragment {
 
     @Nullable
     private LatLng location;
+
+    private transient boolean saving;
 
     @NonNull
     public static ObjectEditFragment newInstance() {
@@ -148,11 +153,19 @@ public final class ObjectEditFragment extends Fragment {
                 startActivityForResult(intent, REQUEST_CODE_LOCATION_PICKER);
             });
         });
+
+        saving = false;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.object_edit, menu);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_save).setEnabled(!saving);
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -184,11 +197,11 @@ public final class ObjectEditFragment extends Fragment {
         super.onResume();
         mapView.onResume();
 
-        if (fragmentContext.checkLocationPermission()) {
-//            initializeLocationRequest();
-        } else {
-            fragmentContext.requestLocationPermission();
-        }
+//        if (fragmentContext.checkLocationPermission()) {
+////            initializeLocationRequest();
+//        } else {
+//            fragmentContext.requestLocationPermission();
+//        }
     }
 
     @Override
@@ -215,40 +228,23 @@ public final class ObjectEditFragment extends Fragment {
             case R.id.action_save:
                 if (location == null) throw new IllegalStateException("'location' is null.");
 
+                saving = true;
+                fragmentContext.invalidateOptionsMenu();
+
                 VirtualObject virtualObject = new VirtualObject();
                 virtualObject.setUserId(CurrentUser.getInstance().getRequiredUserId());
                 virtualObject.setUriString(textInputEditTextUri.getEditableText().toString());
                 virtualObject.setGeoPoint(new GeoPoint(location.latitude, location.longitude));
 
-                FirebaseFirestore.getInstance()
-                                 .collection("userVirtualObjects")
-                                 .document(virtualObject.getKey())
-                                 .set(virtualObject)
-                                 .addOnSuccessListener(aVoid -> {
-                                     LOG.i("Set the user virtual object.");
-                                 })
-                                 .addOnFailureListener(e -> {
-                                     LOG.e("Failed to set the user virtual object.", e);
-                                 });
-
-                FirebaseFirestore.getInstance()
-                                 .collection("userVirtualObjects")
-                                 .whereEqualTo("userId", CurrentUser.getInstance().getRequiredUserId())
-                                 .orderBy("value")
-                                 .startAt("abc")
-                                 .endAt("efg")
-                                 .get()
-                                 .addOnSuccessListener(snapshots -> {
-                                     LOG.i("Got user virtual objects.");
-                                     for (DocumentSnapshot snapshot : snapshots) {
-                                         LOG.v("snapshot.value = %s", snapshot.getString("value"));
-                                     }
-                                 })
-                                 .addOnFailureListener(e -> {
-                                     LOG.e("Failed to get user virtual objects.", e);
-                                 });
-
-                fragmentContext.backView();
+                virtualObjectApi.saveUserObject(virtualObject, aVoid -> {
+                    LOG.v("Saved an object: key = %s", virtualObject.getKey());
+                    Toast.makeText(getContext(), R.string.toast_saved, Toast.LENGTH_SHORT).show();
+                    fragmentContext.backView();
+                }, e -> {
+                    LOG.e("Failed to save an object.", e);
+                    Toast.makeText(getContext(), R.string.toast_save_error, Toast.LENGTH_SHORT).show();
+                    fragmentContext.backView();
+                });
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -1,5 +1,6 @@
 package com.lakeel.altla.ghost.alpha.api.virtualobject;
 
+import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.GeoPoint;
 
 import com.lakeel.altla.ghost.alpha.data.firestore.BaseDocument;
@@ -18,6 +19,7 @@ public class VirtualObject extends BaseDocument {
         return uriString;
     }
 
+    @Exclude
     @NonNull
     public String getRequiredUriString() {
         if (uriString == null) throw new IllegalStateException("'uriString' is null.");
@@ -33,6 +35,7 @@ public class VirtualObject extends BaseDocument {
         return geoPoint;
     }
 
+    @Exclude
     @NonNull
     public GeoPoint getRequiredGeoPoint() {
         if (geoPoint == null) throw new IllegalStateException("'geoPoint' is null.");

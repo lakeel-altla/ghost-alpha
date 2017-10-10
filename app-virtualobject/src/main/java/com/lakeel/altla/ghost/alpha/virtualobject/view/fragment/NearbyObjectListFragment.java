@@ -11,9 +11,13 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.GeoPoint;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObject;
+import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
+import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.DebugPreferences;
@@ -66,6 +70,9 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     @Inject
     FusedLocationProviderClient fusedLocationProviderClient;
 
+    @Inject
+    VirtualObjectApi virtualObjectApi;
+
     private FragmentContext fragmentContext;
 
     private LocationCallback locationCallback;
@@ -81,9 +88,13 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     private TextView textViewAccuracyValue;
 
     @Nullable
-    private LatLng queryLocation;
+    private LatLng location;
 
-    private boolean quering;
+    @Nullable
+    private VirtualObjectApi.ObjectQuery objectQuery;
+
+    @Nullable
+    private VirtualObjectApi.ObjectQueryEventListener objectQueryEventListener;
 
     @Nullable
     private GoogleMap googleMap;
@@ -135,15 +146,15 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
             googleMap.getUiSettings().setZoomControlsEnabled(true);
             googleMap.getUiSettings().setMyLocationButtonEnabled(debugPreferences.isManualLocationUpdatesEnabled());
 
-            if (queryLocation == null) {
+            if (location == null) {
                 googleMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM_LEVEL));
             } else {
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(queryLocation, DEFAULT_ZOOM_LEVEL));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM_LEVEL));
 
                 if (marker != null) {
                     marker.remove();
                 }
-                marker = googleMap.addMarker(new MarkerOptions().position(queryLocation));
+                marker = googleMap.addMarker(new MarkerOptions().position(location));
             }
 
             googleMap.setOnMapClickListener(latLng -> {
@@ -238,6 +249,15 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
             fusedLocationProviderClient.removeLocationUpdates(locationCallback);
             locationCallback = null;
         }
+
+        if (objectQuery != null) {
+            if (objectQueryEventListener != null) {
+                objectQuery.removeObjectQueryEventListener(objectQueryEventListener);
+                objectQueryEventListener = null;
+            }
+            objectQuery = null;
+            items.clear();
+        }
     }
 
     @Override
@@ -312,81 +332,81 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         setMyLocation(new LatLng(location.getLatitude(), location.getLongitude()));
     }
 
-    private void setMyLocation(@NonNull LatLng latLng) {
+    private void setMyLocation(@NonNull LatLng location) {
         if (googleMap != null) {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));
 
             if (marker != null) {
                 marker.remove();
             }
-            marker = googleMap.addMarker(new MarkerOptions().position(latLng));
+            marker = googleMap.addMarker(new MarkerOptions().position(location));
         }
 
-        if (quering) {
-            LOG.d("Skip a new query because the previous query is not finished.");
-            return;
+        boolean locationChanged = false;
+
+        if (this.location == null) {
+            this.location = location;
+            locationChanged = true;
+        } else if (this.location.latitude != location.latitude || this.location.longitude != location.longitude) {
+            this.location = location;
+            locationChanged = true;
         }
 
-        boolean shouldSearch = false;
+        if (objectQuery == null) {
+            int radius = debugPreferences.getSearchRadius();
+            GeoPoint center = new GeoPoint(location.latitude, location.longitude);
+            objectQuery = virtualObjectApi.queryUserObjects(CurrentUser.getInstance().getRequiredUserId(),
+                                                            center, radius);
+            objectQueryEventListener = new VirtualObjectApi.ObjectQueryEventListener() {
+                @Override
+                public void onObjectEntered(VirtualObject object) {
+                    LOG.v("onObjectEntered: key = %s", object.getKey());
+                    Item item = new Item(object);
+                    item.updateDistance(location);
+                    items.add(item);
+                    Collections.sort(items, ItemComparator.INSTANCE);
+                    recyclerView.getAdapter().notifyDataSetChanged();
+                }
 
-        if (queryLocation == null) {
-            queryLocation = latLng;
-            shouldSearch = true;
+                @Override
+                public void onObjectExited(String key) {
+                    LOG.v("onObjectExited: key = %s", key);
+                    int index = -1;
+                    for (int i = 0; i < items.size(); i++) {
+                        Item item = items.get(i);
+                        if (key.equals(item.object.getKey())) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    if (0 <= index) {
+                        items.remove(index);
+                        recyclerView.getAdapter().notifyDataSetChanged();
+                    }
+                }
+
+                @Override
+                public void onObjectQueryReady() {
+                    LOG.v("onObjectQueryReady");
+                }
+
+                @Override
+                public void onObjectQueryError(Exception e) {
+                    LOG.e("Failed to query user objects.", e);
+                }
+            };
+            objectQuery.addObjectQueryEventListener(objectQueryEventListener);
         } else {
-            float[] results = new float[1];
-            Location.distanceBetween(queryLocation.latitude, queryLocation.longitude,
-                                     latLng.latitude, latLng.longitude, results);
-            float distance = results[0];
+            if (locationChanged) {
+                for (Item item : items) {
+                    item.updateDistance(location);
+                }
+                recyclerView.getAdapter().notifyDataSetChanged();
 
-            LOG.v("The location is moved: distance = %f", distance);
-
-            if (debugPreferences.getLocationUpdatesDistance() <= distance) {
-                queryLocation = latLng;
-                shouldSearch = true;
+                GeoPoint center = new GeoPoint(location.latitude, location.longitude);
+                objectQuery.setCenter(center);
             }
         }
-
-        if (shouldSearch) {
-            quering = true;
-
-            double latitude = queryLocation.latitude;
-            double longitude = queryLocation.longitude;
-
-            deferredManager.when(() -> {
-                searchNearbyPlaces(latitude, longitude);
-            }).fail(e -> {
-                LOG.e("Failed to search nearby places.", e);
-                getActivity().runOnUiThread(() -> {
-                    quering = false;
-                });
-            });
-        }
-    }
-
-    private void searchNearbyPlaces(double latitude, double longitude) {
-        int radius = debugPreferences.getSearchRadius();
-
-        LOG.v("Searching nearby places: latitude = %f, longitude = %f, radius = %d, language = %s",
-              latitude, longitude, radius, null);
-
-//        List<Place> places = placeWebApi.searchPlaces(latitude, longitude, radius, null);
-
-        LOG.v("Searched nearby places.");
-
-        items.clear();
-
-//        for (Place place : places) {
-//            if (!place.permanentlyClosed) {
-//                items.add(Item.newInstance(place, latitude, longitude));
-//            }
-//        }
-
-        Collections.sort(items, ItemComparator.INSTANCE);
-
-        getActivity().runOnUiThread(() -> {
-            recyclerView.getAdapter().notifyDataSetChanged();
-            quering = false;
-        });
     }
 
     public interface FragmentContext {
@@ -422,10 +442,11 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
                 inflater = LayoutInflater.from(parent.getContext());
             }
 
-            View itemView = inflater.inflate(R.layout.item_nearby_place, parent, false);
+            View itemView = inflater.inflate(R.layout.item_nearby_object, parent, false);
             itemView.setOnClickListener(v -> {
                 int position = recyclerView.getChildAdapterPosition(v);
                 Item item = items.get(position);
+                // TODO
 //                String placeId = item.place.placeId;
 //                String name = item.place.name;
 //                fragmentContext.showNearbyPlaceView(placeId, name);
@@ -452,10 +473,11 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
 //                holder.imageViewPhoto.setImageDrawable(null);
 //            }
 //
-//            holder.textViewName.setText(item.place.name);
-//            holder.textViewDistance.setText(String.format(getString(R.string.format_nearby_place_distance),
-//                                                          item.distance));
-//
+            // TODO: Use a summary of URL.
+            holder.textViewName.setText(item.object.getUriString());
+            holder.textViewDistance.setText(String.format(getString(R.string.format_nearby_object_distance),
+                                                          item.distance));
+
 //            picasso.load(item.place.icon).into(holder.imageViewIcon);
         }
 
@@ -487,33 +509,28 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
 
     private static final class Item {
 
-        private static final float[] DISTANCE_RESULTS = new float[1];
+        static final float[] DISTANCE_RESULTS = new float[1];
 
-//        private Place place;
+        final VirtualObject object;
 
-        private float distance;
+        float distance;
 
-        private Item(/*Place place, */float distance) {
-//            this.place = place;
-            this.distance = distance;
+        Item(@NonNull VirtualObject object) {
+            this.object = object;
         }
 
-        //        @NonNull
-        static Item newInstance(/*Place place, */double latitude, double longitude) {
-//            Location.distanceBetween(latitude, longitude, place.geometry.location.lat,
-//                                     place.geometry.location.lng,
-//                                     DISTANCE_RESULTS);
-//            return new Item(place, DISTANCE_RESULTS[0]);
-            return null;
+        void updateDistance(@NonNull LatLng location) {
+            Location.distanceBetween(location.latitude, location.longitude,
+                                     object.getRequiredGeoPoint().getLatitude(),
+                                     object.getRequiredGeoPoint().getLongitude(),
+                                     DISTANCE_RESULTS);
+            distance = DISTANCE_RESULTS[0];
         }
     }
 
     private static final class ItemComparator implements Comparator<Item> {
 
         static final ItemComparator INSTANCE = new ItemComparator();
-
-        private ItemComparator() {
-        }
 
         @Override
         public int compare(Item o1, Item o2) {

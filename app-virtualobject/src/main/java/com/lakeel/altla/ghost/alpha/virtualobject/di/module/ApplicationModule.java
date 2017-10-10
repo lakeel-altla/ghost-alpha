@@ -1,5 +1,6 @@
 package com.lakeel.altla.ghost.alpha.virtualobject.di.module;
 
+import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
 import com.lakeel.altla.ghost.alpha.virtualobject.app.MyApplication;
 
 import android.content.res.Resources;
@@ -31,5 +32,11 @@ public class ApplicationModule {
     @Provides
     String provideGoogleApiKey() {
         return application.getString(com.lakeel.altla.ghost.alpha.res.R.string.google_api_key);
+    }
+
+    @Singleton
+    @Provides
+    VirtualObjectApi provideVirtualObjectApi() {
+        return new VirtualObjectApi();
     }
 }

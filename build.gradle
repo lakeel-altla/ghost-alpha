@@ -29,6 +29,7 @@ allprojects {
         discreteSeekbarVersion = '1.0.1'
         jdeferredVersion = '1.2.6'
         picassoVersion = '2.5.2'
+        geofireVersion = '2.1.2'
         junitVersion = '4.12'
     }
     repositories {

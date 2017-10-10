@@ -24,6 +24,8 @@ android {
 
 dependencies {
     compile "com.android.support:appcompat-v7:$supportVersion"
+    compile "com.google.firebase:firebase-database:$gmsVersion"
+    compile "com.firebase:geofire-android:$geofireVersion"
     compile "com.lakeel.altla:android-log:$androidLogVersion"
     compile project(path: ':lib-data-firestore')
     compile project(path: ':lib-auth')
