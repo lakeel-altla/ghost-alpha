@@ -109,23 +109,6 @@ public final class DebugSettingsFragment extends Fragment {
             }
         });
 
-        TextView textViewLocationUpdatesDistanceValue = view.findViewById(
-                R.id.text_view_location_updates_distance_value);
-        int locationUpdateDistance = debugPreferences.getLocationUpdatesDistance();
-        textViewLocationUpdatesDistanceValue.setText(formatTextViewLocationUpdatesDistance(locationUpdateDistance));
-
-        DiscreteSeekBar seekBarLocationUpdatesDistance = view.findViewById(R.id.seek_bar_location_updates_distance);
-        seekBarLocationUpdatesDistance.setMin(DebugPreferences.RANGE_LOCATION_UPDATES_DISTANCE.min);
-        seekBarLocationUpdatesDistance.setMax(DebugPreferences.RANGE_LOCATION_UPDATES_DISTANCE.max);
-        seekBarLocationUpdatesDistance.setProgress(locationUpdateDistance);
-        seekBarLocationUpdatesDistance.setOnProgressChangeListener(new OnProgressChangeListener() {
-            @Override
-            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                debugPreferences.setLocationUpdatesDistance(value);
-                textViewLocationUpdatesDistanceValue.setText(formatTextViewLocationUpdatesDistance(value));
-            }
-        });
-
         Switch switchManualLocationUpdatesEnabled = view.findViewById(R.id.switch_manual_location_updates_enabled);
         switchManualLocationUpdatesEnabled.setChecked(debugPreferences.isManualLocationUpdatesEnabled());
         switchManualLocationUpdatesEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {

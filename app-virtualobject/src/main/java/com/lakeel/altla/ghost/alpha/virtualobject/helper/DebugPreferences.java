@@ -10,8 +10,6 @@ public final class DebugPreferences {
 
     public static final IntRange RANGE_LOCATION_UPDATES_INTERVAL = new IntRange(5, 60);
 
-    public static final IntRange RANGE_LOCATION_UPDATES_DISTANCE = new IntRange(1, 10);
-
     private static final int[] LOCATION_REQUEST_PRIORITIES = {
             LocationRequest.PRIORITY_HIGH_ACCURACY,
             LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY,
@@ -24,8 +22,6 @@ public final class DebugPreferences {
     private static final String KEY_SEARCH_RADIUS = "searchRadius";
 
     private static final String KEY_LOCATION_UPDATES_INTERVAL = "locationUpdatesInterval";
-
-    private static final String KEY_LOCATION_UPDATES_DISTANCE = "locationUpdatesDistance";
 
     private static final String KEY_MANUAL_LOCATION_UPDATES_ENABLED = "manualLocationUpdatesEnabled";
 
@@ -74,21 +70,6 @@ public final class DebugPreferences {
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(KEY_LOCATION_UPDATES_INTERVAL, value);
-        editor.apply();
-    }
-
-    public int getLocationUpdatesDistance() {
-        return preferences.getInt(KEY_LOCATION_UPDATES_DISTANCE, RANGE_LOCATION_UPDATES_DISTANCE.min);
-    }
-
-    public void setLocationUpdatesDistance(int value) {
-        if (!RANGE_LOCATION_UPDATES_DISTANCE.contains(value)) {
-            throw new IllegalArgumentException(
-                    "'value' is out of range: value = " + value + ", range = " + RANGE_LOCATION_UPDATES_DISTANCE);
-        }
-
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putInt(KEY_LOCATION_UPDATES_DISTANCE, value);
         editor.apply();
     }
 
