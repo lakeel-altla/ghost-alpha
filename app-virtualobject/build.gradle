@@ -36,11 +36,13 @@ dependencies {
     compile "org.jdeferred:jdeferred-android-aar:$jdeferredVersion"
     compile "pub.devrel:easypermissions:$easypermissionsVersion"
     compile "org.adw.library:discrete-seekbar:$discreteSeekbarVersion"
+    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile "com.lakeel.altla:android-log:$androidLogVersion"
     compile project(path: ':lib-res')
     compile project(path: ':lib-locationpicker')
     compile project(path: ':lib-auth')
     compile project(path: ':lib-api-virtualobject')
+    compile project(path: ':lib-richlink')
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
 }
 

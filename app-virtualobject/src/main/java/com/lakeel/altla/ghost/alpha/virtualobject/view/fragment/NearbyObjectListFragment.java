@@ -18,16 +18,21 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObject;
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
+import com.lakeel.altla.ghost.alpha.richlink.RichLink;
+import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.DebugPreferences;
+import com.lakeel.altla.ghost.alpha.virtualobject.helper.LinkLetterTileFactory;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.OnLocationUpdatesAvailableListener;
 import com.squareup.picasso.Picasso;
 
 import org.jdeferred.DeferredManager;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -44,6 +49,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -61,6 +67,8 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
 
     private static final float DEFAULT_ZOOM_LEVEL = 17;
 
+    private static final float[] TEMP_DISTANCE_RESULTS = new float[1];
+
     @Inject
     DeferredManager deferredManager;
 
@@ -72,6 +80,12 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
 
     @Inject
     VirtualObjectApi virtualObjectApi;
+
+    @Inject
+    RichLinkParser richLinkParser;
+
+    @Inject
+    LinkLetterTileFactory linkLetterTileFactory;
 
     private FragmentContext fragmentContext;
 
@@ -361,11 +375,26 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
                 @Override
                 public void onObjectEntered(VirtualObject object) {
                     LOG.v("onObjectEntered: key = %s", object.getKey());
+
                     Item item = new Item(object);
-                    item.updateDistance(location);
-                    items.add(item);
-                    Collections.sort(items, ItemComparator.INSTANCE);
-                    recyclerView.getAdapter().notifyDataSetChanged();
+
+                    deferredManager
+                            .when(() -> {
+                                item.updateDistance(location);
+                                try {
+                                    item.loadRichLink();
+                                } catch (IOException e) {
+                                    // Ignore.
+                                }
+                            })
+                            .done(result -> {
+                                items.add(item);
+                                Collections.sort(items, ItemComparator.INSTANCE);
+                                recyclerView.getAdapter().notifyDataSetChanged();
+                            })
+                            .fail(e -> {
+                                LOG.w("Failed to parse the rich link: " + object.getRequiredUriString(), e);
+                            });
                 }
 
                 @Override
@@ -457,28 +486,37 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         }
 
         @Override
+        public void onViewRecycled(ViewHolder holder) {
+            super.onViewRecycled(holder);
+            holder.imageViewPhoto.setImageDrawable(null);
+        }
+
+        @Override
         public void onBindViewHolder(Adapter.ViewHolder holder, int position) {
             Item item = items.get(position);
+
+            String title = item.richLink.getTitle();
+            if (title == null) title = item.object.getRequiredUriString();
 
             Picasso picasso = Picasso.with(getContext());
             picasso.setIndicatorsEnabled(true);
 
-//            if (item.place.photos != null && 0 < item.place.photos.size()) {
-//                Photo photo = item.place.photos.get(0);
-//                Uri uri = placeWebApi.createPhotoUri(photo.photoReference, photo.width, photo.height);
-//                LOG.v("Loading the photo: %s", uri);
-//                picasso.load(uri)
-//                       .into(holder.imageViewPhoto);
-//            } else {
-//                holder.imageViewPhoto.setImageDrawable(null);
-//            }
-//
-            // TODO: Use a summary of URL.
-            holder.textViewName.setText(item.object.getUriString());
+            if (item.richLink.ogImageUri != null) {
+                Uri ogImageUri = Uri.parse(item.richLink.ogImageUri);
+                LOG.v("Loading the photo: %s", ogImageUri);
+                picasso.load(ogImageUri)
+                       .into(holder.imageViewPhoto);
+            } else {
+                String preferredUri = item.richLink.getUri();
+                if (preferredUri == null) preferredUri = item.object.getRequiredUriString();
+
+                Drawable drawable = linkLetterTileFactory.create(preferredUri, title);
+                holder.imageViewPhoto.setImageDrawable(drawable);
+            }
+
+            holder.textViewName.setText(title);
             holder.textViewDistance.setText(String.format(getString(R.string.format_nearby_object_distance),
                                                           item.distance));
-
-//            picasso.load(item.place.icon).into(holder.imageViewIcon);
         }
 
         @Override
@@ -507,13 +545,13 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         }
     }
 
-    private static final class Item {
-
-        static final float[] DISTANCE_RESULTS = new float[1];
+    private final class Item {
 
         final VirtualObject object;
 
         float distance;
+
+        RichLink richLink;
 
         Item(@NonNull VirtualObject object) {
             this.object = object;
@@ -523,8 +561,13 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
             Location.distanceBetween(location.latitude, location.longitude,
                                      object.getRequiredGeoPoint().getLatitude(),
                                      object.getRequiredGeoPoint().getLongitude(),
-                                     DISTANCE_RESULTS);
-            distance = DISTANCE_RESULTS[0];
+                                     TEMP_DISTANCE_RESULTS);
+            distance = TEMP_DISTANCE_RESULTS[0];
+        }
+
+        void loadRichLink() throws IOException {
+            String uriString = object.getRequiredUriString();
+            richLink = richLinkParser.parse(uriString);
         }
     }
 
