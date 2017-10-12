@@ -3,6 +3,7 @@ package com.lakeel.altla.ghost.alpha.viewhelper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
@@ -10,6 +11,18 @@ import android.support.v7.app.AppCompatDelegate;
 public final class AppCompatHelper {
 
     private AppCompatHelper() {
+    }
+
+    public static void back(@NonNull Fragment fragment) {
+        back(fragment.getActivity());
+    }
+
+    public static void back(@NonNull FragmentActivity activity) {
+        if (0 < activity.getSupportFragmentManager().getBackStackEntryCount()) {
+            activity.getSupportFragmentManager().popBackStack();
+        } else {
+            NavUtils.navigateUpFromSameTask(activity);
+        }
     }
 
     @NonNull

@@ -29,7 +29,6 @@ import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -104,7 +103,7 @@ public final class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                backView();
+                AppCompatHelper.back(this);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -206,15 +205,6 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public void showDebugSettingsView() {
         replaceFragmentAndAddToBackStack(DebugSettingsFragment.newInstance());
-    }
-
-    @Override
-    public void backView() {
-        if (0 < getSupportFragmentManager().getBackStackEntryCount()) {
-            getSupportFragmentManager().popBackStack();
-        } else {
-            NavUtils.navigateUpFromSameTask(this);
-        }
     }
 
     private void replaceFragment(Fragment fragment) {

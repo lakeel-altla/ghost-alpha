@@ -356,11 +356,11 @@ public final class ObjectEditFragment extends Fragment {
                 virtualObjectApi.saveUserObject(virtualObject, aVoid -> {
                     LOG.v("Saved an object: key = %s", virtualObject.getKey());
                     Toast.makeText(getContext(), R.string.toast_saved, Toast.LENGTH_SHORT).show();
-                    fragmentContext.backView();
+                    AppCompatHelper.back(this);
                 }, e -> {
                     LOG.e("Failed to save an object.", e);
                     Toast.makeText(getContext(), R.string.toast_save_error, Toast.LENGTH_SHORT).show();
-                    fragmentContext.backView();
+                    AppCompatHelper.back(this);
                 });
                 return true;
             default:
@@ -409,7 +409,5 @@ public final class ObjectEditFragment extends Fragment {
         boolean checkLocationPermission();
 
         void requestLocationPermission();
-
-        void backView();
     }
 }

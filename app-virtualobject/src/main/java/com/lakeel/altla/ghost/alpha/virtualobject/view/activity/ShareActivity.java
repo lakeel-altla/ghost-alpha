@@ -97,7 +97,9 @@ public class ShareActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                backView();
+                Intent intent = MainActivity.createStartActivityIntent(this);
+                startActivity(intent);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -137,13 +139,6 @@ public class ShareActivity extends AppCompatActivity
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
         LOG.v("onPermissionsDenied(): %d, %s", requestCode, perms);
-    }
-
-    @Override
-    public void backView() {
-        Intent intent = MainActivity.createStartActivityIntent(this);
-        startActivity(intent);
-        finish();
     }
 
     private void replaceFragment(Fragment fragment) {
