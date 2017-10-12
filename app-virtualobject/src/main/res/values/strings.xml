@@ -37,5 +37,8 @@
     <string name="toast_saved">Saved.</string>
     <string name="toast_invalid_intent_received">Received an invalid data</string>
     <string name="input_error_uri">Input a valid URL.</string>
+    <string name="button_pick_location">Pick a location</string>
+    <string name="button_load_rich_link">Load the rich link</string>
+    <string name="toast_failed_to_load_rich_link">Failed to load the rich link.</string>
 
 </resources>

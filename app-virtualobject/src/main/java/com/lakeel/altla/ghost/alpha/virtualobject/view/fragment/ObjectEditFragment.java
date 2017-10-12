@@ -16,14 +16,21 @@ import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObject;
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity;
+import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.module.Names;
+import com.lakeel.altla.ghost.alpha.virtualobject.helper.LinkLetterTileFactory;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.PatternHelper;
+import com.squareup.picasso.Picasso;
+
+import org.jdeferred.DeferredManager;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -40,7 +47,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -63,7 +75,16 @@ public final class ObjectEditFragment extends Fragment {
     String googleApiKey;
 
     @Inject
+    DeferredManager deferredManager;
+
+    @Inject
     VirtualObjectApi virtualObjectApi;
+
+    @Inject
+    RichLinkParser richLinkParser;
+
+    @Inject
+    LinkLetterTileFactory linkLetterTileFactory;
 
     private FragmentContext fragmentContext;
 
@@ -72,6 +93,12 @@ public final class ObjectEditFragment extends Fragment {
     private TextInputEditText textInputEditTextUri;
 
     private MapView mapView;
+
+    private Button buttonLoadRichLink;
+
+    private ImageView imageViewPhoto;
+
+    private TextView textViewName;
 
     @Nullable
     private GoogleMap googleMap;
@@ -124,6 +151,9 @@ public final class ObjectEditFragment extends Fragment {
         textInputLayoutUri = getView().findViewById(R.id.text_input_layout_uri);
         textInputEditTextUri = getView().findViewById(R.id.text_input_edit_text_uri);
         mapView = getView().findViewById(R.id.map_view);
+        imageViewPhoto = getView().findViewById(R.id.image_view_photo);
+        textViewName = getView().findViewById(R.id.text_view_name);
+        buttonLoadRichLink = getView().findViewById(R.id.button_load_rich_link);
 
         textInputEditTextUri.addTextChangedListener(new TextWatcher() {
             @Override
@@ -165,27 +195,32 @@ public final class ObjectEditFragment extends Fragment {
             } else {
                 updateLocation(location, true);
             }
+        });
 
-            googleMap.setOnMapClickListener(latLng -> {
-                LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getContext())
-                        .setMyLocationEnabled(true)
-                        .setBuildingsEnabled(false)
-                        .setIndoorEnabled(true)
-                        .setTrafficEnabled(false)
-                        .setMapToolbarEnabled(false)
-                        .setZoomControlsEnabled(true)
-                        .setMyLocationButtonEnabled(true)
-                        .setCompassEnabled(true)
-                        .setIndoorLevelPickerEnabled(true)
-                        .setAllGesturesEnabled(true);
+        buttonLoadRichLink.setOnClickListener(v -> {
+            loadRichLink();
+        });
 
-                if (location != null) {
-                    builder.setLocation(location.latitude, location.longitude);
-                }
+        Button buttonPickLocation = getView().findViewById(R.id.button_pick_location);
+        buttonPickLocation.setOnClickListener(v -> {
+            LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getContext())
+                    .setMyLocationEnabled(true)
+                    .setBuildingsEnabled(false)
+                    .setIndoorEnabled(true)
+                    .setTrafficEnabled(false)
+                    .setMapToolbarEnabled(false)
+                    .setZoomControlsEnabled(true)
+                    .setMyLocationButtonEnabled(true)
+                    .setCompassEnabled(true)
+                    .setIndoorLevelPickerEnabled(true)
+                    .setAllGesturesEnabled(true);
 
-                Intent intent = builder.build();
-                startActivityForResult(intent, REQUEST_CODE_LOCATION_PICKER);
-            });
+            if (location != null) {
+                builder.setLocation(location.latitude, location.longitude);
+            }
+
+            Intent intent = builder.build();
+            startActivityForResult(intent, REQUEST_CODE_LOCATION_PICKER);
         });
 
         Bundle bundle = getArguments();
@@ -193,6 +228,7 @@ public final class ObjectEditFragment extends Fragment {
             String uriString = bundle.getString(ARG_URI_STRING);
             if (uriString != null) {
                 textInputEditTextUri.setText(uriString);
+                loadRichLink();
             }
         }
 
@@ -201,12 +237,59 @@ public final class ObjectEditFragment extends Fragment {
         saving = false;
     }
 
+    private void loadRichLink() {
+        imageViewPhoto.setImageDrawable(null);
+        textViewName.setText(null);
+
+        Editable editable = textInputEditTextUri.getText();
+        String text = editable.toString();
+        String uriString = PatternHelper.parseUriString(text);
+        if (uriString != null) {
+            deferredManager
+                    .when(() -> {
+                        try {
+                            return richLinkParser.parse(uriString);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .done(richLink -> {
+                        String title = richLink.getTitle();
+                        if (title == null) title = uriString;
+
+                        Picasso picasso = Picasso.with(getContext());
+                        picasso.setIndicatorsEnabled(true);
+
+                        if (richLink.ogImageUri != null) {
+                            Uri ogImageUri = Uri.parse(richLink.ogImageUri);
+                            LOG.v("Loading the photo: %s", ogImageUri);
+                            picasso.load(ogImageUri)
+                                   .into(imageViewPhoto);
+                        } else {
+                            String preferredUri = richLink.getUri();
+                            if (preferredUri == null) preferredUri = uriString;
+
+                            Drawable drawable = linkLetterTileFactory.create(preferredUri, title);
+                            imageViewPhoto.setImageDrawable(drawable);
+                        }
+
+                        textViewName.setText(title);
+                    })
+                    .fail(e -> {
+                        LOG.e("Failed to load a rich link.", e);
+                        Toast.makeText(getContext(), R.string.toast_failed_to_load_rich_link, Toast.LENGTH_SHORT)
+                             .show();
+                    });
+        }
+    }
+
     private void validateUri() {
         Editable editable = textInputEditTextUri.getText();
         String text = editable.toString();
         String uriString = PatternHelper.parseUriString(text);
         String error = (uriString != null) ? null : getString(R.string.input_error_uri);
         textInputLayoutUri.setError(error);
+        buttonLoadRichLink.setEnabled(error == null);
     }
 
     @Override
