@@ -62,6 +62,8 @@ public final class MainActivity extends AppCompatActivity
 
     private FirebaseAuth firebaseAuth;
 
+    private boolean locationPermissionRequested;
+
     @NonNull
     public static Intent createStartActivityIntent(@NonNull Context context) {
         Intent intent = new Intent(context, MainActivity.class);
@@ -121,6 +123,9 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void requestLocationPermission() {
+        if (locationPermissionRequested) return;
+
+        locationPermissionRequested = true;
         EasyPermissions.requestPermissions(this,
                                            getString(R.string.rationale_location),
                                            REQUEST_LOCATION_PERMISSION,
@@ -131,6 +136,7 @@ public final class MainActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        locationPermissionRequested = false;
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
