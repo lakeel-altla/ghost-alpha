@@ -1,11 +1,12 @@
 package com.lakeel.altla.ghost.alpha.richlink;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 public class RichLink {
 
-    @Nullable
-    public String documentUri;
+    @NonNull
+    public final String documentUri;
 
     @Nullable
     public String documentTitle;
@@ -32,7 +33,11 @@ public class RichLink {
     @Nullable
     public String html;
 
-    @Nullable
+    public RichLink(String documentUri) {
+        this.documentUri = documentUri;
+    }
+
+    @NonNull
     public String getUri() {
         String value = ogUri;
         if (value == null) {
@@ -57,5 +62,15 @@ public class RichLink {
             value = documentDescription;
         }
         return value;
+    }
+
+    @NonNull
+    public String getTitleOrUri() {
+        String title = getTitle();
+        if (title == null) {
+            return getUri();
+        } else {
+            return title;
+        }
     }
 }

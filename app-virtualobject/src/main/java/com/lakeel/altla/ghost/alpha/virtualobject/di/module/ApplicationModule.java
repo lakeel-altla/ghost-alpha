@@ -6,7 +6,6 @@ import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.app.MyApplication;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.LinkLetterTileFactory;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.ObjectColorSource;
-import com.lakeel.altla.ghost.alpha.virtualobject.helper.UriColorFactory;
 
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
@@ -55,8 +54,6 @@ public class ApplicationModule {
     @Provides
     LinkLetterTileFactory provideLinkLetterTileFactory(Resources resources) {
         int[] colors = resources.getIntArray(R.array.letter_tile_colors);
-        ObjectColorSource objectColorSource = new ObjectColorSource(colors);
-        UriColorFactory uriColorFactory = new UriColorFactory(objectColorSource);
-        return new LinkLetterTileFactory(uriColorFactory);
+        return new LinkLetterTileFactory(new ObjectColorSource(colors));
     }
 }

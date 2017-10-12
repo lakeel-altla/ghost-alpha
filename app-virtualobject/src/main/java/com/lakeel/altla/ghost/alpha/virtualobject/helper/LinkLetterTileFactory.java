@@ -7,16 +7,16 @@ import android.support.annotation.NonNull;
 
 public final class LinkLetterTileFactory {
 
-    private final UriColorFactory uriColorFactory;
+    private final ObjectColorSource objectColorSource;
 
-    public LinkLetterTileFactory(@NonNull UriColorFactory uriColorFactory) {
-        this.uriColorFactory = uriColorFactory;
+    public LinkLetterTileFactory(@NonNull ObjectColorSource objectColorSource) {
+        this.objectColorSource = objectColorSource;
     }
 
     @NonNull
     public Drawable create(@NonNull String uri, @NonNull String title) {
         String letter = title.substring(0, 1);
-        int color = uriColorFactory.create(uri);
+        int color = objectColorSource.get(uri);
         return TextDrawable.builder().buildRect(letter, color);
     }
 }

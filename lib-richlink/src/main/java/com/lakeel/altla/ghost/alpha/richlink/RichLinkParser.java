@@ -33,9 +33,8 @@ public class RichLinkParser {
         Document document = connection.get();
         Metadata metadata = new Metadata(document);
 
-        RichLink link = new RichLink();
+        RichLink link = new RichLink(uriString);
 
-        link.documentUri = uriString;
         link.documentTitle = document.title();
         link.documentDescription = metadata.getDescription();
 

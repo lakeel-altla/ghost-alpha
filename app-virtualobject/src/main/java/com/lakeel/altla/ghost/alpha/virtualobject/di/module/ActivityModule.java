@@ -5,6 +5,8 @@ import com.google.android.gms.location.LocationServices;
 
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScope;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.DebugPreferences;
+import com.lakeel.altla.ghost.alpha.virtualobject.helper.LinkLetterTileFactory;
+import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
 
 import org.jdeferred.DeferredManager;
 import org.jdeferred.android.AndroidDeferredManager;
@@ -54,5 +56,11 @@ public final class ActivityModule {
     @Provides
     FusedLocationProviderClient provideFusedLocationProviderClient(Activity activity) {
         return LocationServices.getFusedLocationProviderClient(activity);
+    }
+
+    @ActivityScope
+    @Provides
+    RichLinkImageLoader provideRichLinkImageLoader(Activity activity, LinkLetterTileFactory linkLetterTileFactory) {
+        return new RichLinkImageLoader(activity, linkLetterTileFactory);
     }
 }

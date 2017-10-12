@@ -20,17 +20,14 @@ import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.module.Names;
-import com.lakeel.altla.ghost.alpha.virtualobject.helper.LinkLetterTileFactory;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.PatternHelper;
-import com.squareup.picasso.Picasso;
+import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
 
 import org.jdeferred.DeferredManager;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -84,7 +81,7 @@ public final class ObjectEditFragment extends Fragment {
     RichLinkParser richLinkParser;
 
     @Inject
-    LinkLetterTileFactory linkLetterTileFactory;
+    RichLinkImageLoader richLinkImageLoader;
 
     private FragmentContext fragmentContext;
 
@@ -254,26 +251,8 @@ public final class ObjectEditFragment extends Fragment {
                         }
                     })
                     .done(richLink -> {
-                        String title = richLink.getTitle();
-                        if (title == null) title = uriString;
-
-                        Picasso picasso = Picasso.with(getContext());
-                        picasso.setIndicatorsEnabled(true);
-
-                        if (richLink.ogImageUri != null) {
-                            Uri ogImageUri = Uri.parse(richLink.ogImageUri);
-                            LOG.v("Loading the photo: %s", ogImageUri);
-                            picasso.load(ogImageUri)
-                                   .into(imageViewPhoto);
-                        } else {
-                            String preferredUri = richLink.getUri();
-                            if (preferredUri == null) preferredUri = uriString;
-
-                            Drawable drawable = linkLetterTileFactory.create(preferredUri, title);
-                            imageViewPhoto.setImageDrawable(drawable);
-                        }
-
-                        textViewName.setText(title);
+                        richLinkImageLoader.load(richLink, imageViewPhoto);
+                        textViewName.setText(richLink.getTitleOrUri());
                     })
                     .fail(e -> {
                         LOG.e("Failed to load a rich link.", e);

@@ -23,16 +23,13 @@ import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.DebugPreferences;
-import com.lakeel.altla.ghost.alpha.virtualobject.helper.LinkLetterTileFactory;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.OnLocationUpdatesAvailableListener;
-import com.squareup.picasso.Picasso;
+import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
 
 import org.jdeferred.DeferredManager;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -85,7 +82,7 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     RichLinkParser richLinkParser;
 
     @Inject
-    LinkLetterTileFactory linkLetterTileFactory;
+    RichLinkImageLoader richLinkImageLoader;
 
     private FragmentContext fragmentContext;
 
@@ -495,26 +492,8 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         public void onBindViewHolder(Adapter.ViewHolder holder, int position) {
             Item item = items.get(position);
 
-            String title = item.richLink.getTitle();
-            if (title == null) title = item.object.getRequiredUriString();
-
-            Picasso picasso = Picasso.with(getContext());
-            picasso.setIndicatorsEnabled(true);
-
-            if (item.richLink.ogImageUri != null) {
-                Uri ogImageUri = Uri.parse(item.richLink.ogImageUri);
-                LOG.v("Loading the photo: %s", ogImageUri);
-                picasso.load(ogImageUri)
-                       .into(holder.imageViewPhoto);
-            } else {
-                String preferredUri = item.richLink.getUri();
-                if (preferredUri == null) preferredUri = item.object.getRequiredUriString();
-
-                Drawable drawable = linkLetterTileFactory.create(preferredUri, title);
-                holder.imageViewPhoto.setImageDrawable(drawable);
-            }
-
-            holder.textViewName.setText(title);
+            richLinkImageLoader.load(item.richLink, holder.imageViewPhoto);
+            holder.textViewName.setText(item.richLink.getTitleOrUri());
             holder.textViewDistance.setText(String.format(getString(R.string.format_nearby_object_distance),
                                                           item.distance));
         }
