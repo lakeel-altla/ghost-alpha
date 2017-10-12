@@ -142,6 +142,7 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
         LOG.v("onPermissionsDenied(): %d, %s", requestCode, perms);
+
     }
 
     @Override

@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -37,12 +36,13 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import pub.devrel.easypermissions.EasyPermissions;
+
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static android.widget.Toast.LENGTH_SHORT;
 
 public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
+                   EasyPermissions.PermissionCallbacks,
                    NearbyPlaceListFragment.FragmentContext {
 
     private static final Log LOG = LogFactory.getLog(MainActivity.class);
@@ -89,22 +89,6 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_LOCATION_PERMISSION) {
-            for (int i = 0; i < permissions.length; i++) {
-                if (grantResults[i] != PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this, ACCESS_FINE_LOCATION)) {
-                        Toast.makeText(this, R.string.toast_permission_required, LENGTH_SHORT).show();
-                    }
-                    finish();
-                    return;
-                }
-            }
-        }
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CHECK_SETTINGS) {
             switch (resultCode) {
@@ -129,12 +113,32 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public boolean checkLocationPermission() {
-        return ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED;
+        return EasyPermissions.hasPermissions(this, ACCESS_FINE_LOCATION);
     }
 
     @Override
     public void requestLocationPermission() {
-        ActivityCompat.requestPermissions(this, new String[] { ACCESS_FINE_LOCATION }, REQUEST_LOCATION_PERMISSION);
+        EasyPermissions.requestPermissions(this,
+                                           getString(R.string.rationale_location),
+                                           REQUEST_LOCATION_PERMISSION,
+                                           ACCESS_FINE_LOCATION);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+        LOG.v("onPermissionsGranted(): %d, %s", requestCode, perms);
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        LOG.v("onPermissionsDenied(): %d, %s", requestCode, perms);
     }
 
     @Override
