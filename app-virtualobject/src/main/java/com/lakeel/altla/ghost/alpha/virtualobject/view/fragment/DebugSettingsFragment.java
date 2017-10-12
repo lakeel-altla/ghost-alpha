@@ -1,7 +1,6 @@
 package com.lakeel.altla.ghost.alpha.virtualobject.view.fragment;
 
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.DebugPreferences;
@@ -10,10 +9,8 @@ import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,12 +26,8 @@ import static java.lang.String.format;
 
 public final class DebugSettingsFragment extends Fragment {
 
-    private static final Log LOG = LogFactory.getLog(DebugSettingsFragment.class);
-
     @Inject
     DebugPreferences debugPreferences;
-
-    private FragmentContext fragmentContext;
 
     @NonNull
     public static DebugSettingsFragment newInstance() {
@@ -44,14 +37,7 @@ public final class DebugSettingsFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        fragmentContext = (FragmentContext) context;
         ((ActivityScopeContext) context).getActivityComponent().inject(this);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        fragmentContext = null;
     }
 
     @Override
@@ -66,9 +52,9 @@ public final class DebugSettingsFragment extends Fragment {
         View view = getView();
         if (view == null) return;
 
-        fragmentContext.setTitle(R.string.title_debug_settings);
-        fragmentContext.setDisplayHomeAsUpEnabled(true);
-        fragmentContext.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+        getActivity().setTitle(R.string.title_debug_settings);
+        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
+        AppCompatHelper.getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
 
         Switch switchGoogleMapVisible = view.findViewById(R.id.switch_google_map_visible);
         switchGoogleMapVisible.setChecked(debugPreferences.isGoogleMapVisible());
@@ -138,22 +124,6 @@ public final class DebugSettingsFragment extends Fragment {
     @NonNull
     private String formatTextViewLocationUpdatesInterval(int value) {
         return format(getString(R.string.format_text_view_location_updates_interval_value), value);
-    }
-
-    @NonNull
-    private String formatTextViewLocationUpdatesDistance(int value) {
-        return format(getString(R.string.format_text_view_location_updates_distance_value), value);
-    }
-
-    public interface FragmentContext {
-
-        void setTitle(@StringRes int resId);
-
-        void setDisplayHomeAsUpEnabled(boolean enabled);
-
-        void setHomeAsUpIndicator(@DrawableRes int resId);
-
-        void backView();
     }
 
     abstract class OnProgressChangeListener implements DiscreteSeekBar.OnProgressChangeListener {

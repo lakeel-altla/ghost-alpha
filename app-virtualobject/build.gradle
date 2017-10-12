@@ -43,6 +43,7 @@ dependencies {
     compile project(path: ':lib-auth')
     compile project(path: ':lib-api-virtualobject')
     compile project(path: ':lib-richlink')
+    compile project(path: ':lib-viewhelper')
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
 }
 

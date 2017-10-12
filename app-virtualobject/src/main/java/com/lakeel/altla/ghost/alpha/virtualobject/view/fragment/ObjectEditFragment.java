@@ -17,6 +17,7 @@ import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity;
 import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
+import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.module.Names;
@@ -29,10 +30,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
@@ -164,7 +163,7 @@ public final class ObjectEditFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 validateUri();
-                fragmentContext.invalidateOptionsMenu();
+                getActivity().invalidateOptionsMenu();
             }
         });
 
@@ -303,11 +302,11 @@ public final class ObjectEditFragment extends Fragment {
         super.onStart();
         mapView.onStart();
 
-        fragmentContext.setTitle(R.string.title_object_edit);
-        fragmentContext.setDisplayHomeAsUpEnabled(true);
-        fragmentContext.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+        getActivity().setTitle(R.string.title_object_edit);
+        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
+        AppCompatHelper.getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         setHasOptionsMenu(true);
-        fragmentContext.invalidateOptionsMenu();
+        getActivity().invalidateOptionsMenu();
     }
 
     @Override
@@ -347,7 +346,7 @@ public final class ObjectEditFragment extends Fragment {
                 if (location == null) throw new IllegalStateException("'location' is null.");
 
                 saving = true;
-                fragmentContext.invalidateOptionsMenu();
+                getActivity().invalidateOptionsMenu();
 
                 VirtualObject virtualObject = new VirtualObject();
                 virtualObject.setUserId(CurrentUser.getInstance().getRequiredUserId());
@@ -384,7 +383,7 @@ public final class ObjectEditFragment extends Fragment {
 
     private void updateLocation(@Nullable LatLng location, boolean adjustZoomLevel) {
         this.location = location;
-        fragmentContext.invalidateOptionsMenu();
+        getActivity().invalidateOptionsMenu();
 
         if (marker != null) {
             marker.remove();
@@ -406,14 +405,6 @@ public final class ObjectEditFragment extends Fragment {
     }
 
     public interface FragmentContext {
-
-        void setTitle(@StringRes int resId);
-
-        void setDisplayHomeAsUpEnabled(boolean enabled);
-
-        void setHomeAsUpIndicator(@DrawableRes int resId);
-
-        void invalidateOptionsMenu();
 
         boolean checkLocationPermission();
 

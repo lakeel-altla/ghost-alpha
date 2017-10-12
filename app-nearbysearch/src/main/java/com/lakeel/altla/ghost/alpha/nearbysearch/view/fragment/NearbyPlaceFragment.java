@@ -8,12 +8,12 @@ import com.lakeel.altla.ghost.alpha.nearbysearch.R;
 import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.nearbysearch.helper.BundleHelper;
 import com.lakeel.altla.ghost.alpha.nearbysearch.helper.FragmentHelper;
+import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 
 import org.jdeferred.DeferredManager;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -38,8 +38,6 @@ public final class NearbyPlaceFragment extends Fragment {
 
     private String name;
 
-    private FragmentContext fragmentContext;
-
     private TextView textViewDetailsJson;
 
     @NonNull
@@ -54,14 +52,7 @@ public final class NearbyPlaceFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        fragmentContext = (FragmentContext) context;
         ((ActivityScopeContext) context).getActivityComponent().inject(this);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        fragmentContext = null;
     }
 
     @Override
@@ -89,9 +80,9 @@ public final class NearbyPlaceFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        fragmentContext.setTitle(name);
-        fragmentContext.setDisplayHomeAsUpEnabled(true);
-        fragmentContext.setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
+        getActivity().setTitle(name);
+        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
+        AppCompatHelper.getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
 
         deferredManager.when(() -> {
             Place place = placeWebApi.getPlace(placeId, null);
@@ -107,15 +98,6 @@ public final class NearbyPlaceFragment extends Fragment {
 
     private void setPlace(@NonNull Place place) {
         textViewDetailsJson.setText(placeWebApi.getGson().toJson(place));
-    }
-
-    public interface FragmentContext {
-
-        void setTitle(@Nullable CharSequence name);
-
-        void setDisplayHomeAsUpEnabled(boolean enabled);
-
-        void setHomeAsUpIndicator(@DrawableRes int resId);
     }
 
     private static final class Arguments {

@@ -19,17 +19,16 @@ import com.lakeel.altla.ghost.alpha.nearbysearch.helper.OnLocationUpdatesAvailab
 import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.DebugSettingsFragment;
 import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.NearbyPlaceFragment;
 import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.NearbyPlaceListFragment;
+import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -44,9 +43,7 @@ import static android.widget.Toast.LENGTH_SHORT;
 
 public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
-                   NearbyPlaceListFragment.FragmentContext,
-                   NearbyPlaceFragment.FragmentContext,
-                   DebugSettingsFragment.FragmentContext {
+                   NearbyPlaceListFragment.FragmentContext {
 
     private static final Log LOG = LogFactory.getLog(MainActivity.class);
 
@@ -54,7 +51,6 @@ public final class MainActivity extends AppCompatActivity
 
     private static final int REQUEST_CHECK_SETTINGS = 2;
 
-    //    @Inject
     private SettingsClient settingsClient;
 
     private List<OnLocationUpdatesAvailableListener> onLocationUpdatesAvailableListeners = new ArrayList<>();
@@ -70,9 +66,9 @@ public final class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setDisplayHomeAsUpEnabled(true);
+        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
 
         settingsClient = LocationServices.getSettingsClient(this);
 
@@ -132,26 +128,6 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void setDisplayHomeAsUpEnabled(boolean enabled) {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(enabled);
-        } else {
-            LOG.w("ActionBar is null.");
-        }
-    }
-
-    @Override
-    public void setHomeAsUpIndicator(@DrawableRes int resId) {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setHomeAsUpIndicator(resId);
-        } else {
-            LOG.w("ActionBar is null.");
-        }
-    }
-
-    @Override
     public boolean checkLocationPermission() {
         return ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED;
     }
@@ -207,7 +183,6 @@ public final class MainActivity extends AppCompatActivity
         onLocationUpdatesAvailableListeners.remove(listener);
     }
 
-    @Override
     public void backView() {
         if (0 < getSupportFragmentManager().getBackStackEntryCount()) {
             getSupportFragmentManager().popBackStack();

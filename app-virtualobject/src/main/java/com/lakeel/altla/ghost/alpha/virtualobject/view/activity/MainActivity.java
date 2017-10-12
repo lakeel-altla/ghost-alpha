@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
+import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.app.MyApplication;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
@@ -26,11 +27,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -47,8 +46,7 @@ public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
                    EasyPermissions.PermissionCallbacks,
                    NearbyObjectListFragment.FragmentContext,
-                   ObjectEditFragment.FragmentContext,
-                   DebugSettingsFragment.FragmentContext {
+                   ObjectEditFragment.FragmentContext {
 
     private static final Log LOG = LogFactory.getLog(MainActivity.class);
 
@@ -82,7 +80,7 @@ public final class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setDisplayHomeAsUpEnabled(true);
+        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
 
         settingsClient = LocationServices.getSettingsClient(this);
 
@@ -114,26 +112,6 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public ActivityComponent getActivityComponent() {
         return activityComponent;
-    }
-
-    @Override
-    public void setDisplayHomeAsUpEnabled(boolean enabled) {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(enabled);
-        } else {
-            LOG.w("ActionBar is null.");
-        }
-    }
-
-    @Override
-    public void setHomeAsUpIndicator(@DrawableRes int resId) {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setHomeAsUpIndicator(resId);
-        } else {
-            LOG.w("ActionBar is null.");
-        }
     }
 
     @Override

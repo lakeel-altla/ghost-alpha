@@ -20,6 +20,7 @@ import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.richlink.RichLink;
 import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
+import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.DebugPreferences;
@@ -35,7 +36,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -226,8 +226,8 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         super.onStart();
         mapView.onStart();
 
-        fragmentContext.setTitle(R.string.title_nearby_object_list);
-        fragmentContext.setDisplayHomeAsUpEnabled(false);
+        getActivity().setTitle(R.string.title_nearby_object_list);
+        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(false);
         setHasOptionsMenu(true);
 
         mapView.setVisibility(debugPreferences.isGoogleMapVisible() ? View.VISIBLE : View.GONE);
@@ -438,10 +438,6 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     }
 
     public interface FragmentContext {
-
-        void setTitle(@StringRes int resId);
-
-        void setDisplayHomeAsUpEnabled(boolean enabled);
 
         boolean checkLocationPermission();
 
