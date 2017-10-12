@@ -138,7 +138,9 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
-        LOG.v("onPermissionsDenied(): %d, %s", requestCode, perms);
+        LOG.e("onPermissionsDenied(): %d, %s", requestCode, perms);
+        Toast.makeText(this, R.string.toast_permission_required, Toast.LENGTH_SHORT).show();
+        finish();
     }
 
     @Override
