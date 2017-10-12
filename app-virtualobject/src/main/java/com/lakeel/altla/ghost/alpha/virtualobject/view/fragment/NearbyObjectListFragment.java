@@ -443,8 +443,6 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
 
         void setDisplayHomeAsUpEnabled(boolean enabled);
 
-        void invalidateOptionsMenu();
-
         boolean checkLocationPermission();
 
         void requestLocationPermission();
