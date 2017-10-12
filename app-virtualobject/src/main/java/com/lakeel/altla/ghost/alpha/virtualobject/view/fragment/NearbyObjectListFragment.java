@@ -29,7 +29,9 @@ import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
 import org.jdeferred.DeferredManager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -472,11 +474,12 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
             itemView.setOnClickListener(v -> {
                 int position = recyclerView.getChildAdapterPosition(v);
                 Item item = items.get(position);
-                // TODO
-//                String placeId = item.place.placeId;
-//                String name = item.place.name;
-//                fragmentContext.showNearbyPlaceView(placeId, name);
-                fragmentContext.invalidateOptionsMenu();
+
+                String uriString = item.object.getRequiredUriString();
+                Uri uri = Uri.parse(uriString);
+
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
             });
 
             return new Adapter.ViewHolder(itemView);
