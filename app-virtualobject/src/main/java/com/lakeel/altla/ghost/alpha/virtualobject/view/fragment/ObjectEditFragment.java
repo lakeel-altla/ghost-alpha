@@ -1,6 +1,7 @@
 package com.lakeel.altla.ghost.alpha.virtualobject.view.fragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,11 +21,11 @@ import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
-import com.lakeel.altla.ghost.alpha.virtualobject.di.module.Names;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.PatternHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
 
 import org.jdeferred.DeferredManager;
+import org.jdeferred.android.AndroidDeferredManager;
 
 import android.app.Activity;
 import android.content.Context;
@@ -51,7 +52,6 @@ import android.widget.Toast;
 import java.io.IOException;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 public final class ObjectEditFragment extends Fragment {
 
@@ -64,16 +64,6 @@ public final class ObjectEditFragment extends Fragment {
     private static final String ARG_URI_STRING = "uriString";
 
     @Inject
-    FusedLocationProviderClient fusedLocationProviderClient;
-
-    @Named(Names.GOOGLE_API_KEY)
-    @Inject
-    String googleApiKey;
-
-    @Inject
-    DeferredManager deferredManager;
-
-    @Inject
     VirtualObjectApi virtualObjectApi;
 
     @Inject
@@ -82,7 +72,11 @@ public final class ObjectEditFragment extends Fragment {
     @Inject
     RichLinkImageLoader richLinkImageLoader;
 
+    private final DeferredManager deferredManager = new AndroidDeferredManager();
+
     private FragmentContext fragmentContext;
+
+    private FusedLocationProviderClient fusedLocationProviderClient;
 
     private TextInputLayout textInputLayoutUri;
 
@@ -143,6 +137,8 @@ public final class ObjectEditFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (getView() == null) throw new IllegalStateException("The root view could not be found.");
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         textInputLayoutUri = getView().findViewById(R.id.text_input_layout_uri);
         textInputEditTextUri = getView().findViewById(R.id.text_input_edit_text_uri);

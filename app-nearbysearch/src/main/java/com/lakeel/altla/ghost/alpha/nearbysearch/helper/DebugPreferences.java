@@ -2,7 +2,11 @@ package com.lakeel.altla.ghost.alpha.nearbysearch.helper;
 
 import com.google.android.gms.location.LocationRequest;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 
 public final class DebugPreferences {
 
@@ -35,7 +39,15 @@ public final class DebugPreferences {
 
     private SharedPreferences preferences;
 
-    public DebugPreferences(SharedPreferences preferences) {
+    public DebugPreferences(@NonNull Fragment fragment) {
+        this(fragment.getActivity());
+    }
+
+    public DebugPreferences(@NonNull Activity activity) {
+        this(activity.getPreferences(Context.MODE_PRIVATE));
+    }
+
+    public DebugPreferences(@NonNull SharedPreferences preferences) {
         this.preferences = preferences;
     }
 

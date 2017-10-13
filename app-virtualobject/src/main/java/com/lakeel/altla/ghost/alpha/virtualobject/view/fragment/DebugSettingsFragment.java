@@ -20,14 +20,11 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import javax.inject.Inject;
-
 import static java.lang.String.format;
 
 public final class DebugSettingsFragment extends Fragment {
 
-    @Inject
-    DebugPreferences debugPreferences;
+    private DebugPreferences debugPreferences;
 
     @NonNull
     public static DebugSettingsFragment newInstance() {
@@ -48,25 +45,25 @@ public final class DebugSettingsFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (getView() == null) throw new IllegalStateException("The root view could not be found.");
 
-        View view = getView();
-        if (view == null) return;
+        debugPreferences = new DebugPreferences(this);
 
         getActivity().setTitle(R.string.title_debug_settings);
         AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
         AppCompatHelper.getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
 
-        Switch switchGoogleMapVisible = view.findViewById(R.id.switch_google_map_visible);
+        Switch switchGoogleMapVisible = getView().findViewById(R.id.switch_google_map_visible);
         switchGoogleMapVisible.setChecked(debugPreferences.isGoogleMapVisible());
         switchGoogleMapVisible.setOnCheckedChangeListener((buttonView, isChecked) -> {
             debugPreferences.setGoogleMapVisible(isChecked);
         });
 
-        TextView textViewSearchRadiusValue = view.findViewById(R.id.text_view_search_radius_value);
+        TextView textViewSearchRadiusValue = getView().findViewById(R.id.text_view_search_radius_value);
         int searchRadius = debugPreferences.getSearchRadius();
         textViewSearchRadiusValue.setText(formatTextViewSearchRadiusValue(searchRadius));
 
-        DiscreteSeekBar seekBarSearchRadius = view.findViewById(R.id.seek_bar_search_radius);
+        DiscreteSeekBar seekBarSearchRadius = getView().findViewById(R.id.seek_bar_search_radius);
         seekBarSearchRadius.setMin(DebugPreferences.RANGE_SEARCH_RADIUS.min);
         seekBarSearchRadius.setMax(DebugPreferences.RANGE_SEARCH_RADIUS.max);
         seekBarSearchRadius.setProgress(searchRadius);
@@ -78,11 +75,12 @@ public final class DebugSettingsFragment extends Fragment {
             }
         });
 
-        TextView textViewLocationUpdatesIntervalValue = view.findViewById(
+        TextView textViewLocationUpdatesIntervalValue = getView().findViewById(
                 R.id.text_view_location_updates_interval_value);
         int locationUpdateInterval = debugPreferences.getLocationUpdatesInterval();
 
-        DiscreteSeekBar seekBarLocationUpdatesInterval = view.findViewById(R.id.seek_bar_location_updates_interval);
+        DiscreteSeekBar seekBarLocationUpdatesInterval = getView().findViewById(
+                R.id.seek_bar_location_updates_interval);
         textViewLocationUpdatesIntervalValue.setText(formatTextViewLocationUpdatesInterval(locationUpdateInterval));
         seekBarLocationUpdatesInterval.setMin(DebugPreferences.RANGE_LOCATION_UPDATES_INTERVAL.min);
         seekBarLocationUpdatesInterval.setMax(DebugPreferences.RANGE_LOCATION_UPDATES_INTERVAL.max);
@@ -95,13 +93,13 @@ public final class DebugSettingsFragment extends Fragment {
             }
         });
 
-        Switch switchManualLocationUpdatesEnabled = view.findViewById(R.id.switch_manual_location_updates_enabled);
+        Switch switchManualLocationUpdatesEnabled = getView().findViewById(R.id.switch_manual_location_updates_enabled);
         switchManualLocationUpdatesEnabled.setChecked(debugPreferences.isManualLocationUpdatesEnabled());
         switchManualLocationUpdatesEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
             debugPreferences.setManualLocationUpdatesEnabled(isChecked);
         });
 
-        Spinner spinnerLocationRequestPriority = view.findViewById(R.id.spinner_location_request_priority);
+        Spinner spinnerLocationRequestPriority = getView().findViewById(R.id.spinner_location_request_priority);
         spinnerLocationRequestPriority.setSelection(debugPreferences.getLocationRequestPriorityIndex());
         spinnerLocationRequestPriority.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

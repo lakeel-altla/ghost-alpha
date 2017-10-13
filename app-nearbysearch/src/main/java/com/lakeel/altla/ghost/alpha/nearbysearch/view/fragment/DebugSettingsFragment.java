@@ -20,14 +20,11 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import javax.inject.Inject;
-
 import static java.lang.String.format;
 
 public final class DebugSettingsFragment extends Fragment {
 
-    @Inject
-    DebugPreferences debugPreferences;
+    private DebugPreferences debugPreferences;
 
     @NonNull
     public static DebugSettingsFragment newInstance() {
@@ -49,6 +46,8 @@ public final class DebugSettingsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (getView() == null) throw new IllegalStateException("The root view could not be found.");
+
+        debugPreferences = new DebugPreferences(this);
 
         TextView textViewSearchRadiusValue = getView().findViewById(
                 R.id.text_view_search_radius_value);

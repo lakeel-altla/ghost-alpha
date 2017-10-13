@@ -11,6 +11,7 @@ import com.lakeel.altla.ghost.alpha.nearbysearch.helper.FragmentHelper;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 
 import org.jdeferred.DeferredManager;
+import org.jdeferred.android.AndroidDeferredManager;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -31,8 +32,7 @@ public final class NearbyPlaceFragment extends Fragment {
     @Inject
     PlaceWebApi placeWebApi;
 
-    @Inject
-    DeferredManager deferredManager;
+    private final DeferredManager deferredManager = new AndroidDeferredManager();
 
     private String placeId;
 

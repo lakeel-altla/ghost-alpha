@@ -5,6 +5,7 @@ import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +28,7 @@ import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.squareup.picasso.Picasso;
 
 import org.jdeferred.DeferredManager;
+import org.jdeferred.android.AndroidDeferredManager;
 
 import android.content.Context;
 import android.content.Intent;
@@ -65,24 +67,21 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
     private static final float DEFAULT_ZOOM_LEVEL = 17;
 
     @Inject
-    DebugPreferences debugPreferences;
-
-    @Inject
-    DeferredManager deferredManager;
-
-    @Inject
-    FusedLocationProviderClient fusedLocationProviderClient;
-
-    @Inject
     PlaceWebApi placeWebApi;
 
+    private final DeferredManager deferredManager = new AndroidDeferredManager();
+
     private FragmentContext fragmentContext;
+
+    private DebugPreferences debugPreferences;
 
     private RecyclerView recyclerView;
 
     private MapView mapView;
 
     private TextView textViewAccuracyValue;
+
+    private FusedLocationProviderClient fusedLocationProviderClient;
 
     private LocationCallback locationCallback;
 
@@ -130,6 +129,8 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (getView() == null) throw new IllegalStateException("The root view could not be found.");
+
+        debugPreferences = new DebugPreferences(this);
 
         recyclerView = getView().findViewById(R.id.recycler_view);
         mapView = getView().findViewById(R.id.map_view);
@@ -194,6 +195,8 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
                 fragmentContext.requestLocationPermission();
             }
         });
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
     }
 
     @Override
@@ -301,7 +304,6 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
 
     private void initializeLocationRequest() {
         locationRequest = new LocationRequest();
-
         locationRequest.setPriority(debugPreferences.getLocationRequestPriority());
         locationRequest.setInterval(debugPreferences.getLocationUpdatesInterval() * MILLIS_1000);
         locationRequest.setFastestInterval(FASTEST_INTERVAL_SECONDS * MILLIS_1000);

@@ -5,6 +5,7 @@ import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -28,6 +29,7 @@ import com.lakeel.altla.ghost.alpha.virtualobject.helper.OnLocationUpdatesAvaila
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
 
 import org.jdeferred.DeferredManager;
+import org.jdeferred.android.AndroidDeferredManager;
 
 import android.content.Context;
 import android.content.Intent;
@@ -69,15 +71,6 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     private static final float[] TEMP_DISTANCE_RESULTS = new float[1];
 
     @Inject
-    DeferredManager deferredManager;
-
-    @Inject
-    DebugPreferences debugPreferences;
-
-    @Inject
-    FusedLocationProviderClient fusedLocationProviderClient;
-
-    @Inject
     VirtualObjectApi virtualObjectApi;
 
     @Inject
@@ -86,7 +79,13 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     @Inject
     RichLinkImageLoader richLinkImageLoader;
 
+    private final DeferredManager deferredManager = new AndroidDeferredManager();
+
     private FragmentContext fragmentContext;
+
+    private DebugPreferences debugPreferences;
+
+    private FusedLocationProviderClient fusedLocationProviderClient;
 
     private LocationCallback locationCallback;
 
@@ -143,6 +142,9 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (getView() == null) throw new IllegalStateException("The root view could not be found.");
+
+        debugPreferences = new DebugPreferences(this);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         recyclerView = getView().findViewById(R.id.recycler_view);
         textViewAccuracyValue = getView().findViewById(R.id.text_view_accuracy_value);

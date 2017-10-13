@@ -7,7 +7,6 @@ import com.lakeel.altla.ghost.alpha.virtualobject.app.MyApplication;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.LinkLetterTileFactory;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.ObjectColorSource;
 
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
 
 import javax.inject.Named;
@@ -23,12 +22,6 @@ public class ApplicationModule {
 
     public ApplicationModule(@NonNull MyApplication application) {
         this.application = application;
-    }
-
-    @Singleton
-    @Provides
-    Resources provideResources() {
-        return application.getResources();
     }
 
     @Named(Names.GOOGLE_API_KEY)
@@ -52,8 +45,8 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    LinkLetterTileFactory provideLinkLetterTileFactory(Resources resources) {
-        int[] colors = resources.getIntArray(R.array.letter_tile_colors);
+    LinkLetterTileFactory provideLinkLetterTileFactory() {
+        int[] colors = application.getResources().getIntArray(R.array.letter_tile_colors);
         return new LinkLetterTileFactory(new ObjectColorSource(colors));
     }
 }

@@ -39,6 +39,7 @@ dependencies {
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile "com.lakeel.altla:android-log:$androidLogVersion"
     compile project(path: ':lib-res')
+    compile project(path: ':lib-location')
     compile project(path: ':lib-locationpicker')
     compile project(path: ':lib-auth')
     compile project(path: ':lib-api-virtualobject')

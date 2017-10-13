@@ -48,7 +48,7 @@
     <string name="value_not_available">N/A</string>
 
     <string name="toast_permission_required">The permission is required.</string>
-    <string name="toast_location_settings_inadequate">Location settings are inadequate, and cannot be fixed here. Fix in
+    <string name="toast_location_settings_never_fixed">Location settings are inadequate, and cannot be fixed here. Fix in
         Settings.
     </string>
     <string name="toast_enable_location">Enable the location.</string>

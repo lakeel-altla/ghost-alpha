@@ -1,15 +1,11 @@
 package com.lakeel.altla.ghost.alpha.nearbysearch.view.activity;
 
-import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.google.android.gms.location.SettingsClient;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
+import com.lakeel.altla.ghost.alpha.location.LocationSettingsChecker;
 import com.lakeel.altla.ghost.alpha.nearbysearch.R;
 import com.lakeel.altla.ghost.alpha.nearbysearch.app.MyApplication;
 import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScopeContext;
@@ -21,9 +17,7 @@ import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.NearbyPlaceFragme
 import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.NearbyPlaceListFragment;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -42,6 +36,7 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
                    EasyPermissions.PermissionCallbacks,
+                   LocationSettingsChecker.LocationSettingsCallbacks,
                    NearbyPlaceListFragment.FragmentContext {
 
     private static final Log LOG = LogFactory.getLog(MainActivity.class);
@@ -49,8 +44,6 @@ public final class MainActivity extends AppCompatActivity
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     private static final int REQUEST_CHECK_SETTINGS = 2;
-
-    private SettingsClient settingsClient;
 
     private List<OnLocationUpdatesAvailableListener> onLocationUpdatesAvailableListeners = new ArrayList<>();
 
@@ -71,8 +64,6 @@ public final class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
 
-        settingsClient = LocationServices.getSettingsClient(this);
-
         if (savedInstanceState == null) {
             replaceFragment(NearbyPlaceListFragment.newInstance());
         }
@@ -86,24 +77,6 @@ public final class MainActivity extends AppCompatActivity
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CHECK_SETTINGS) {
-            switch (resultCode) {
-                case Activity.RESULT_OK:
-                    LOG.i("Upgraded location settings.");
-                    break;
-                case Activity.RESULT_CANCELED:
-                    LOG.i("Cancelled to upgrade location settings.");
-                    Toast.makeText(this, R.string.toast_enable_location, Toast.LENGTH_SHORT).show();
-                    finish();
-                    break;
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -150,38 +123,41 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void checkLocationSettings(LocationRequest locationRequest) {
-        LocationSettingsRequest settingsRequest = new LocationSettingsRequest.Builder()
+        LocationSettingsRequest locationSettingsRequest = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest)
                 .build();
+        LocationSettingsChecker.checkLocationSettings(this, locationSettingsRequest, REQUEST_CHECK_SETTINGS, this);
+    }
 
-        settingsClient.checkLocationSettings(settingsRequest)
-                      .addOnSuccessListener(this, locationSettingsResponse -> {
-                          for (OnLocationUpdatesAvailableListener listener : onLocationUpdatesAvailableListeners) {
-                              listener.onLocationUpdatesAvailable();
-                          }
-                      })
-                      .addOnFailureListener(this, e -> {
-                          int statusCode = ((ApiException) e).getStatusCode();
-                          switch (statusCode) {
-                              case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                  LOG.i("Upgrading location settings.");
-                                  try {
-                                      ResolvableApiException rae = (ResolvableApiException) e;
-                                      rae.startResolutionForResult(this, REQUEST_CHECK_SETTINGS);
-                                  } catch (IntentSender.SendIntentException sie) {
-                                      LOG.e("Failed to upgrade location settings.", sie);
-                                  }
-                                  break;
-                              case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                                  LOG.e("Location settings are inadequate.");
-                                  Toast.makeText(this, getString(R.string.toast_location_settings_inadequate),
-                                                 Toast.LENGTH_LONG).show();
-                                  break;
-                              default:
-                                  LOG.e("An unknown error occured.", e);
-                                  break;
-                          }
-                      });
+    @Override
+    public void onLocationSettingsSatisfied() {
+        for (OnLocationUpdatesAvailableListener listener : onLocationUpdatesAvailableListeners) {
+            listener.onLocationUpdatesAvailable();
+        }
+    }
+
+    @Override
+    public void onLocationSettingsNeverFixed() {
+        LOG.e("Location settings are not satisfied. However, we have no way to fix them.");
+        Toast.makeText(this, getString(R.string.toast_location_settings_never_fixed), Toast.LENGTH_LONG).show();
+        finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CHECK_SETTINGS:
+                if (resultCode == RESULT_OK) {
+                    onLocationSettingsSatisfied();
+                } else {
+                    Toast.makeText(this, R.string.toast_enable_location, Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                break;
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
+        }
     }
 
     @Override
