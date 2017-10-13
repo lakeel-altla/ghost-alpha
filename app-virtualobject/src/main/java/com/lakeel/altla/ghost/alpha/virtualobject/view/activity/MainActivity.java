@@ -202,6 +202,11 @@ public final class MainActivity extends AppCompatActivity
         replaceFragmentAndAddToBackStack(DebugSettingsFragment.newInstance());
     }
 
+    @Override
+    public void back() {
+        AppCompatHelper.back(this);
+    }
+
     private void replaceFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                                    .replace(R.id.fragment_container, fragment, fragment.getClass().getName())
