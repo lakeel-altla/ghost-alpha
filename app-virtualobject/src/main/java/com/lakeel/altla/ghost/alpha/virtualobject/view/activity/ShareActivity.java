@@ -12,7 +12,7 @@ import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.component.ActivityComponent;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.module.ActivityModule;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.PatternHelper;
-import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.ObjectEditFragment;
+import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectEditFragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,7 +32,7 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 public class ShareActivity extends AppCompatActivity
         implements ActivityScopeContext,
                    EasyPermissions.PermissionCallbacks,
-                   ObjectEditFragment.FragmentContext {
+                   MyObjectEditFragment.FragmentContext {
 
     private static final Log LOG = LogFactory.getLog(ShareActivity.class);
 
@@ -89,7 +89,7 @@ public class ShareActivity extends AppCompatActivity
         }
 
         if (savedInstanceState == null) {
-            replaceFragment(ObjectEditFragment.newInstance(uriString));
+            replaceFragment(MyObjectEditFragment.newInstanceWithUriString(uriString));
         }
     }
 

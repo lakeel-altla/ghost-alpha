@@ -16,8 +16,10 @@ import com.lakeel.altla.ghost.alpha.virtualobject.di.component.ActivityComponent
 import com.lakeel.altla.ghost.alpha.virtualobject.di.module.ActivityModule;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.OnLocationUpdatesAvailableListener;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.DebugSettingsFragment;
+import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectEditFragment;
+import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectListFragment;
+import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectViewFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.NearbyObjectListFragment;
-import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.ObjectEditFragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -41,7 +43,9 @@ public final class MainActivity extends AppCompatActivity
                    EasyPermissions.PermissionCallbacks,
                    LocationSettingsChecker.LocationSettingsCallbacks,
                    NearbyObjectListFragment.FragmentContext,
-                   ObjectEditFragment.FragmentContext {
+                   MyObjectListFragment.FragmentContext,
+                   MyObjectViewFragment.FragmentContext,
+                   MyObjectEditFragment.FragmentContext {
 
     private static final Log LOG = LogFactory.getLog(MainActivity.class);
 
@@ -193,12 +197,27 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void showObjectEditView() {
-        replaceFragmentAndAddToBackStack(ObjectEditFragment.newInstance());
+    public void showMyObjectListFragment() {
+        replaceFragmentAndAddToBackStack(MyObjectListFragment.newInstance());
     }
 
     @Override
-    public void showDebugSettingsView() {
+    public void showMyObjectViewFragment(@NonNull String key) {
+        replaceFragmentAndAddToBackStack(MyObjectViewFragment.newInstance(key));
+    }
+
+    @Override
+    public void showMyObjectEditFragment() {
+        replaceFragmentAndAddToBackStack(MyObjectEditFragment.newInstance());
+    }
+
+    @Override
+    public void showMyObjectEditFragment(@NonNull String key) {
+        replaceFragmentAndAddToBackStack(MyObjectEditFragment.newInstanceWithKey(key));
+    }
+
+    @Override
+    public void showDebugSettingsFragment() {
         replaceFragmentAndAddToBackStack(DebugSettingsFragment.newInstance());
     }
 

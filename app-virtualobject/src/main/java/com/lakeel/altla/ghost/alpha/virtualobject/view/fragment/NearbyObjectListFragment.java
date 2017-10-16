@@ -290,11 +290,11 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_add_object:
-                fragmentContext.showObjectEditView();
+            case R.id.action_list_my_objects:
+                fragmentContext.showMyObjectListFragment();
                 return true;
             case R.id.action_debug:
-                fragmentContext.showDebugSettingsView();
+                fragmentContext.showDebugSettingsFragment();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -451,9 +451,9 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
 
         void removeOnLocationUpdatesAvailableListener(OnLocationUpdatesAvailableListener listener);
 
-        void showObjectEditView();
+        void showMyObjectListFragment();
 
-        void showDebugSettingsView();
+        void showDebugSettingsFragment();
     }
 
     final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
@@ -484,15 +484,15 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         @Override
         public void onViewRecycled(ViewHolder holder) {
             super.onViewRecycled(holder);
-            holder.imageViewPhoto.setImageDrawable(null);
+            holder.imageViewRichLinkImage.setImageDrawable(null);
         }
 
         @Override
         public void onBindViewHolder(Adapter.ViewHolder holder, int position) {
             Item item = items.get(position);
 
-            richLinkImageLoader.load(item.richLink, holder.imageViewPhoto);
-            holder.textViewName.setText(item.richLink.getTitleOrUri());
+            richLinkImageLoader.load(item.richLink, holder.imageViewRichLinkImage);
+            holder.textViewRichLinkTitle.setText(item.richLink.getTitleOrUri());
             holder.textViewDistance.setText(String.format(getString(R.string.format_nearby_object_distance),
                                                           item.distance));
         }
@@ -504,20 +504,20 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
 
         class ViewHolder extends RecyclerView.ViewHolder {
 
-            ImageView imageViewPhoto;
+            ImageView imageViewRichLinkImage;
 
             ImageView imageViewIcon;
 
-            TextView textViewName;
+            TextView textViewRichLinkTitle;
 
             TextView textViewDistance;
 
             ViewHolder(@NonNull View itemView) {
                 super(itemView);
 
-                imageViewPhoto = itemView.findViewById(R.id.image_view_photo);
+                imageViewRichLinkImage = itemView.findViewById(R.id.image_view_rich_link_image);
                 imageViewIcon = itemView.findViewById(R.id.image_view_icon);
-                textViewName = itemView.findViewById(R.id.text_view_name);
+                textViewRichLinkTitle = itemView.findViewById(R.id.text_view_rich_link_title);
                 textViewDistance = itemView.findViewById(R.id.text_view_distance);
             }
         }

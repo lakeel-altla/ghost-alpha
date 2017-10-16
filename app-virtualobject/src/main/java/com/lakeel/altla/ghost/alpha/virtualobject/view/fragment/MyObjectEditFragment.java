@@ -49,17 +49,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 
-public final class ObjectEditFragment extends Fragment {
+public final class MyObjectEditFragment extends Fragment {
 
-    private static final Log LOG = LogFactory.getLog(ObjectEditFragment.class);
+    private static final Log LOG = LogFactory.getLog(MyObjectEditFragment.class);
 
     private static final int REQUEST_CODE_LOCATION_PICKER = 100;
 
     private static final float DEFAULT_ZOOM_LEVEL = 17;
+
+    private static final String ARG_KEY = "key";
 
     private static final String ARG_URI_STRING = "uriString";
 
@@ -76,6 +76,18 @@ public final class ObjectEditFragment extends Fragment {
 
     private FragmentContext fragmentContext;
 
+    @Nullable
+    private String key;
+
+    @Nullable
+    private String uriString;
+
+    @Nullable
+    private VirtualObject object;
+
+    @Nullable
+    private LatLng location;
+
     private FusedLocationProviderClient fusedLocationProviderClient;
 
     private TextInputLayout textInputLayoutUri;
@@ -86,9 +98,9 @@ public final class ObjectEditFragment extends Fragment {
 
     private Button buttonLoadRichLink;
 
-    private ImageView imageViewPhoto;
+    private ImageView imageViewRichLinkImage;
 
-    private TextView textViewName;
+    private TextView textViewRichLinkTitle;
 
     @Nullable
     private GoogleMap googleMap;
@@ -96,21 +108,27 @@ public final class ObjectEditFragment extends Fragment {
     @Nullable
     private Marker marker;
 
-    @Nullable
-    private LatLng location;
-
     private transient boolean saving;
 
     @NonNull
-    public static ObjectEditFragment newInstance() {
-        return new ObjectEditFragment();
+    public static MyObjectEditFragment newInstance() {
+        return new MyObjectEditFragment();
     }
 
     @NonNull
-    public static ObjectEditFragment newInstance(@NonNull String uriString) {
+    public static MyObjectEditFragment newInstanceWithUriString(@NonNull String uriString) {
         Bundle bundle = new Bundle();
         bundle.putString(ARG_URI_STRING, uriString);
-        ObjectEditFragment fragment = new ObjectEditFragment();
+        MyObjectEditFragment fragment = new MyObjectEditFragment();
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    @NonNull
+    public static MyObjectEditFragment newInstanceWithKey(@NonNull String key) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ARG_KEY, key);
+        MyObjectEditFragment fragment = new MyObjectEditFragment();
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -129,8 +147,19 @@ public final class ObjectEditFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            key = bundle.getString(ARG_KEY);
+            uriString = bundle.getString(ARG_URI_STRING);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_object_edit, container, false);
+        return inflater.inflate(R.layout.fragment_my_object_edit, container, false);
     }
 
     @Override
@@ -143,8 +172,8 @@ public final class ObjectEditFragment extends Fragment {
         textInputLayoutUri = getView().findViewById(R.id.text_input_layout_uri);
         textInputEditTextUri = getView().findViewById(R.id.text_input_edit_text_uri);
         mapView = getView().findViewById(R.id.map_view);
-        imageViewPhoto = getView().findViewById(R.id.image_view_photo);
-        textViewName = getView().findViewById(R.id.text_view_name);
+        imageViewRichLinkImage = getView().findViewById(R.id.image_view_rich_link_image);
+        textViewRichLinkTitle = getView().findViewById(R.id.text_view_rich_link_title);
         buttonLoadRichLink = getView().findViewById(R.id.button_load_rich_link);
 
         textInputEditTextUri.addTextChangedListener(new TextWatcher() {
@@ -215,60 +244,41 @@ public final class ObjectEditFragment extends Fragment {
             startActivityForResult(intent, REQUEST_CODE_LOCATION_PICKER);
         });
 
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            String uriString = bundle.getString(ARG_URI_STRING);
+        if (key == null) {
+            // This is a view to create a new object.
             if (uriString != null) {
                 textInputEditTextUri.setText(uriString);
                 loadRichLink();
             }
-        }
+            validateUri();
+        } else {
+            // This is a view to edit an existing object.
+            virtualObjectApi.findUserObject(CurrentUser.getInstance().getRequiredUserId(), key, object -> {
+                this.object = object;
+                getActivity().invalidateOptionsMenu();
 
-        validateUri();
+                if (object == null) {
+                    LOG.e("No virtual object exists: key = %s", key);
+                } else {
+                    textInputEditTextUri.setText(object.getRequiredUriString());
+                    LatLng location = new LatLng(object.getRequiredGeoPoint().getLatitude(),
+                                                 object.getRequiredGeoPoint().getLongitude());
+                    updateLocation(location, true);
+                }
+
+                validateUri();
+                loadRichLink();
+            }, e -> {
+                LOG.e("Failed to find a virtual object.", e);
+            });
+        }
 
         saving = false;
     }
 
-    private void loadRichLink() {
-        imageViewPhoto.setImageDrawable(null);
-        textViewName.setText(null);
-
-        Editable editable = textInputEditTextUri.getText();
-        String text = editable.toString();
-        String uriString = PatternHelper.parseUriString(text);
-        if (uriString != null) {
-            deferredManager
-                    .when(() -> {
-                        try {
-                            return richLinkParser.parse(uriString);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    })
-                    .done(richLink -> {
-                        richLinkImageLoader.load(richLink, imageViewPhoto);
-                        textViewName.setText(richLink.getTitleOrUri());
-                    })
-                    .fail(e -> {
-                        LOG.e("Failed to load a rich link.", e);
-                        Toast.makeText(getContext(), R.string.toast_failed_to_load_rich_link, Toast.LENGTH_SHORT)
-                             .show();
-                    });
-        }
-    }
-
-    private void validateUri() {
-        Editable editable = textInputEditTextUri.getText();
-        String text = editable.toString();
-        String uriString = PatternHelper.parseUriString(text);
-        String error = (uriString != null) ? null : getString(R.string.input_error_uri);
-        textInputLayoutUri.setError(error);
-        buttonLoadRichLink.setEnabled(error == null);
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.object_edit, menu);
+        inflater.inflate(R.menu.my_object_edit, menu);
     }
 
     @Override
@@ -288,6 +298,41 @@ public final class ObjectEditFragment extends Fragment {
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_save:
+                if (location == null) throw new IllegalStateException("'location' is null.");
+
+                saving = true;
+                getActivity().invalidateOptionsMenu();
+
+                VirtualObject savedObject;
+                if (object == null) {
+                    savedObject = new VirtualObject();
+                    savedObject.setUserId(CurrentUser.getInstance().getRequiredUserId());
+                } else {
+                    savedObject = object;
+                }
+
+                savedObject.setUriString(textInputEditTextUri.getEditableText().toString());
+                savedObject.setGeoPoint(new GeoPoint(location.latitude, location.longitude));
+
+                virtualObjectApi.saveUserObject(savedObject, aVoid -> {
+                    LOG.v("Saved an object: key = %s", savedObject.getKey());
+                    Toast.makeText(getContext(), R.string.toast_saved, Toast.LENGTH_SHORT).show();
+                    fragmentContext.back();
+                }, e -> {
+                    LOG.e("Failed to save an object.", e);
+                    Toast.makeText(getContext(), R.string.toast_save_error, Toast.LENGTH_SHORT).show();
+                    fragmentContext.back();
+                });
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
@@ -298,7 +343,7 @@ public final class ObjectEditFragment extends Fragment {
         super.onStart();
         mapView.onStart();
 
-        getActivity().setTitle(R.string.title_object_edit);
+        getActivity().setTitle(R.string.title_my_object_edit);
         AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
         AppCompatHelper.getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         setHasOptionsMenu(true);
@@ -336,35 +381,6 @@ public final class ObjectEditFragment extends Fragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_save:
-                if (location == null) throw new IllegalStateException("'location' is null.");
-
-                saving = true;
-                getActivity().invalidateOptionsMenu();
-
-                VirtualObject virtualObject = new VirtualObject();
-                virtualObject.setUserId(CurrentUser.getInstance().getRequiredUserId());
-                virtualObject.setUriString(textInputEditTextUri.getEditableText().toString());
-                virtualObject.setGeoPoint(new GeoPoint(location.latitude, location.longitude));
-
-                virtualObjectApi.saveUserObject(virtualObject, aVoid -> {
-                    LOG.v("Saved an object: key = %s", virtualObject.getKey());
-                    Toast.makeText(getContext(), R.string.toast_saved, Toast.LENGTH_SHORT).show();
-                    fragmentContext.back();
-                }, e -> {
-                    LOG.e("Failed to save an object.", e);
-                    Toast.makeText(getContext(), R.string.toast_save_error, Toast.LENGTH_SHORT).show();
-                    fragmentContext.back();
-                });
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -375,6 +391,39 @@ public final class ObjectEditFragment extends Fragment {
                 LOG.d("Picking a location is cancelled.");
             }
         }
+    }
+
+    private void loadRichLink() {
+        imageViewRichLinkImage.setImageDrawable(null);
+        textViewRichLinkTitle.setText(null);
+
+        Editable editable = textInputEditTextUri.getText();
+        String text = editable.toString();
+        String uriString = PatternHelper.parseUriString(text);
+        if (uriString != null) {
+            deferredManager
+                    .when(() -> {
+                        return richLinkParser.parse(uriString);
+                    })
+                    .done(richLink -> {
+                        richLinkImageLoader.load(richLink, imageViewRichLinkImage);
+                        textViewRichLinkTitle.setText(richLink.getTitleOrUri());
+                    })
+                    .fail(e -> {
+                        LOG.e("Failed to load a rich link.", e);
+                        Toast.makeText(getContext(), R.string.toast_failed_to_load_rich_link, Toast.LENGTH_SHORT)
+                             .show();
+                    });
+        }
+    }
+
+    private void validateUri() {
+        Editable editable = textInputEditTextUri.getText();
+        String text = editable.toString();
+        String uriString = PatternHelper.parseUriString(text);
+        String error = (uriString != null) ? null : getString(R.string.input_error_uri);
+        textInputLayoutUri.setError(error);
+        buttonLoadRichLink.setEnabled(error == null);
     }
 
     private void updateLocation(@Nullable LatLng location, boolean adjustZoomLevel) {

@@ -5,8 +5,10 @@ import com.lakeel.altla.ghost.alpha.virtualobject.di.module.ActivityModule;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.activity.MainActivity;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.activity.ShareActivity;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.DebugSettingsFragment;
+import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectEditFragment;
+import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectListFragment;
+import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectViewFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.NearbyObjectListFragment;
-import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.ObjectEditFragment;
 
 import dagger.Subcomponent;
 
@@ -20,7 +22,11 @@ public interface ActivityComponent {
 
     void inject(NearbyObjectListFragment fragment);
 
-    void inject(ObjectEditFragment fragment);
+    void inject(MyObjectListFragment fragment);
+
+    void inject(MyObjectViewFragment fragment);
+
+    void inject(MyObjectEditFragment fragment);
 
     void inject(DebugSettingsFragment fragment);
 }

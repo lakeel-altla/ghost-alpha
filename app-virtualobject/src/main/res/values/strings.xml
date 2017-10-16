@@ -3,10 +3,25 @@
     <string name="app_name">Ghost Virtual Objects</string>
 
     <string name="title_nearby_object_list">Nearby Objects</string>
+    <string name="title_my_object_list">My objects</string>
+    <string name="title_my_object_view">My object</string>
+    <string name="title_my_object_edit">Edit</string>
     <string name="title_debug_settings">Debug Settings</string>
 
+    <string name="action_save">Save</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_list_my_objects">My objects</string>
+    <string name="action_add_object">Add</string>
     <string name="action_debug_settings">Debug Settings</string>
 
+    <string name="toast_saved">Saved.</string>
+    <string name="toast_deleted">Deleted.</string>
+    <string name="toast_save_error">Failed to save.</string>
+    <string name="toast_failed_to_load_rich_link">Failed to load the rich link.</string>
+    <string name="toast_permission_required">The permission is required.</string>
+    <string name="toast_enable_location">Enable the location.</string>
+    <string name="toast_invalid_intent_received">Received an invalid data</string>
     <string name="toast_location_settings_never_fixed">Location settings are inadequate, and cannot be fixed here. Fix
         in
         Settings.
@@ -22,6 +37,10 @@
     <string name="text_view_location_request_priority">The accuracy of the location request</string>
     <string name="text_view_accuracy">Accuracy:</string>
 
+    <string name="text_view_label_location">Location</string>
+    <string name="text_view_label_uri">URI</string>
+    <string name="text_view_label_rich_link">Rich link</string>
+
     <string name="value_not_available">N/A</string>
 
     <string name="format_text_view_search_radius_value">%d meter</string>
@@ -29,19 +48,10 @@
     <string name="format_text_view_location_updates_distance_value">%d meter</string>
     <string name="format_nearby_object_distance">%.1f m</string>
 
-    <string name="edit_text_uri">URL (required)</string>
-    <string name="text_view_location">Location</string>
-    <string name="title_object_edit">Edit</string>
-    <string name="action_save">Save</string>
-    <string name="action_add_object">Add object</string>
-    <string name="toast_save_error">Failed to save.</string>
-    <string name="toast_saved">Saved.</string>
-    <string name="toast_invalid_intent_received">Received an invalid data</string>
+    <string name="hint_uri">URL (required)</string>
     <string name="input_error_uri">Input a valid URL.</string>
+
     <string name="button_pick_location">Pick a location</string>
     <string name="button_load_rich_link">Load the rich link</string>
-    <string name="toast_failed_to_load_rich_link">Failed to load the rich link.</string>
-    <string name="toast_permission_required">The permission is required.</string>
-    <string name="toast_enable_location">Enable the location.</string>
 
 </resources>

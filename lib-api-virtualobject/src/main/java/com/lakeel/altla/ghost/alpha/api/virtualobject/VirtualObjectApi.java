@@ -5,6 +5,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 
@@ -12,13 +13,16 @@ import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.firebase.geofire.GeoQuery;
 import com.firebase.geofire.GeoQueryEventListener;
+import com.firebase.geofire.LocationCallback;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class VirtualObjectApi {
@@ -68,10 +72,66 @@ public class VirtualObjectApi {
                 }
             } else {
                 Exception e = error.toException();
-                LOG.e("Failed to set a geo location: key = " + key, e);
+                LOG.e("Failed to set a location: key = " + key, e);
                 if (onFailureListener != null) onFailureListener.onFailure(e);
             }
         });
+    }
+
+    public void findUserObject(@NonNull String userId,
+                               @NonNull String key,
+                               @Nullable OnSuccessListener<VirtualObject> onSuccessListener,
+                               @Nullable OnFailureListener onFailureListener) {
+        GeoFire geoFire = userGeoFireFactory.create(userId);
+        geoFire.getLocation(key, new LocationCallback() {
+            @Override
+            public void onLocationResult(String key, GeoLocation location) {
+                if (location == null) {
+                    LOG.e("No location exists: key = " + key);
+                } else {
+                    userObjectsReference
+                            .document(key)
+                            .get()
+                            .addOnSuccessListener(snapshot -> {
+                                if (onSuccessListener != null) {
+                                    if (snapshot.exists()) {
+                                        onSuccessListener.onSuccess(snapshot.toObject(VirtualObject.class));
+                                    } else {
+                                        onSuccessListener.onSuccess(null);
+                                    }
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                if (onFailureListener != null) onFailureListener.onFailure(e);
+                            });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                LOG.e("Failed to get a location.", error.toException());
+            }
+        });
+    }
+
+    public void findUserObjects(@NonNull String userId,
+                                @Nullable OnSuccessListener<List<VirtualObject>> onSuccessListener,
+                                @Nullable OnFailureListener onFailureListener) {
+        userObjectsReference
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(snapshots -> {
+                    if (onSuccessListener != null) {
+                        List<VirtualObject> results = new ArrayList<>(snapshots.size());
+                        for (DocumentSnapshot snapshot : snapshots) {
+                            results.add(snapshot.toObject(VirtualObject.class));
+                        }
+                        onSuccessListener.onSuccess(results);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    if (onFailureListener != null) onFailureListener.onFailure(e);
+                });
     }
 
     @NonNull
@@ -82,6 +142,29 @@ public class VirtualObjectApi {
         GeoQuery geoQuery = geoFire.queryAtLocation(geoLocation, ((double) radius) * KILOMETERS_PER_METER);
 
         return new ObjectQuery(geoQuery);
+    }
+
+    public void deleteUserObjects(@NonNull String userId, @NonNull String key,
+                                  @Nullable OnSuccessListener<Void> onSuccessListener,
+                                  @Nullable OnFailureListener onFailureListener) {
+
+        GeoFire geoFire = userGeoFireFactory.create(userId);
+        geoFire.removeLocation(key, (k, error) -> {
+            if (error == null) {
+                userObjectsReference.document(key)
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        if (onSuccessListener != null) onSuccessListener.onSuccess(null);
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        if (onFailureListener != null) onFailureListener.onFailure(e);
+                                    });
+            } else {
+                Exception e = error.toException();
+                LOG.e("Failed to delete a location: key = " + key, e);
+                if (onFailureListener != null) onFailureListener.onFailure(e);
+            }
+        });
     }
 
     public interface OnSuccessListener<T> {
