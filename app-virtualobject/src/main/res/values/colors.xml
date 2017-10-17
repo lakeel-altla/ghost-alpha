@@ -5,9 +5,6 @@
     <color name="app_theme_primary_dark">#303F9F</color>
     <color name="app_theme_accent">#FF4081</color>
 
-    <color name="view_group_accuracy_background">#FF000000</color>
-    <color name="view_group_accuracy_text_color">#FFFFFFFF</color>
-
     <array name="letter_tile_colors">
         <item>#f16364</item>
         <item>#f58559</item>

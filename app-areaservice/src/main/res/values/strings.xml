@@ -9,18 +9,9 @@
     </string>
 
     <string name="title_nearby_area_list">Nearby Areas</string>
-    <string name="title_debug_settings">Debug Settings</string>
 
-    <string name="format_text_view_search_radius_value">%d meter</string>
-    <string name="format_text_view_location_updates_interval_value">%d sec.</string>
     <string name="format_nearby_object_distance">%.1f m</string>
 
-    <string name="text_view_google_map_visible">Show the google map</string>
-    <string name="text_view_search_radius">The search radius:</string>
-    <string name="text_view_location_updates_interval">The location updates interval:</string>
-    <string name="text_view_manual_location_updates_enabled">Enable the manual location updates</string>
-    <string name="text_view_location_updates_distance">The location update distance:</string>
-    <string name="text_view_location_request_priority">The accuracy of the location request</string>
     <string name="text_view_accuracy">Accuracy:</string>
 
     <string name="value_not_available">N/A</string>
