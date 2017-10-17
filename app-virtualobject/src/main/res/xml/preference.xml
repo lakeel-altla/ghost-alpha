@@ -1,9 +1,5 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <SwitchPreference android:key="google_map_visible"
-                      android:title="@string/pref_title_google_map_visible"
-                      android:defaultValue="false"/>
-
     <ListPreference android:key="search_radius"
                     android:title="@string/pref_title_search_radius"
                     android:defaultValue="30"

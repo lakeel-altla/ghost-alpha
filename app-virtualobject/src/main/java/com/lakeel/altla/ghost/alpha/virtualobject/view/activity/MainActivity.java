@@ -14,7 +14,6 @@ import com.lakeel.altla.ghost.alpha.virtualobject.app.MyApplication;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.component.ActivityComponent;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.module.ActivityModule;
-import com.lakeel.altla.ghost.alpha.virtualobject.helper.OnLocationUpdatesAvailableListener;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectEditFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectListFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectViewFragment;
@@ -31,7 +30,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
@@ -52,8 +50,6 @@ public final class MainActivity extends AppCompatActivity
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
     private static final int REQUEST_CHECK_SETTINGS = 2;
-
-    private List<OnLocationUpdatesAvailableListener> onLocationUpdatesAvailableListeners = new ArrayList<>();
 
     private ActivityComponent activityComponent;
 
@@ -159,9 +155,6 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void onLocationSettingsSatisfied() {
-        for (OnLocationUpdatesAvailableListener listener : onLocationUpdatesAvailableListeners) {
-            listener.onLocationUpdatesAvailable();
-        }
     }
 
     @Override
@@ -186,16 +179,6 @@ public final class MainActivity extends AppCompatActivity
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
-    }
-
-    @Override
-    public void addOnLocationUpdatesAvailableListener(OnLocationUpdatesAvailableListener listener) {
-        onLocationUpdatesAvailableListeners.add(listener);
-    }
-
-    @Override
-    public void removeOnLocationUpdatesAvailableListener(OnLocationUpdatesAvailableListener listener) {
-        onLocationUpdatesAvailableListeners.remove(listener);
     }
 
     @Override

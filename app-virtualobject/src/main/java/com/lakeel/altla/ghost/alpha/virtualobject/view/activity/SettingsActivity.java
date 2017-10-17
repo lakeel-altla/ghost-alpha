@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
+import android.view.MenuItem;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
@@ -40,6 +42,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         bindPreferenceSummaryToValue(findPreference(Preferences.KEY_LOCATION_UPDATES_INTERVAL));
         bindPreferenceSummaryToValue(findPreference(Preferences.KEY_LOCATION_UPDATES_DISTANCE));
         bindPreferenceSummaryToValue(findPreference(Preferences.KEY_LOCATION_REQUEST_PRIORITY));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

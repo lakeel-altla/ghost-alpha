@@ -1,17 +1,9 @@
 package com.lakeel.altla.ghost.alpha.virtualobject.view.fragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationAvailability;
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.GeoPoint;
 
 import com.lakeel.altla.android.log.Log;
@@ -19,16 +11,17 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObject;
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
+import com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity;
 import com.lakeel.altla.ghost.alpha.richlink.RichLink;
 import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
-import com.lakeel.altla.ghost.alpha.virtualobject.helper.OnLocationUpdatesAvailableListener;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.Preferences;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.activity.SettingsActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -36,6 +29,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -62,7 +56,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public final class NearbyObjectListFragment extends Fragment implements OnLocationUpdatesAvailableListener {
+public final class NearbyObjectListFragment extends Fragment {
 
     private static final Log LOG = LogFactory.getLog(NearbyObjectListFragment.class);
 
@@ -70,9 +64,9 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
 
     private static final int FASTEST_INTERVAL_SECONDS = 5;
 
-    private static final float DEFAULT_ZOOM_LEVEL = 17;
-
     private static final float[] TEMP_DISTANCE_RESULTS = new float[1];
+
+    private static final int REQUEST_CODE_LOCATION_PICKER = 100;
 
     @Inject
     VirtualObjectApi virtualObjectApi;
@@ -91,17 +85,11 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
-    private LocationCallback locationCallback;
-
     private LocationRequest locationRequest;
 
     private final List<Item> items = new ArrayList<>();
 
     private RecyclerView recyclerView;
-
-    private MapView mapView;
-
-    private TextView textViewAccuracyValue;
 
     @Nullable
     private LatLng location;
@@ -112,12 +100,6 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     @Nullable
     private VirtualObjectApi.ObjectQueryEventListener objectQueryEventListener;
 
-    @Nullable
-    private GoogleMap googleMap;
-
-    @Nullable
-    private Marker marker;
-
     public static NearbyObjectListFragment newInstance() {
         return new NearbyObjectListFragment();
     }
@@ -126,14 +108,12 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     public void onAttach(Context context) {
         super.onAttach(context);
         fragmentContext = (FragmentContext) context;
-        fragmentContext.addOnLocationUpdatesAvailableListener(this);
         ((ActivityScopeContext) context).getActivityComponent().inject(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        fragmentContext.removeOnLocationUpdatesAvailableListener(this);
         fragmentContext = null;
     }
 
@@ -151,145 +131,55 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         recyclerView = getView().findViewById(R.id.recycler_view);
-        textViewAccuracyValue = getView().findViewById(R.id.text_view_accuracy_value);
-        mapView = getView().findViewById(R.id.map_view);
-
         recyclerView.setAdapter(new Adapter());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(googleMap -> {
-            this.googleMap = googleMap;
+        FloatingActionButton floatingActionButton = getView().findViewById(R.id.fab);
+        floatingActionButton.setOnClickListener(v -> {
+            if (preferences.isManualLocationUpdatesEnabled()) {
+                LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getContext())
+                        .setMyLocationEnabled(true)
+                        .setBuildingsEnabled(false)
+                        .setIndoorEnabled(true)
+                        .setTrafficEnabled(false)
+                        .setMapToolbarEnabled(false)
+                        .setZoomControlsEnabled(true)
+                        .setMyLocationButtonEnabled(true)
+                        .setCompassEnabled(true)
+                        .setIndoorLevelPickerEnabled(true)
+                        .setAllGesturesEnabled(true);
 
-            googleMap.getUiSettings().setMapToolbarEnabled(false);
-            googleMap.getUiSettings().setZoomControlsEnabled(true);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(preferences.isManualLocationUpdatesEnabled());
-
-            if (location == null) {
-                googleMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM_LEVEL));
-            } else {
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM_LEVEL));
-
-                if (marker != null) {
-                    marker.remove();
+                if (location != null) {
+                    builder.setLocation(location.latitude, location.longitude);
                 }
-                marker = googleMap.addMarker(new MarkerOptions().position(location));
+
+                Intent intent = builder.build();
+                startActivityForResult(intent, REQUEST_CODE_LOCATION_PICKER);
+            } else {
+                if (fragmentContext.checkLocationPermission()) {
+                    fusedLocationProviderClient
+                            .getLastLocation()
+                            .addOnSuccessListener(getActivity(), location -> {
+                                if (location == null) {
+                                    LOG.w("The last location could not be resolved.");
+                                } else {
+                                    updateLocation(location);
+                                }
+                            })
+                            .addOnFailureListener(getActivity(), e -> {
+                                LOG.e("Failed to get the last location.", e);
+                            });
+                } else {
+                    fragmentContext.requestLocationPermission();
+                }
             }
 
-            googleMap.setOnMapClickListener(latLng -> {
-                if (preferences.isManualLocationUpdatesEnabled()) {
-                    setMyLocation(latLng);
-                }
-            });
-
-            googleMap.setOnMyLocationButtonClickListener(() -> {
-                if (preferences.isManualLocationUpdatesEnabled()) {
-                    if (fragmentContext.checkLocationPermission()) {
-                        fusedLocationProviderClient
-                                .getLastLocation()
-                                .addOnSuccessListener(getActivity(), location -> {
-                                    if (location == null) {
-                                        if (marker != null) {
-                                            marker.remove();
-                                            marker = null;
-                                        }
-                                    } else {
-                                        setMyLocation(location);
-                                    }
-                                })
-                                .addOnFailureListener(getActivity(), e -> {
-                                    LOG.e("Failed to get the last location.", e);
-                                });
-                    } else {
-                        fragmentContext.requestLocationPermission();
-                    }
-                }
-                return false;
-            });
-
-            if (fragmentContext.checkLocationPermission()) {
-                // Enable the location layer.
-                googleMap.setMyLocationEnabled(true);
-            } else {
-                fragmentContext.requestLocationPermission();
-            }
         });
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.nearby_object_list, menu);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mapView.onStart();
-
-        getActivity().setTitle(R.string.title_nearby_object_list);
-        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(false);
-        setHasOptionsMenu(true);
-
-        mapView.setVisibility(preferences.isGoogleMapVisible() ? View.VISIBLE : View.GONE);
-
-        textViewAccuracyValue.setText(R.string.value_not_available);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mapView.onStop();
-        compositeDisposable.clear();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mapView.onResume();
-
-        if (fragmentContext.checkLocationPermission()) {
-            initializeLocationRequest();
-        } else {
-            fragmentContext.requestLocationPermission();
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
-
-        if (locationCallback != null) {
-            fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-            locationCallback = null;
-        }
-
-        if (objectQuery != null) {
-            if (objectQueryEventListener != null) {
-                objectQuery.removeObjectQueryEventListener(objectQueryEventListener);
-                objectQueryEventListener = null;
-            }
-            objectQuery = null;
-            items.clear();
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
     }
 
     @Override
@@ -307,27 +197,59 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     }
 
     @Override
-    public void onLocationUpdatesAvailable() {
-        if (!preferences.isManualLocationUpdatesEnabled()) {
-            if (fragmentContext.checkLocationPermission()) {
-                locationCallback = new LocationCallback() {
-                    @Override
-                    public void onLocationResult(LocationResult locationResult) {
-                        setMyLocation(locationResult.getLastLocation());
-                    }
+    public void onStart() {
+        super.onStart();
 
-                    @Override
-                    public void onLocationAvailability(LocationAvailability locationAvailability) {
-                        if (locationAvailability.isLocationAvailable()) {
-                            LOG.i("The location is available.");
-                        } else {
-                            LOG.w("The location is not available.");
-                        }
-                    }
-                };
-                fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        getActivity().setTitle(R.string.title_nearby_object_list);
+        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(false);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        compositeDisposable.clear();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (fragmentContext.checkLocationPermission()) {
+            initializeLocationRequest();
+        } else {
+            fragmentContext.requestLocationPermission();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (objectQuery != null) {
+            if (objectQueryEventListener != null) {
+                objectQuery.removeObjectQueryEventListener(objectQueryEventListener);
+                objectQueryEventListener = null;
+            }
+            objectQuery = null;
+            items.clear();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE_LOCATION_PICKER) {
+            if (resultCode == Activity.RESULT_OK) {
+                LatLng location = LocationPickerActivity.getLocation(data);
+                if (location == null) {
+                    LOG.w("LocationPickerActivity returns null as a location.");
+                } else {
+                    updateLocation(location);
+                }
             } else {
-                fragmentContext.requestLocationPermission();
+                LOG.d("Picking a location is cancelled.");
             }
         }
     }
@@ -342,26 +264,11 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         fragmentContext.checkLocationSettings(locationRequest);
     }
 
-    private void setMyLocation(@NonNull Location location) {
-        if (location.hasAccuracy()) {
-            textViewAccuracyValue.setText(String.valueOf(location.getAccuracy()));
-        } else {
-            textViewAccuracyValue.setText(R.string.value_not_available);
-        }
-
-        setMyLocation(new LatLng(location.getLatitude(), location.getLongitude()));
+    private void updateLocation(@NonNull Location location) {
+        updateLocation(new LatLng(location.getLatitude(), location.getLongitude()));
     }
 
-    private void setMyLocation(@NonNull LatLng location) {
-        if (googleMap != null) {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));
-
-            if (marker != null) {
-                marker.remove();
-            }
-            marker = googleMap.addMarker(new MarkerOptions().position(location));
-        }
-
+    private void updateLocation(@NonNull LatLng location) {
         boolean locationChanged = false;
 
         if (this.location == null) {
@@ -449,10 +356,6 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         void requestLocationPermission();
 
         void checkLocationSettings(LocationRequest locationRequest);
-
-        void addOnLocationUpdatesAvailableListener(OnLocationUpdatesAvailableListener listener);
-
-        void removeOnLocationUpdatesAvailableListener(OnLocationUpdatesAvailableListener listener);
 
         void showMyObjectListFragment();
     }

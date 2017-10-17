@@ -131,6 +131,9 @@ public class MyObjectListFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+        items.clear();
+        recyclerView.getAdapter().notifyDataSetChanged();
+
         virtualObjectApi.findUserObjects(
                 CurrentUser.getInstance().getRequiredUserId(),
                 objects -> {

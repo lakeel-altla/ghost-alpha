@@ -44,7 +44,6 @@
     <string name="button_pick_location">Pick a location</string>
     <string name="button_load_rich_link">Load the rich link</string>
 
-    <string name="pref_title_google_map_visible">Show the google map</string>
     <string name="pref_title_search_radius">The search radius</string>
     <string-array name="pref_entries_search_radius">
         <item>30 meters</item>
