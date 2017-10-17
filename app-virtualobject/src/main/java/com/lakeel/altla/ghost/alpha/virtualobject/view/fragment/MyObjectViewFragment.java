@@ -16,6 +16,8 @@ import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.richlink.RichLink;
 import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
+import com.lakeel.altla.ghost.alpha.viewhelper.BundleHelper;
+import com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
@@ -109,10 +111,8 @@ public class MyObjectViewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = getArguments();
-        if (arguments == null) throw new IllegalStateException("'arguments' is null.");
-
-        key = arguments.getString(ARG_KEY);
+        Bundle arguments = FragmentHelper.getRequiredArguments(this);
+        key = BundleHelper.getRequiredString(arguments, ARG_KEY);
     }
 
     @Override
