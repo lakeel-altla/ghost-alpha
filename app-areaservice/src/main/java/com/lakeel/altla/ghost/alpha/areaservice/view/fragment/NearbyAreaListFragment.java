@@ -24,9 +24,6 @@ import com.lakeel.altla.ghost.alpha.richlink.RichLink;
 import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 
-import org.jdeferred.DeferredManager;
-import org.jdeferred.android.AndroidDeferredManager;
-
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
@@ -51,6 +48,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.disposables.CompositeDisposable;
+
 public final class NearbyAreaListFragment extends Fragment implements OnLocationUpdatesAvailableListener {
 
     private static final Log LOG = LogFactory.getLog(NearbyAreaListFragment.class);
@@ -69,7 +68,7 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
     @Inject
     RichLinkImageLoader richLinkImageLoader;
 
-    private final DeferredManager deferredManager = new AndroidDeferredManager();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private FragmentContext fragmentContext;
 
@@ -225,6 +224,7 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
     public void onStop() {
         super.onStop();
         mapView.onStop();
+        compositeDisposable.clear();
     }
 
     @Override

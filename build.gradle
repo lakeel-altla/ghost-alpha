@@ -27,7 +27,6 @@ allprojects {
         daggerVersion = '2.10'
         easypermissionsVersion = '1.0.1'
         discreteSeekbarVersion = '1.0.1'
-        jdeferredVersion = '1.2.6'
         picassoVersion = '2.5.2'
         geofireVersion = '2.1.2'
         jsoupVersion = '1.9.2'
