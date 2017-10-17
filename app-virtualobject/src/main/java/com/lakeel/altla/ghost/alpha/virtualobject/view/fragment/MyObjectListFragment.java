@@ -6,7 +6,7 @@ import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObject;
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.richlink.RichLink;
-import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
+import com.lakeel.altla.ghost.alpha.richlink.RichLinkLoader;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
@@ -48,7 +48,7 @@ public class MyObjectListFragment extends Fragment {
     VirtualObjectApi virtualObjectApi;
 
     @Inject
-    RichLinkParser richLinkParser;
+    RichLinkLoader richLinkLoader;
 
     @Inject
     RichLinkImageLoader richLinkImageLoader;
@@ -259,7 +259,7 @@ public class MyObjectListFragment extends Fragment {
 
         void loadRichLink() throws IOException {
             String uriString = object.getRequiredUriString();
-            richLink = richLinkParser.parse(uriString);
+            richLink = richLinkLoader.load(uriString);
         }
     }
 }

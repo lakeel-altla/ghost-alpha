@@ -21,7 +21,7 @@ import com.lakeel.altla.ghost.alpha.areaservice.helper.Preferences;
 import com.lakeel.altla.ghost.alpha.areaservice.helper.OnLocationUpdatesAvailableListener;
 import com.lakeel.altla.ghost.alpha.areaservice.helper.RichLinkImageLoader;
 import com.lakeel.altla.ghost.alpha.richlink.RichLink;
-import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
+import com.lakeel.altla.ghost.alpha.richlink.RichLinkLoader;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 
 import android.content.Context;
@@ -63,7 +63,7 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
     private static final float[] TEMP_DISTANCE_RESULTS = new float[1];
 
     @Inject
-    RichLinkParser richLinkParser;
+    RichLinkLoader richLinkLoader;
 
     @Inject
     RichLinkImageLoader richLinkImageLoader;
@@ -378,7 +378,7 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
 //                                recyclerView.getAdapter().notifyDataSetChanged();
 //                            })
 //                            .fail(e -> {
-//                                LOG.w("Failed to parse the rich link: " + object.getRequiredUriString(), e);
+//                                LOG.w("Failed to load the rich link: " + object.getRequiredUriString(), e);
 //                            });
 //                }
 //
@@ -452,7 +452,7 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
                 Item item = items.get(position);
 
 //                String uriString = item.object.getRequiredUriString();
-//                Uri uri = Uri.parse(uriString);
+//                Uri uri = Uri.load(uriString);
 //
 //                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 //                startActivity(intent);
@@ -525,7 +525,7 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
 
         void loadRichLink() throws IOException {
 //            String uriString = object.getRequiredUriString();
-//            richLink = richLinkParser.parse(uriString);
+//            richLink = richLinkParser.load(uriString);
         }
     }
 

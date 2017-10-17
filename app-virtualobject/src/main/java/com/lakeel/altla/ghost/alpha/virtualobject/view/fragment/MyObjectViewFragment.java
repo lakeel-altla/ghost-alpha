@@ -14,7 +14,7 @@ import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObject;
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.richlink.RichLink;
-import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
+import com.lakeel.altla.ghost.alpha.richlink.RichLinkLoader;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.lakeel.altla.ghost.alpha.viewhelper.BundleHelper;
 import com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper;
@@ -57,7 +57,7 @@ public class MyObjectViewFragment extends Fragment {
     VirtualObjectApi virtualObjectApi;
 
     @Inject
-    RichLinkParser richLinkParser;
+    RichLinkLoader richLinkLoader;
 
     @Inject
     RichLinkImageLoader richLinkImageLoader;
@@ -153,7 +153,7 @@ public class MyObjectViewFragment extends Fragment {
 
                 Disposable disposable = Single
                         .<RichLink>create(e -> {
-                            RichLink richLink = richLinkParser.parse(object.getRequiredUriString());
+                            RichLink richLink = richLinkLoader.load(object.getRequiredUriString());
                             e.onSuccess(richLink);
                         })
                         .subscribeOn(Schedulers.io())

@@ -4,7 +4,7 @@ import com.lakeel.altla.ghost.alpha.areaservice.R;
 import com.lakeel.altla.ghost.alpha.areaservice.app.MyApplication;
 import com.lakeel.altla.ghost.alpha.areaservice.helper.LinkLetterTileFactory;
 import com.lakeel.altla.ghost.alpha.areaservice.helper.ObjectColorSource;
-import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
+import com.lakeel.altla.ghost.alpha.richlink.RichLinkLoader;
 
 import android.support.annotation.NonNull;
 
@@ -32,8 +32,8 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    RichLinkParser provideRichLinkParser() {
-        return new RichLinkParser.Builder().build();
+    RichLinkLoader provideRichLinkParser() {
+        return new RichLinkLoader.Builder().build();
     }
 
     @Singleton

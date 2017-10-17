@@ -13,7 +13,7 @@ import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity;
 import com.lakeel.altla.ghost.alpha.richlink.RichLink;
-import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
+import com.lakeel.altla.ghost.alpha.richlink.RichLinkLoader;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
@@ -72,7 +72,7 @@ public final class NearbyObjectListFragment extends Fragment {
     VirtualObjectApi virtualObjectApi;
 
     @Inject
-    RichLinkParser richLinkParser;
+    RichLinkLoader richLinkLoader;
 
     @Inject
     RichLinkImageLoader richLinkImageLoader;
@@ -303,7 +303,7 @@ public final class NearbyObjectListFragment extends Fragment {
                                 Collections.sort(items, ItemComparator.INSTANCE);
                                 recyclerView.getAdapter().notifyDataSetChanged();
                             }, e -> {
-                                LOG.w("Failed to parse the rich link: " + object.getRequiredUriString(), e);
+                                LOG.w("Failed to load the rich link: " + object.getRequiredUriString(), e);
                             });
                     compositeDisposable.add(disposable);
                 }
@@ -449,7 +449,7 @@ public final class NearbyObjectListFragment extends Fragment {
 
         void loadRichLink() throws IOException {
             String uriString = object.getRequiredUriString();
-            richLink = richLinkParser.parse(uriString);
+            richLink = richLinkLoader.load(uriString);
         }
     }
 

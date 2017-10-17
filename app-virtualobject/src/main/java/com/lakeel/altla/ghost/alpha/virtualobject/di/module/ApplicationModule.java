@@ -1,7 +1,7 @@
 package com.lakeel.altla.ghost.alpha.virtualobject.di.module;
 
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
-import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
+import com.lakeel.altla.ghost.alpha.richlink.RichLinkLoader;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.app.MyApplication;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.LinkLetterTileFactory;
@@ -39,8 +39,8 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    RichLinkParser provideRichLinkParser() {
-        return new RichLinkParser.Builder().build();
+    RichLinkLoader provideRichLinkParser() {
+        return new RichLinkLoader.Builder().build();
     }
 
     @Singleton
