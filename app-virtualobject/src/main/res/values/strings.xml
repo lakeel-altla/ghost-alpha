@@ -1,12 +1,12 @@
 <resources>
 
     <string name="app_name">Ghost Virtual Objects</string>
+    <string name="activity_name_settings">Settings</string>
 
     <string name="title_nearby_object_list">Nearby Objects</string>
     <string name="title_my_object_list">My objects</string>
     <string name="title_my_object_view">My object</string>
     <string name="title_my_object_edit">Edit</string>
-    <string name="title_debug_settings">Debug Settings</string>
 
     <string name="action_save">Save</string>
     <string name="action_edit">Edit</string>
@@ -29,23 +29,13 @@
     <string name="rationale_location">This app would like to access this device\'s location to manage virtual objects.
     </string>
 
-    <string name="text_view_google_map_visible">Show the google map</string>
-    <string name="text_view_search_radius">The search radius:</string>
-    <string name="text_view_location_updates_interval">The location updates interval:</string>
-    <string name="text_view_manual_location_updates_enabled">Enable the manual location updates</string>
-    <string name="text_view_location_updates_distance">The location update distance:</string>
-    <string name="text_view_location_request_priority">The accuracy of the location request</string>
     <string name="text_view_accuracy">Accuracy:</string>
 
     <string name="text_view_label_location">Location</string>
     <string name="text_view_label_uri">URI</string>
-    <string name="text_view_label_rich_link">Rich link</string>
 
     <string name="value_not_available">N/A</string>
 
-    <string name="format_text_view_search_radius_value">%d meter</string>
-    <string name="format_text_view_location_updates_interval_value">%d sec.</string>
-    <string name="format_text_view_location_updates_distance_value">%d meter</string>
     <string name="format_nearby_object_distance">%.1f m</string>
 
     <string name="hint_uri">URL (required)</string>
@@ -53,5 +43,56 @@
 
     <string name="button_pick_location">Pick a location</string>
     <string name="button_load_rich_link">Load the rich link</string>
+
+    <string name="pref_title_google_map_visible">Show the google map</string>
+    <string name="pref_title_search_radius">The search radius</string>
+    <string-array name="pref_entries_search_radius">
+        <item>30 meters</item>
+        <item>50 meters</item>
+        <item>100 meters</item>
+    </string-array>
+    <string-array name="pref_values_search_radius">
+        <item>30</item>
+        <item>50</item>
+        <item>100</item>
+    </string-array>
+    <string name="pref_title_location_update_interval">The location updates interval</string>
+    <string-array name="pref_entries_location_update_interval">
+        <item>5 sec</item>
+        <item>10 sec</item>
+        <item>30 sec</item>
+        <item>60 sec</item>
+    </string-array>
+    <string-array name="pref_values_location_update_interval">
+        <item>5</item>
+        <item>10</item>
+        <item>30</item>
+        <item>60</item>
+    </string-array>
+    <string name="pref_title_location_update_distance">The location update distance</string>
+    <string-array name="pref_entries_location_update_distance">
+        <item>1 meter</item>
+        <item>2 meters</item>
+        <item>5 meters</item>
+    </string-array>
+    <string-array name="pref_values_location_update_distance">
+        <item>1</item>
+        <item>2</item>
+        <item>5</item>
+    </string-array>
+    <string name="pref_title_manual_location_updates_enabled">Enable the manual location updates</string>
+    <string name="pref_title_location_request_priority">The location request priority</string>
+    <string-array name="pref_entries_location_request_priority">
+        <item>High accuracy</item>
+        <item>Balanced power accuracy</item>
+        <item>Low power</item>
+        <item>No power</item>
+    </string-array>
+    <string-array name="pref_values_location_request_priority">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 
 </resources>

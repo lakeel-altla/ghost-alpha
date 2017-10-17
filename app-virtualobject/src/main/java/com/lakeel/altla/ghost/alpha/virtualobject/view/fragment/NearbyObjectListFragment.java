@@ -24,9 +24,10 @@ import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
-import com.lakeel.altla.ghost.alpha.virtualobject.helper.DebugPreferences;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.OnLocationUpdatesAvailableListener;
+import com.lakeel.altla.ghost.alpha.virtualobject.helper.Preferences;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
+import com.lakeel.altla.ghost.alpha.virtualobject.view.activity.SettingsActivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -86,7 +87,7 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
 
     private FragmentContext fragmentContext;
 
-    private DebugPreferences debugPreferences;
+    private Preferences preferences;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -146,7 +147,7 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         super.onActivityCreated(savedInstanceState);
         if (getView() == null) throw new IllegalStateException("The root view could not be found.");
 
-        debugPreferences = new DebugPreferences(this);
+        preferences = new Preferences(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         recyclerView = getView().findViewById(R.id.recycler_view);
@@ -162,7 +163,7 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
 
             googleMap.getUiSettings().setMapToolbarEnabled(false);
             googleMap.getUiSettings().setZoomControlsEnabled(true);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(debugPreferences.isManualLocationUpdatesEnabled());
+            googleMap.getUiSettings().setMyLocationButtonEnabled(preferences.isManualLocationUpdatesEnabled());
 
             if (location == null) {
                 googleMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM_LEVEL));
@@ -176,13 +177,13 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
             }
 
             googleMap.setOnMapClickListener(latLng -> {
-                if (debugPreferences.isManualLocationUpdatesEnabled()) {
+                if (preferences.isManualLocationUpdatesEnabled()) {
                     setMyLocation(latLng);
                 }
             });
 
             googleMap.setOnMyLocationButtonClickListener(() -> {
-                if (debugPreferences.isManualLocationUpdatesEnabled()) {
+                if (preferences.isManualLocationUpdatesEnabled()) {
                     if (fragmentContext.checkLocationPermission()) {
                         fusedLocationProviderClient
                                 .getLastLocation()
@@ -235,7 +236,7 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(false);
         setHasOptionsMenu(true);
 
-        mapView.setVisibility(debugPreferences.isGoogleMapVisible() ? View.VISIBLE : View.GONE);
+        mapView.setVisibility(preferences.isGoogleMapVisible() ? View.VISIBLE : View.GONE);
 
         textViewAccuracyValue.setText(R.string.value_not_available);
     }
@@ -298,7 +299,7 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
                 fragmentContext.showMyObjectListFragment();
                 return true;
             case R.id.action_debug:
-                fragmentContext.showDebugSettingsFragment();
+                getActivity().startActivity(new Intent(getActivity(), SettingsActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -307,7 +308,7 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
 
     @Override
     public void onLocationUpdatesAvailable() {
-        if (!debugPreferences.isManualLocationUpdatesEnabled()) {
+        if (!preferences.isManualLocationUpdatesEnabled()) {
             if (fragmentContext.checkLocationPermission()) {
                 locationCallback = new LocationCallback() {
                     @Override
@@ -334,8 +335,8 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     private void initializeLocationRequest() {
         locationRequest = new LocationRequest();
 
-        locationRequest.setPriority(debugPreferences.getLocationRequestPriority());
-        locationRequest.setInterval(debugPreferences.getLocationUpdatesInterval() * MILLIS_1000);
+        locationRequest.setPriority(preferences.getLocationRequestPriority());
+        locationRequest.setInterval(preferences.getLocationUpdatesInterval() * MILLIS_1000);
         locationRequest.setFastestInterval(FASTEST_INTERVAL_SECONDS * MILLIS_1000);
 
         fragmentContext.checkLocationSettings(locationRequest);
@@ -372,7 +373,7 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         }
 
         if (objectQuery == null) {
-            int radius = debugPreferences.getSearchRadius();
+            int radius = preferences.getSearchRadius();
             GeoPoint center = new GeoPoint(location.latitude, location.longitude);
             objectQuery = virtualObjectApi.queryUserObjects(CurrentUser.getInstance().getRequiredUserId(),
                                                             center, radius);
@@ -454,8 +455,6 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
         void removeOnLocationUpdatesAvailableListener(OnLocationUpdatesAvailableListener listener);
 
         void showMyObjectListFragment();
-
-        void showDebugSettingsFragment();
     }
 
     final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {

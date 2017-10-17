@@ -15,7 +15,6 @@ import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.component.ActivityComponent;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.module.ActivityModule;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.OnLocationUpdatesAvailableListener;
-import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.DebugSettingsFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectEditFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectListFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectViewFragment;
@@ -24,6 +23,7 @@ import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.NearbyObjectList
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -77,6 +77,8 @@ public final class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        PreferenceManager.setDefaultValues(this, R.xml.preference, false);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
@@ -85,14 +87,14 @@ public final class MainActivity extends AppCompatActivity
         firebaseAuth.signInAnonymously()
                     .addOnSuccessListener(this, authResult -> {
                         LOG.i("Signed in anonymously: userId = %s", CurrentUser.getInstance().getRequiredUserId());
+
+                        if (savedInstanceState == null) {
+                            replaceFragment(NearbyObjectListFragment.newInstance());
+                        }
                     })
                     .addOnFailureListener(this, e -> {
                         LOG.e("Failed to sign-in anonymously.", e);
                     });
-
-        if (savedInstanceState == null) {
-            replaceFragment(NearbyObjectListFragment.newInstance());
-        }
     }
 
     @Override
@@ -214,11 +216,6 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public void showMyObjectEditFragment(@NonNull String key) {
         replaceFragmentAndAddToBackStack(MyObjectEditFragment.newInstanceWithKey(key));
-    }
-
-    @Override
-    public void showDebugSettingsFragment() {
-        replaceFragmentAndAddToBackStack(DebugSettingsFragment.newInstance());
     }
 
     @Override

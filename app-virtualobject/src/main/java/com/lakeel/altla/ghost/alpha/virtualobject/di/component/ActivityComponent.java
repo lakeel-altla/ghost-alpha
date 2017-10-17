@@ -4,7 +4,6 @@ import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScope;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.module.ActivityModule;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.activity.MainActivity;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.activity.ShareActivity;
-import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.DebugSettingsFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectEditFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectListFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectViewFragment;
@@ -27,6 +26,4 @@ public interface ActivityComponent {
     void inject(MyObjectViewFragment fragment);
 
     void inject(MyObjectEditFragment fragment);
-
-    void inject(DebugSettingsFragment fragment);
 }

@@ -25,6 +25,13 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".view.activity.SettingsActivity"
+                  android:label="@string/activity_name_settings"
+                  android:theme="@style/AppThemeSettings">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                       android:value=".view.activity.MainActivity"/>
+        </activity>
+
         <activity android:name=".view.activity.ShareActivity"
                   android:launchMode="singleInstance">
             <intent-filter>
