@@ -5,7 +5,7 @@
 
     <string name="title_nearby_place_list">Nearby Places</string>
 
-    <string name="action_debug_settings">Debug Settings</string>
+    <string name="action_settings">Settings</string>
 
     <string name="text_view_accuracy">Accuracy:</string>
 

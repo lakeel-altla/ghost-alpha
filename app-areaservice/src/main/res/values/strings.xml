@@ -26,6 +26,6 @@
     <string name="value_not_available">N/A</string>
 
     <string name="action_add_area">Add area</string>
-    <string name="action_debug_settings">Debug Settings</string>
+    <string name="action_settings">Settings</string>
 
 </resources>

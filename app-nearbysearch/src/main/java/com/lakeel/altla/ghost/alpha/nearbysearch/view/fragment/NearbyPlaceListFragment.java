@@ -211,7 +211,7 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_debug:
+            case R.id.action_settings:
                 getActivity().startActivity(new Intent(getActivity(), SettingsActivity.class));
 //                fragmentContext.showDebugView();
                 return true;

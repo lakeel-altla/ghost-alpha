@@ -298,7 +298,7 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
             case R.id.action_list_my_objects:
                 fragmentContext.showMyObjectListFragment();
                 return true;
-            case R.id.action_debug:
+            case R.id.action_settings:
                 getActivity().startActivity(new Intent(getActivity(), SettingsActivity.class));
                 return true;
             default:

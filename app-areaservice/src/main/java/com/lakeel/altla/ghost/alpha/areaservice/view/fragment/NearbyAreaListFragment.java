@@ -277,7 +277,7 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
             case R.id.action_add_object:
                 // TODO
                 return true;
-            case R.id.action_debug:
+            case R.id.action_settings:
                 // TODO
                 return true;
             default:
