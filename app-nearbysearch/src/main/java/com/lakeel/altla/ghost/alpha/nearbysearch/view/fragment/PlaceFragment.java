@@ -28,9 +28,9 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public final class NearbyPlaceFragment extends Fragment {
+public final class PlaceFragment extends Fragment {
 
-    private static final Log LOG = LogFactory.getLog(NearbyPlaceFragment.class);
+    private static final Log LOG = LogFactory.getLog(PlaceFragment.class);
 
     @Inject
     PlaceWebApi placeWebApi;
@@ -44,8 +44,8 @@ public final class NearbyPlaceFragment extends Fragment {
     private TextView textViewDetailsJson;
 
     @NonNull
-    public static NearbyPlaceFragment newInstance(@NonNull String placeId, @NonNull String name) {
-        NearbyPlaceFragment fragment = new NearbyPlaceFragment();
+    public static PlaceFragment newInstance(@NonNull String placeId, @NonNull String name) {
+        PlaceFragment fragment = new PlaceFragment();
         Arguments arguments = new Arguments().setPlaceId(placeId)
                                              .setName(name);
         fragment.setArguments(arguments.bundle);
@@ -68,7 +68,7 @@ public final class NearbyPlaceFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_nearby_place, container, false);
+        return inflater.inflate(R.layout.fragment_place, container, false);
     }
 
     @Override

@@ -12,13 +12,13 @@ import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.nearbysearch.di.component.ActivityComponent;
 import com.lakeel.altla.ghost.alpha.nearbysearch.di.module.ActivityModule;
 import com.lakeel.altla.ghost.alpha.nearbysearch.helper.OnLocationUpdatesAvailableListener;
-import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.DebugSettingsFragment;
-import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.NearbyPlaceFragment;
 import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.NearbyPlaceListFragment;
+import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.PlaceFragment;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -59,6 +59,8 @@ public final class MainActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        PreferenceManager.setDefaultValues(this, R.xml.preference, false);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -171,13 +173,8 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void showDebugView() {
-        replaceFragmentAndAddToBackStack(DebugSettingsFragment.newInstance());
-    }
-
-    @Override
-    public void showNearbyPlaceView(@NonNull String placeId, @NonNull String name) {
-        replaceFragmentAndAddToBackStack(NearbyPlaceFragment.newInstance(placeId, name));
+    public void showPlaceFragment(@NonNull String placeId, @NonNull String name) {
+        replaceFragmentAndAddToBackStack(PlaceFragment.newInstance(placeId, name));
     }
 
     private void replaceFragment(Fragment fragment) {

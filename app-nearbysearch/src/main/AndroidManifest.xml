@@ -19,6 +19,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".view.activity.SettingsActivity"
+                  android:label="@string/activity_name_settings"
+                  android:theme="@style/AppThemeSettings">
+            <meta-data android:name="android.support.PARENT_ACTIVITY"
+                       android:value=".view.activity.MainActivity"/>
+        </activity>
         <meta-data android:name="com.google.android.geo.API_KEY"
                    android:value="@string/google_api_key"/>
     </application>

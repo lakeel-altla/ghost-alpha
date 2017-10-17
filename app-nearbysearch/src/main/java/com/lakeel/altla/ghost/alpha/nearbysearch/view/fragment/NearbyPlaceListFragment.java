@@ -22,8 +22,9 @@ import com.lakeel.altla.ghost.alpha.google.place.web.Place;
 import com.lakeel.altla.ghost.alpha.google.place.web.PlaceWebApi;
 import com.lakeel.altla.ghost.alpha.nearbysearch.R;
 import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScopeContext;
-import com.lakeel.altla.ghost.alpha.nearbysearch.helper.DebugPreferences;
+import com.lakeel.altla.ghost.alpha.nearbysearch.helper.Preferences;
 import com.lakeel.altla.ghost.alpha.nearbysearch.helper.OnLocationUpdatesAvailableListener;
+import com.lakeel.altla.ghost.alpha.nearbysearch.view.activity.SettingsActivity;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.squareup.picasso.Picasso;
 
@@ -76,7 +77,7 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
 
     private FragmentContext fragmentContext;
 
-    private DebugPreferences debugPreferences;
+    private Preferences preferences;
 
     private RecyclerView recyclerView;
 
@@ -133,7 +134,7 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
         super.onActivityCreated(savedInstanceState);
         if (getView() == null) throw new IllegalStateException("The root view could not be found.");
 
-        debugPreferences = new DebugPreferences(this);
+        preferences = new Preferences(this);
 
         recyclerView = getView().findViewById(R.id.recycler_view);
         mapView = getView().findViewById(R.id.map_view);
@@ -147,7 +148,7 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
             this.googleMap = googleMap;
 
             googleMap.getUiSettings().setZoomControlsEnabled(true);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(debugPreferences.isManualLocationUpdatesEnabled());
+            googleMap.getUiSettings().setMyLocationButtonEnabled(preferences.isManualLocationUpdatesEnabled());
 
             if (queryLocation == null) {
                 googleMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM_LEVEL));
@@ -161,13 +162,13 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
             }
 
             googleMap.setOnMapClickListener(latLng -> {
-                if (debugPreferences.isManualLocationUpdatesEnabled()) {
+                if (preferences.isManualLocationUpdatesEnabled()) {
                     setMyLocation(latLng);
                 }
             });
 
             googleMap.setOnMyLocationButtonClickListener(() -> {
-                if (debugPreferences.isManualLocationUpdatesEnabled()) {
+                if (preferences.isManualLocationUpdatesEnabled()) {
                     if (fragmentContext.checkLocationPermission()) {
                         fusedLocationProviderClient
                                 .getLastLocation()
@@ -208,6 +209,18 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_debug:
+                getActivity().startActivity(new Intent(getActivity(), SettingsActivity.class));
+//                fragmentContext.showDebugView();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
@@ -222,7 +235,7 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
         AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(false);
         setHasOptionsMenu(true);
 
-        mapView.setVisibility(debugPreferences.isGoogleMapVisible() ? View.VISIBLE : View.GONE);
+        mapView.setVisibility(preferences.isGoogleMapVisible() ? View.VISIBLE : View.GONE);
 
         textViewAccuracyValue.setText(R.string.value_not_available);
     }
@@ -270,19 +283,8 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_debug:
-                fragmentContext.showDebugView();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
     public void onLocationUpdatesAvailable() {
-        if (!debugPreferences.isManualLocationUpdatesEnabled()) {
+        if (!preferences.isManualLocationUpdatesEnabled()) {
             if (fragmentContext.checkLocationPermission()) {
                 locationCallback = new LocationCallback() {
                     @Override
@@ -308,8 +310,8 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
 
     private void initializeLocationRequest() {
         locationRequest = new LocationRequest();
-        locationRequest.setPriority(debugPreferences.getLocationRequestPriority());
-        locationRequest.setInterval(debugPreferences.getLocationUpdatesInterval() * MILLIS_1000);
+        locationRequest.setPriority(preferences.getLocationRequestPriority());
+        locationRequest.setInterval(preferences.getLocationUpdatesInterval() * MILLIS_1000);
         locationRequest.setFastestInterval(FASTEST_INTERVAL_SECONDS * MILLIS_1000);
 
         fragmentContext.checkLocationSettings(locationRequest);
@@ -356,7 +358,7 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
 
             LOG.v("The location is moved: distance = %f", distance);
 
-            if (debugPreferences.getLocationUpdatesDistance() <= distance) {
+            if (preferences.getLocationUpdatesDistance() <= distance) {
                 queryLocation = latLng;
                 shouldSearch = true;
             }
@@ -367,7 +369,7 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
 
             double latitude = queryLocation.latitude;
             double longitude = queryLocation.longitude;
-            int radius = debugPreferences.getSearchRadius();
+            int radius = preferences.getSearchRadius();
 
             Disposable disposable = Single
                     .<List<Place>>create(e -> {
@@ -406,9 +408,7 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
 
         void removeOnLocationUpdatesAvailableListener(OnLocationUpdatesAvailableListener listener);
 
-        void showDebugView();
-
-        void showNearbyPlaceView(@NonNull String placeId, @NonNull String name);
+        void showPlaceFragment(@NonNull String placeId, @NonNull String name);
     }
 
     final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
@@ -426,11 +426,11 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
                 int position = recyclerView.getChildAdapterPosition(v);
                 Item item = items.get(position);
 
-                if (debugPreferences.isPlaceDetailsViewEnabled()) {
+                if (preferences.isPlaceDetailsViewEnabled()) {
                     String placeId = item.place.placeId;
                     String name = item.place.name;
 
-                    fragmentContext.showNearbyPlaceView(placeId, name);
+                    fragmentContext.showPlaceFragment(placeId, name);
                     getActivity().invalidateOptionsMenu();
                 } else {
                     String placeId = item.place.placeId;
