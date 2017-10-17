@@ -6,8 +6,8 @@ import com.lakeel.altla.ghost.alpha.google.place.web.Place;
 import com.lakeel.altla.ghost.alpha.google.place.web.PlaceWebApi;
 import com.lakeel.altla.ghost.alpha.nearbysearch.R;
 import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScopeContext;
-import com.lakeel.altla.ghost.alpha.nearbysearch.helper.BundleHelper;
-import com.lakeel.altla.ghost.alpha.nearbysearch.helper.FragmentHelper;
+import com.lakeel.altla.ghost.alpha.viewhelper.BundleHelper;
+import com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 
 import android.content.Context;

@@ -1,4 +1,4 @@
-package com.lakeel.altla.ghost.alpha.nearbysearch.helper;
+package com.lakeel.altla.ghost.alpha.viewhelper;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
