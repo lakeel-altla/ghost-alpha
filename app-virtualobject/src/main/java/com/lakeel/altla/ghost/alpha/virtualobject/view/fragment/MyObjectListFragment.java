@@ -12,9 +12,6 @@ import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
 
-import org.jdeferred.DeferredManager;
-import org.jdeferred.android.AndroidDeferredManager;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -37,6 +34,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class MyObjectListFragment extends Fragment {
 
     private static final Log LOG = LogFactory.getLog(MyObjectListFragment.class);
@@ -50,7 +53,7 @@ public class MyObjectListFragment extends Fragment {
     @Inject
     RichLinkImageLoader richLinkImageLoader;
 
-    private final DeferredManager deferredManager = new AndroidDeferredManager();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private FragmentContext fragmentContext;
 
@@ -119,6 +122,12 @@ public class MyObjectListFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        compositeDisposable.clear();
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
@@ -140,21 +149,21 @@ public class MyObjectListFragment extends Fragment {
                         recyclerView.getAdapter().notifyItemInserted(i);
 
                         final int index = i;
-                        deferredManager
-                                .when(() -> {
-                                    try {
-                                        item.loadRichLink();
-                                    } catch (IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
+
+                        Disposable disposable = Completable
+                                .create(e -> {
+                                    item.loadRichLink();
+                                    e.onComplete();
                                 })
-                                .done(aVoid -> {
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(() -> {
                                     recyclerView.getAdapter().notifyItemChanged(index);
-                                })
-                                .fail(e -> {
+                                }, e -> {
                                     LOG.e(String.format("Failed to load the rich link: uri = %s",
                                                         object.getRequiredUriString()), e);
                                 });
+                        compositeDisposable.add(disposable);
                     }
                 },
                 e -> {

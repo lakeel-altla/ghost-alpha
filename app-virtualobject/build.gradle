@@ -10,6 +10,7 @@ android {
         targetSdkVersion project.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -31,9 +32,7 @@ dependencies {
     compile "com.google.android.gms:play-services-location:$gmsVersion"
     compile "com.google.android.gms:play-services-maps:$gmsVersion"
     compile "com.google.firebase:firebase-firestore:$gmsVersion"
-    compile "com.google.dagger:dagger:$daggerVersion"
     compile "com.squareup.picasso:picasso:$picassoVersion"
-    compile "org.jdeferred:jdeferred-android-aar:$jdeferredVersion"
     compile "pub.devrel:easypermissions:$easypermissionsVersion"
     compile "org.adw.library:discrete-seekbar:$discreteSeekbarVersion"
     compile "com.lakeel.altla:android-log:$androidLogVersion"
@@ -44,9 +43,12 @@ dependencies {
     compile project(path: ':lib-api-virtualobject')
     compile project(path: ':lib-richlink')
     compile project(path: ':lib-viewhelper')
+    compile "com.google.dagger:dagger:$daggerVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
-    compile 'com.android.support:support-v4:26.+'
+    compile "io.reactivex.rxjava2:rxandroid:$rxandroidVersion"
+    compile "io.reactivex.rxjava2:rxjava:$rxjavaVersion"
+    compile 'com.android.support:multidex:1.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -17,15 +17,13 @@ import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObject;
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity;
+import com.lakeel.altla.ghost.alpha.richlink.RichLink;
 import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.PatternHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
-
-import org.jdeferred.DeferredManager;
-import org.jdeferred.android.AndroidDeferredManager;
 
 import android.app.Activity;
 import android.content.Context;
@@ -51,6 +49,12 @@ import android.widget.Toast;
 
 import javax.inject.Inject;
 
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 public final class MyObjectEditFragment extends Fragment {
 
     private static final Log LOG = LogFactory.getLog(MyObjectEditFragment.class);
@@ -72,7 +76,7 @@ public final class MyObjectEditFragment extends Fragment {
     @Inject
     RichLinkImageLoader richLinkImageLoader;
 
-    private final DeferredManager deferredManager = new AndroidDeferredManager();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private FragmentContext fragmentContext;
 
@@ -354,6 +358,7 @@ public final class MyObjectEditFragment extends Fragment {
     public void onStop() {
         super.onStop();
         mapView.onStop();
+        compositeDisposable.clear();
     }
 
     @Override
@@ -401,19 +406,22 @@ public final class MyObjectEditFragment extends Fragment {
         String text = editable.toString();
         String uriString = PatternHelper.parseUriString(text);
         if (uriString != null) {
-            deferredManager
-                    .when(() -> {
-                        return richLinkParser.parse(uriString);
+            Disposable disposable = Single
+                    .<RichLink>create(e -> {
+                        RichLink richLink = richLinkParser.parse(uriString);
+                        e.onSuccess(richLink);
                     })
-                    .done(richLink -> {
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(richLink -> {
                         richLinkImageLoader.load(richLink, imageViewRichLinkImage);
                         textViewRichLinkTitle.setText(richLink.getTitleOrUri());
-                    })
-                    .fail(e -> {
+                    }, e -> {
                         LOG.e("Failed to load a rich link.", e);
                         Toast.makeText(getContext(), R.string.toast_failed_to_load_rich_link, Toast.LENGTH_SHORT)
                              .show();
                     });
+            compositeDisposable.add(disposable);
         }
     }
 

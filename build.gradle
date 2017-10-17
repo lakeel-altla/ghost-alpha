@@ -31,6 +31,8 @@ allprojects {
         picassoVersion = '2.5.2'
         geofireVersion = '2.1.2'
         jsoupVersion = '1.9.2'
+        rxjavaVersion = '2.1.5'
+        rxandroidVersion = '2.0.1'
         junitVersion = '4.12'
     }
     repositories {

@@ -19,5 +19,4 @@ android {
 
 dependencies {
     compile "com.android.support:appcompat-v7:$supportVersion"
-//    compile "com.lakeel.altla:android-log:$androidLogVersion"
 }

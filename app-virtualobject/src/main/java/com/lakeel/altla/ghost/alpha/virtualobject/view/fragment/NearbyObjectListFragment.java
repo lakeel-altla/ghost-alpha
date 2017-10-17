@@ -28,9 +28,6 @@ import com.lakeel.altla.ghost.alpha.virtualobject.helper.DebugPreferences;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.OnLocationUpdatesAvailableListener;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
 
-import org.jdeferred.DeferredManager;
-import org.jdeferred.android.AndroidDeferredManager;
-
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -58,6 +55,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Completable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 public final class NearbyObjectListFragment extends Fragment implements OnLocationUpdatesAvailableListener {
 
     private static final Log LOG = LogFactory.getLog(NearbyObjectListFragment.class);
@@ -79,7 +82,7 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     @Inject
     RichLinkImageLoader richLinkImageLoader;
 
-    private final DeferredManager deferredManager = new AndroidDeferredManager();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private FragmentContext fragmentContext;
 
@@ -241,6 +244,7 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
     public void onStop() {
         super.onStop();
         mapView.onStop();
+        compositeDisposable.clear();
     }
 
     @Override
@@ -378,24 +382,22 @@ public final class NearbyObjectListFragment extends Fragment implements OnLocati
                     LOG.v("onObjectEntered: key = %s", object.getKey());
 
                     Item item = new Item(object);
-
-                    deferredManager
-                            .when(() -> {
+                    Disposable disposable = Completable
+                            .create(e -> {
                                 item.updateDistance(location);
-                                try {
-                                    item.loadRichLink();
-                                } catch (IOException e) {
-                                    // Ignore.
-                                }
+                                item.loadRichLink();
+                                e.onComplete();
                             })
-                            .done(result -> {
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(() -> {
                                 items.add(item);
                                 Collections.sort(items, ItemComparator.INSTANCE);
                                 recyclerView.getAdapter().notifyDataSetChanged();
-                            })
-                            .fail(e -> {
+                            }, e -> {
                                 LOG.w("Failed to parse the rich link: " + object.getRequiredUriString(), e);
                             });
+                    compositeDisposable.add(disposable);
                 }
 
                 @Override

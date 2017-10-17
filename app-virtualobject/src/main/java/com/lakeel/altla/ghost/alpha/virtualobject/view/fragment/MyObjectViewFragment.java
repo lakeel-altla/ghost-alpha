@@ -13,14 +13,12 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObject;
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
+import com.lakeel.altla.ghost.alpha.richlink.RichLink;
 import com.lakeel.altla.ghost.alpha.richlink.RichLinkParser;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
-
-import org.jdeferred.DeferredManager;
-import org.jdeferred.android.AndroidDeferredManager;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -39,6 +37,12 @@ import android.widget.Toast;
 
 import javax.inject.Inject;
 
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 public class MyObjectViewFragment extends Fragment {
 
     private static final Log LOG = LogFactory.getLog(MyObjectViewFragment.class);
@@ -56,7 +60,7 @@ public class MyObjectViewFragment extends Fragment {
     @Inject
     RichLinkImageLoader richLinkImageLoader;
 
-    private final DeferredManager deferredManager = new AndroidDeferredManager();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private String key;
 
@@ -147,19 +151,22 @@ public class MyObjectViewFragment extends Fragment {
                 textViewUri.setText(object.getRequiredUriString());
                 updateMapView();
 
-                deferredManager
-                        .when(() -> {
-                            return richLinkParser.parse(object.getRequiredUriString());
+                Disposable disposable = Single
+                        .<RichLink>create(e -> {
+                            RichLink richLink = richLinkParser.parse(object.getRequiredUriString());
+                            e.onSuccess(richLink);
                         })
-                        .done(richLink -> {
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(richLink -> {
                             richLinkImageLoader.load(richLink, imageViewRichLinkImage);
                             textViewRichLinkTitle.setText(richLink.getTitleOrUri());
-                        })
-                        .fail(e -> {
+                        }, e -> {
                             LOG.e("Failed to load a rich link.", e);
                             Toast.makeText(getContext(), R.string.toast_failed_to_load_rich_link, Toast.LENGTH_SHORT)
                                  .show();
                         });
+                compositeDisposable.add(disposable);
             }
         }, e -> {
             LOG.e("Failed to find a virtual object.", e);
@@ -226,6 +233,7 @@ public class MyObjectViewFragment extends Fragment {
     public void onStop() {
         super.onStop();
         mapView.onStop();
+        compositeDisposable.clear();
     }
 
     @Override
