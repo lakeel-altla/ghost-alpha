@@ -1,4 +1,4 @@
-package com.lakeel.altla.ghost.alpha.nearbysearch.view.activity;
+package com.lakeel.altla.ghost.alpha.viewhelper;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

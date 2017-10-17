@@ -2,6 +2,7 @@ package com.lakeel.altla.ghost.alpha.nearbysearch.view.activity;
 
 import com.lakeel.altla.ghost.alpha.nearbysearch.R;
 import com.lakeel.altla.ghost.alpha.nearbysearch.helper.Preferences;
+import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatPreferenceActivity;
 
 import android.os.Bundle;
 import android.preference.ListPreference;
