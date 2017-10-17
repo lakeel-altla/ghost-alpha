@@ -8,7 +8,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 
-public final class DebugPreferences {
+public final class Preferences {
 
     public static final IntRange RANGE_SEARCH_RADIUS = new IntRange(10, 100);
 
@@ -33,15 +33,15 @@ public final class DebugPreferences {
 
     private SharedPreferences preferences;
 
-    public DebugPreferences(@NonNull Fragment fragment) {
+    public Preferences(@NonNull Fragment fragment) {
         this(fragment.getActivity());
     }
 
-    public DebugPreferences(@NonNull Activity activity) {
+    public Preferences(@NonNull Activity activity) {
         this(activity.getPreferences(Context.MODE_PRIVATE));
     }
 
-    public DebugPreferences(@NonNull SharedPreferences preferences) {
+    public Preferences(@NonNull SharedPreferences preferences) {
         this.preferences = preferences;
     }
 

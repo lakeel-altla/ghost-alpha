@@ -12,7 +12,6 @@ import com.lakeel.altla.ghost.alpha.areaservice.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.areaservice.di.component.ActivityComponent;
 import com.lakeel.altla.ghost.alpha.areaservice.di.module.ActivityModule;
 import com.lakeel.altla.ghost.alpha.areaservice.helper.OnLocationUpdatesAvailableListener;
-import com.lakeel.altla.ghost.alpha.areaservice.view.fragment.DebugSettingsFragment;
 import com.lakeel.altla.ghost.alpha.areaservice.view.fragment.NearbyAreaListFragment;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.location.LocationSettingsChecker;
@@ -188,11 +187,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void removeOnLocationUpdatesAvailableListener(OnLocationUpdatesAvailableListener listener) {
         onLocationUpdatesAvailableListeners.remove(listener);
-    }
-
-    @Override
-    public void showDebugSettingsView() {
-        replaceFragmentAndAddToBackStack(DebugSettingsFragment.newInstance());
     }
 
     //    @Override

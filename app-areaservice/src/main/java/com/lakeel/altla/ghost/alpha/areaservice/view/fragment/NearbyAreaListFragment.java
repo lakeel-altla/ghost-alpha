@@ -17,7 +17,7 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.areaservice.R;
 import com.lakeel.altla.ghost.alpha.areaservice.di.ActivityScopeContext;
-import com.lakeel.altla.ghost.alpha.areaservice.helper.DebugPreferences;
+import com.lakeel.altla.ghost.alpha.areaservice.helper.Preferences;
 import com.lakeel.altla.ghost.alpha.areaservice.helper.OnLocationUpdatesAvailableListener;
 import com.lakeel.altla.ghost.alpha.areaservice.helper.RichLinkImageLoader;
 import com.lakeel.altla.ghost.alpha.richlink.RichLink;
@@ -72,7 +72,7 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
 
     private FragmentContext fragmentContext;
 
-    private DebugPreferences debugPreferences;
+    private Preferences preferences;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -126,7 +126,7 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
         super.onActivityCreated(savedInstanceState);
         if (getView() == null) throw new IllegalStateException("The root view could not be found.");
 
-        debugPreferences = new DebugPreferences(this);
+        preferences = new Preferences(this);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         recyclerView = getView().findViewById(R.id.recycler_view);
@@ -142,7 +142,7 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
 
             googleMap.getUiSettings().setMapToolbarEnabled(false);
             googleMap.getUiSettings().setZoomControlsEnabled(true);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(debugPreferences.isManualLocationUpdatesEnabled());
+            googleMap.getUiSettings().setMyLocationButtonEnabled(preferences.isManualLocationUpdatesEnabled());
 
             if (location == null) {
                 googleMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM_LEVEL));
@@ -156,13 +156,13 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
             }
 
             googleMap.setOnMapClickListener(latLng -> {
-                if (debugPreferences.isManualLocationUpdatesEnabled()) {
+                if (preferences.isManualLocationUpdatesEnabled()) {
                     setMyLocation(latLng);
                 }
             });
 
             googleMap.setOnMyLocationButtonClickListener(() -> {
-                if (debugPreferences.isManualLocationUpdatesEnabled()) {
+                if (preferences.isManualLocationUpdatesEnabled()) {
                     if (fragmentContext.checkLocationPermission()) {
                         fusedLocationProviderClient
                                 .getLastLocation()
@@ -215,7 +215,7 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
         AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(false);
         setHasOptionsMenu(true);
 
-        mapView.setVisibility(debugPreferences.isGoogleMapVisible() ? View.VISIBLE : View.GONE);
+        mapView.setVisibility(preferences.isGoogleMapVisible() ? View.VISIBLE : View.GONE);
 
         textViewAccuracyValue.setText(R.string.value_not_available);
     }
@@ -276,10 +276,9 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
         switch (item.getItemId()) {
             case R.id.action_add_object:
                 // TODO
-//                fragmentContext.showObjectEditView();
                 return true;
             case R.id.action_debug:
-                fragmentContext.showDebugSettingsView();
+                // TODO
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -288,7 +287,7 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
 
     //    @Override
     public void onLocationUpdatesAvailable() {
-        if (!debugPreferences.isManualLocationUpdatesEnabled()) {
+        if (!preferences.isManualLocationUpdatesEnabled()) {
             if (fragmentContext.checkLocationPermission()) {
                 locationCallback = new LocationCallback() {
                     @Override
@@ -315,8 +314,8 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
     private void initializeLocationRequest() {
         locationRequest = new LocationRequest();
 
-        locationRequest.setPriority(debugPreferences.getLocationRequestPriority());
-        locationRequest.setInterval(debugPreferences.getLocationUpdatesInterval() * MILLIS_1000);
+        locationRequest.setPriority(preferences.getLocationRequestPriority());
+        locationRequest.setInterval(preferences.getLocationUpdatesInterval() * MILLIS_1000);
         locationRequest.setFastestInterval(FASTEST_INTERVAL_SECONDS * MILLIS_1000);
 
         fragmentContext.checkLocationSettings(locationRequest);
@@ -435,10 +434,6 @@ public final class NearbyAreaListFragment extends Fragment implements OnLocation
         void addOnLocationUpdatesAvailableListener(OnLocationUpdatesAvailableListener listener);
 
         void removeOnLocationUpdatesAvailableListener(OnLocationUpdatesAvailableListener listener);
-//
-//        void showObjectEditView();
-
-        void showDebugSettingsView();
     }
 
     final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
