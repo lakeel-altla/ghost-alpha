@@ -27,9 +27,6 @@ import com.lakeel.altla.ghost.alpha.nearbysearch.helper.OnLocationUpdatesAvailab
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.squareup.picasso.Picasso;
 
-import org.jdeferred.DeferredManager;
-import org.jdeferred.android.AndroidDeferredManager;
-
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -56,6 +53,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 public final class NearbyPlaceListFragment extends Fragment implements OnLocationUpdatesAvailableListener {
 
     private static final Log LOG = LogFactory.getLog(NearbyPlaceListFragment.class);
@@ -69,7 +72,7 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
     @Inject
     PlaceWebApi placeWebApi;
 
-    private final DeferredManager deferredManager = new AndroidDeferredManager();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private FragmentContext fragmentContext;
 
@@ -228,6 +231,7 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
     public void onStop() {
         super.onStop();
         mapView.onStop();
+        compositeDisposable.clear();
     }
 
     @Override
@@ -363,42 +367,31 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
 
             double latitude = queryLocation.latitude;
             double longitude = queryLocation.longitude;
+            int radius = debugPreferences.getSearchRadius();
 
-            deferredManager.when(() -> {
-                searchNearbyPlaces(latitude, longitude);
-            }).fail(e -> {
-                LOG.e("Failed to search nearby places.", e);
-                getActivity().runOnUiThread(() -> {
-                    quering = false;
-                });
-            });
+            Disposable disposable = Single
+                    .<List<Place>>create(e -> {
+                        List<Place> places = placeWebApi.searchPlaces(latitude, longitude, radius, null);
+                        e.onSuccess(places);
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(places -> {
+                        items.clear();
+                        for (Place place : places) {
+                            if (!place.permanentlyClosed) {
+                                items.add(Item.newInstance(place, latitude, longitude));
+                            }
+                        }
+                        Collections.sort(items, ItemComparator.INSTANCE);
+                        recyclerView.getAdapter().notifyDataSetChanged();
+                        quering = false;
+                    }, e -> {
+                        LOG.e("Failed to search nearby places.", e);
+                        quering = false;
+                    });
+            compositeDisposable.add(disposable);
         }
-    }
-
-    private void searchNearbyPlaces(double latitude, double longitude) {
-        int radius = debugPreferences.getSearchRadius();
-
-        LOG.v("Searching nearby places: latitude = %f, longitude = %f, radius = %d, language = %s",
-              latitude, longitude, radius, null);
-
-        List<Place> places = placeWebApi.searchPlaces(latitude, longitude, radius, null);
-
-        LOG.v("Searched nearby places.");
-
-        items.clear();
-
-        for (Place place : places) {
-            if (!place.permanentlyClosed) {
-                items.add(Item.newInstance(place, latitude, longitude));
-            }
-        }
-
-        Collections.sort(items, ItemComparator.INSTANCE);
-
-        getActivity().runOnUiThread(() -> {
-            recyclerView.getAdapter().notifyDataSetChanged();
-            quering = false;
-        });
     }
 
     public interface FragmentContext {

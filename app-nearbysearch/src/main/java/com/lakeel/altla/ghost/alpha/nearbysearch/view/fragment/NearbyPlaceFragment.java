@@ -10,9 +10,6 @@ import com.lakeel.altla.ghost.alpha.nearbysearch.helper.BundleHelper;
 import com.lakeel.altla.ghost.alpha.nearbysearch.helper.FragmentHelper;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 
-import org.jdeferred.DeferredManager;
-import org.jdeferred.android.AndroidDeferredManager;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -25,6 +22,12 @@ import android.widget.TextView;
 
 import javax.inject.Inject;
 
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
 public final class NearbyPlaceFragment extends Fragment {
 
     private static final Log LOG = LogFactory.getLog(NearbyPlaceFragment.class);
@@ -32,7 +35,7 @@ public final class NearbyPlaceFragment extends Fragment {
     @Inject
     PlaceWebApi placeWebApi;
 
-    private final DeferredManager deferredManager = new AndroidDeferredManager();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private String placeId;
 
@@ -84,20 +87,29 @@ public final class NearbyPlaceFragment extends Fragment {
         AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
         AppCompatHelper.getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
 
-        deferredManager.when(() -> {
-            Place place = placeWebApi.getPlace(placeId, null);
-            if (place == null) {
-                LOG.w("No getPlace: placeId = %s", placeId);
-            } else {
-                getActivity().runOnUiThread(() -> {
-                    setPlace(place);
+        Disposable disposable = Single
+                .<Place>create(e -> {
+                    Place place = placeWebApi.getPlace(placeId, null);
+                    e.onSuccess(place);
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(place -> {
+                    if (place == null) {
+                        LOG.w("No place exists: placeId = %s", placeId);
+                    } else {
+                        textViewDetailsJson.setText(placeWebApi.getGson().toJson(place));
+                    }
+                }, e -> {
+                    LOG.e("Failed to get a place.", e);
                 });
-            }
-        });
+        compositeDisposable.add(disposable);
     }
 
-    private void setPlace(@NonNull Place place) {
-        textViewDetailsJson.setText(placeWebApi.getGson().toJson(place));
+    @Override
+    public void onStop() {
+        super.onStop();
+        compositeDisposable.clear();
     }
 
     private static final class Arguments {

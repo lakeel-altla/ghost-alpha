@@ -7,10 +7,10 @@ import com.lakeel.altla.ghost.alpha.nearbysearch.di.component.DaggerApplicationC
 import com.lakeel.altla.ghost.alpha.nearbysearch.di.module.ApplicationModule;
 
 import android.app.Activity;
-import android.app.Application;
 import android.support.annotation.NonNull;
+import android.support.multidex.MultiDexApplication;
 
-public final class MyApplication extends Application {
+public final class MyApplication extends MultiDexApplication {
 
     private ApplicationComponent applicationComponent;
 
