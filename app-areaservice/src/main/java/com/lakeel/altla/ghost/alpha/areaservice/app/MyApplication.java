@@ -1,5 +1,6 @@
 package com.lakeel.altla.ghost.alpha.areaservice.app;
 
+import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.areaservice.BuildConfig;
 import com.lakeel.altla.ghost.alpha.areaservice.di.component.ApplicationComponent;
@@ -10,7 +11,11 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDexApplication;
 
+import io.reactivex.plugins.RxJavaPlugins;
+
 public final class MyApplication extends MultiDexApplication {
+
+    private static final Log LOG = LogFactory.getLog(MyApplication.class);
 
     private ApplicationComponent applicationComponent;
 
@@ -24,6 +29,11 @@ public final class MyApplication extends MultiDexApplication {
                 .builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
+
+        // see: https://github.com/ReactiveX/RxJava/wiki/What's-different-in-2.0#error-handling
+        RxJavaPlugins.setErrorHandler(e -> {
+            LOG.e("An unhandled error.", e);
+        });
     }
 
     public static ApplicationComponent getApplicationComponent(@NonNull Activity activity) {
