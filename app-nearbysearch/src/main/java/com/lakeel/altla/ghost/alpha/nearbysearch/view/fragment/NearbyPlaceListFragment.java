@@ -1,18 +1,9 @@
 package com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationAvailability;
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
@@ -20,14 +11,15 @@ import com.lakeel.altla.ghost.alpha.google.maps.urls.SearchUrlBuilder;
 import com.lakeel.altla.ghost.alpha.google.place.web.Photo;
 import com.lakeel.altla.ghost.alpha.google.place.web.Place;
 import com.lakeel.altla.ghost.alpha.google.place.web.PlaceWebApi;
+import com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity;
 import com.lakeel.altla.ghost.alpha.nearbysearch.R;
 import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.nearbysearch.helper.Preferences;
-import com.lakeel.altla.ghost.alpha.nearbysearch.helper.OnLocationUpdatesAvailableListener;
 import com.lakeel.altla.ghost.alpha.nearbysearch.view.activity.SettingsActivity;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.squareup.picasso.Picasso;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -35,6 +27,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -60,7 +53,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
-public final class NearbyPlaceListFragment extends Fragment implements OnLocationUpdatesAvailableListener {
+public final class NearbyPlaceListFragment extends Fragment {
 
     private static final Log LOG = LogFactory.getLog(NearbyPlaceListFragment.class);
 
@@ -68,7 +61,7 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
 
     private static final int FASTEST_INTERVAL_SECONDS = 5;
 
-    private static final float DEFAULT_ZOOM_LEVEL = 17;
+    private static final int REQUEST_CODE_LOCATION_PICKER = 100;
 
     @Inject
     PlaceWebApi placeWebApi;
@@ -81,28 +74,16 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
 
     private RecyclerView recyclerView;
 
-    private MapView mapView;
-
-    private TextView textViewAccuracyValue;
-
     private FusedLocationProviderClient fusedLocationProviderClient;
-
-    private LocationCallback locationCallback;
 
     private LocationRequest locationRequest;
 
     @Nullable
-    private LatLng queryLocation;
+    private LatLng location;
 
     private boolean quering;
 
     private final List<Item> items = new ArrayList<>();
-
-    @Nullable
-    private GoogleMap googleMap;
-
-    @Nullable
-    private Marker marker;
 
     @NonNull
     public static NearbyPlaceListFragment newInstance() {
@@ -113,14 +94,12 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
     public void onAttach(Context context) {
         super.onAttach(context);
         fragmentContext = (FragmentContext) context;
-        fragmentContext.addOnLocationUpdatesAvailableListener(this);
         ((ActivityScopeContext) context).getActivityComponent().inject(this);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        fragmentContext.removeOnLocationUpdatesAvailableListener(this);
         fragmentContext = null;
     }
 
@@ -137,66 +116,47 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
         preferences = new Preferences(this);
 
         recyclerView = getView().findViewById(R.id.recycler_view);
-        mapView = getView().findViewById(R.id.map_view);
-        textViewAccuracyValue = getView().findViewById(R.id.text_view_accuracy_value);
-
         recyclerView.setAdapter(new Adapter());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(googleMap -> {
-            this.googleMap = googleMap;
+        FloatingActionButton floatingActionButton = getView().findViewById(R.id.fab);
+        floatingActionButton.setOnClickListener(v -> {
+            if (preferences.isManualLocationUpdatesEnabled()) {
+                LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getContext())
+                        .setMyLocationEnabled(true)
+                        .setBuildingsEnabled(false)
+                        .setIndoorEnabled(true)
+                        .setTrafficEnabled(false)
+                        .setMapToolbarEnabled(false)
+                        .setZoomControlsEnabled(true)
+                        .setMyLocationButtonEnabled(true)
+                        .setCompassEnabled(true)
+                        .setIndoorLevelPickerEnabled(true)
+                        .setAllGesturesEnabled(true);
 
-            googleMap.getUiSettings().setZoomControlsEnabled(true);
-            googleMap.getUiSettings().setMyLocationButtonEnabled(preferences.isManualLocationUpdatesEnabled());
+                if (location != null) {
+                    builder.setLocation(location.latitude, location.longitude);
+                }
 
-            if (queryLocation == null) {
-                googleMap.moveCamera(CameraUpdateFactory.zoomTo(DEFAULT_ZOOM_LEVEL));
+                Intent intent = builder.build();
+                startActivityForResult(intent, REQUEST_CODE_LOCATION_PICKER);
             } else {
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(queryLocation, DEFAULT_ZOOM_LEVEL));
-
-                if (marker != null) {
-                    marker.remove();
+                if (fragmentContext.checkLocationPermission()) {
+                    fusedLocationProviderClient
+                            .getLastLocation()
+                            .addOnSuccessListener(getActivity(), location -> {
+                                if (location == null) {
+                                    LOG.w("The last location could not be resolved.");
+                                } else {
+                                    updateLocation(location);
+                                }
+                            })
+                            .addOnFailureListener(getActivity(), e -> {
+                                LOG.e("Failed to get the last location.", e);
+                            });
+                } else {
+                    fragmentContext.requestLocationPermission();
                 }
-                marker = googleMap.addMarker(new MarkerOptions().position(queryLocation));
-            }
-
-            googleMap.setOnMapClickListener(latLng -> {
-                if (preferences.isManualLocationUpdatesEnabled()) {
-                    setMyLocation(latLng);
-                }
-            });
-
-            googleMap.setOnMyLocationButtonClickListener(() -> {
-                if (preferences.isManualLocationUpdatesEnabled()) {
-                    if (fragmentContext.checkLocationPermission()) {
-                        fusedLocationProviderClient
-                                .getLastLocation()
-                                .addOnSuccessListener(getActivity(), location -> {
-                                    if (location == null) {
-                                        if (marker != null) {
-                                            marker.remove();
-                                            marker = null;
-                                        }
-                                    } else {
-                                        setMyLocation(location);
-                                    }
-                                })
-                                .addOnFailureListener(getActivity(), e -> {
-                                    LOG.e("Failed to get the last location.", e);
-                                });
-                    } else {
-                        fragmentContext.requestLocationPermission();
-                    }
-                }
-                return false;
-            });
-
-            if (fragmentContext.checkLocationPermission()) {
-                // Enable the location layer.
-                googleMap.setMyLocationEnabled(true);
-            } else {
-                fragmentContext.requestLocationPermission();
             }
         });
 
@@ -213,7 +173,6 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
         switch (item.getItemId()) {
             case R.id.action_settings:
                 getActivity().startActivity(new Intent(getActivity(), SettingsActivity.class));
-//                fragmentContext.showDebugView();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -221,36 +180,23 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-    }
-
-    @Override
     public void onStart() {
         super.onStart();
-        mapView.onStart();
 
         getActivity().setTitle(R.string.title_nearby_place_list);
         AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(false);
         setHasOptionsMenu(true);
-
-        mapView.setVisibility(preferences.isGoogleMapVisible() ? View.VISIBLE : View.GONE);
-
-        textViewAccuracyValue.setText(R.string.value_not_available);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mapView.onStop();
         compositeDisposable.clear();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mapView.onResume();
 
         if (fragmentContext.checkLocationPermission()) {
             initializeLocationRequest();
@@ -260,50 +206,19 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        if (locationCallback != null) {
-            fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-            locationCallback = null;
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
-    }
-
-    @Override
-    public void onLocationUpdatesAvailable() {
-        if (!preferences.isManualLocationUpdatesEnabled()) {
-            if (fragmentContext.checkLocationPermission()) {
-                locationCallback = new LocationCallback() {
-                    @Override
-                    public void onLocationResult(LocationResult locationResult) {
-                        setMyLocation(locationResult.getLastLocation());
-                    }
-
-                    @Override
-                    public void onLocationAvailability(LocationAvailability locationAvailability) {
-                        if (locationAvailability.isLocationAvailable()) {
-                            LOG.i("The location is available.");
-                        } else {
-                            LOG.w("The location is not available.");
-                        }
-                    }
-                };
-                fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        if (requestCode == REQUEST_CODE_LOCATION_PICKER) {
+            if (resultCode == Activity.RESULT_OK) {
+                LatLng location = LocationPickerActivity.getLocation(data);
+                if (location == null) {
+                    LOG.w("LocationPickerActivity returns null as a location.");
+                } else {
+                    updateLocation(location);
+                }
             } else {
-                fragmentContext.requestLocationPermission();
+                LOG.d("Picking a location is cancelled.");
             }
         }
     }
@@ -317,28 +232,12 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
         fragmentContext.checkLocationSettings(locationRequest);
     }
 
-    private void setMyLocation(@NonNull Location location) {
-        if (location.hasAccuracy()) {
-            textViewAccuracyValue.setText(String.valueOf(location.getAccuracy()));
-        } else {
-            textViewAccuracyValue.setText(R.string.value_not_available);
-        }
-
-        setMyLocation(new LatLng(location.getLatitude(), location.getLongitude()));
+    private void updateLocation(@NonNull Location location) {
+        updateLocation(new LatLng(location.getLatitude(), location.getLongitude()));
     }
 
-    private void setMyLocation(@NonNull LatLng latLng) {
-        LOG.i("The location is resolved: latitude,longitude = %f,%f", latLng.latitude, latLng.longitude);
-
-        if (googleMap != null) {
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(latLng);
-            googleMap.moveCamera(cameraUpdate);
-
-            if (marker != null) {
-                marker.remove();
-            }
-            marker = googleMap.addMarker(new MarkerOptions().position(latLng));
-        }
+    private void updateLocation(@NonNull LatLng location) {
+        LOG.i("The location is resolved: latitude,longitude = %f,%f", location.latitude, location.longitude);
 
         if (quering) {
             LOG.d("Skip a new query because the previous query is not finished.");
@@ -347,19 +246,19 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
 
         boolean shouldSearch = false;
 
-        if (queryLocation == null) {
-            queryLocation = latLng;
+        if (this.location == null) {
+            this.location = location;
             shouldSearch = true;
         } else {
             float[] results = new float[1];
-            Location.distanceBetween(queryLocation.latitude, queryLocation.longitude,
-                                     latLng.latitude, latLng.longitude, results);
+            Location.distanceBetween(this.location.latitude, this.location.longitude,
+                                     location.latitude, location.longitude, results);
             float distance = results[0];
 
             LOG.v("The location is moved: distance = %f", distance);
 
             if (preferences.getLocationUpdatesDistance() <= distance) {
-                queryLocation = latLng;
+                this.location = location;
                 shouldSearch = true;
             }
         }
@@ -367,8 +266,8 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
         if (shouldSearch) {
             quering = true;
 
-            double latitude = queryLocation.latitude;
-            double longitude = queryLocation.longitude;
+            double latitude = this.location.latitude;
+            double longitude = this.location.longitude;
             int radius = preferences.getSearchRadius();
 
             Disposable disposable = Single
@@ -403,10 +302,6 @@ public final class NearbyPlaceListFragment extends Fragment implements OnLocatio
         void requestLocationPermission();
 
         void checkLocationSettings(LocationRequest locationRequest);
-
-        void addOnLocationUpdatesAvailableListener(OnLocationUpdatesAvailableListener listener);
-
-        void removeOnLocationUpdatesAvailableListener(OnLocationUpdatesAvailableListener listener);
 
         void showPlaceFragment(@NonNull String placeId, @NonNull String name);
     }

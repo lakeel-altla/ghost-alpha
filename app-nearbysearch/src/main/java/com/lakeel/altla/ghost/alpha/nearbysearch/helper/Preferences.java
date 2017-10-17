@@ -10,8 +10,6 @@ import android.support.v4.app.Fragment;
 
 public final class Preferences {
 
-    public static final String KEY_GOOGLE_MAP_VISIBLE = "google_map_visible";
-
     public static final String KEY_SEARCH_RADIUS = "search_radius";
 
     public static final String KEY_LOCATION_UPDATES_INTERVAL = "location_update_interval";
@@ -39,10 +37,6 @@ public final class Preferences {
 
     public Preferences(@NonNull Context context) {
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
-    }
-
-    public boolean isGoogleMapVisible() {
-        return preferences.getBoolean(KEY_GOOGLE_MAP_VISIBLE, false);
     }
 
     public int getSearchRadius() {

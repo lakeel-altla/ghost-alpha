@@ -37,6 +37,7 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
     compile project(path: ':lib-res')
     compile project(path: ':lib-location')
+    compile project(path: ':lib-locationpicker')
     compile project(path: ':lib-google-place-web-service')
     compile project(path: ':lib-google-maps-urls')
     compile project(path: ':lib-viewhelper')
