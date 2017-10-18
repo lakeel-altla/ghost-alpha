@@ -25,7 +25,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -38,6 +37,8 @@ import pub.devrel.easypermissions.EasyPermissions;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.back;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.replaceFragment;
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.replaceFragmentAndAddToBackStack;
 
 public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
@@ -90,7 +91,7 @@ public final class MainActivity extends AppCompatActivity
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         if (savedInstanceState == null) {
-            replaceFragment(NearbyPlaceListFragment.newInstance());
+            replaceFragment(this, R.id.fragment_container, NearbyPlaceListFragment.newInstance());
         }
     }
 
@@ -202,7 +203,7 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void showPlaceFragment(@NonNull String placeId, @NonNull String name) {
-        replaceFragmentAndAddToBackStack(PlaceFragment.newInstance(placeId, name));
+        replaceFragmentAndAddToBackStack(this, R.id.fragment_container, PlaceFragment.newInstance(placeId, name));
     }
 
     private boolean checkLocationPermission() {
@@ -242,18 +243,5 @@ public final class MainActivity extends AppCompatActivity
             };
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
         }
-    }
-
-    private void replaceFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                                   .replace(R.id.fragment_container, fragment, fragment.getClass().getName())
-                                   .commit();
-    }
-
-    private void replaceFragmentAndAddToBackStack(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                                   .addToBackStack(fragment.getClass().getName())
-                                   .replace(R.id.fragment_container, fragment, fragment.getClass().getName())
-                                   .commit();
     }
 }

@@ -27,7 +27,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -39,6 +38,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.replaceFragment;
 
 public class ShareActivity extends AppCompatActivity
         implements ActivityScopeContext,
@@ -126,7 +126,7 @@ public class ShareActivity extends AppCompatActivity
         }
 
         if (savedInstanceState == null) {
-            replaceFragment(MyObjectEditFragment.newInstanceWithUriString(uriString));
+            replaceFragment(this, R.id.fragment_container, MyObjectEditFragment.newInstanceWithUriString(uriString));
         }
     }
 
@@ -277,11 +277,5 @@ public class ShareActivity extends AppCompatActivity
             };
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
         }
-    }
-
-    private void replaceFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                                   .replace(R.id.fragment_container, fragment, fragment.getClass().getName())
-                                   .commit();
     }
 }

@@ -31,7 +31,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -43,6 +42,8 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.replaceFragment;
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.replaceFragmentAndAddToBackStack;
 
 public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
@@ -112,7 +113,7 @@ public final class MainActivity extends AppCompatActivity
                         LOG.i("Signed in anonymously: userId = %s", CurrentUser.getInstance().getRequiredUserId());
 
                         if (savedInstanceState == null) {
-                            replaceFragment(NearbyObjectListFragment.newInstance());
+                            replaceFragment(this, R.id.fragment_container, NearbyObjectListFragment.newInstance());
                         }
                     })
                     .addOnFailureListener(this, e -> {
@@ -228,22 +229,22 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void showMyObjectListFragment() {
-        replaceFragmentAndAddToBackStack(MyObjectListFragment.newInstance());
+        replaceFragmentAndAddToBackStack(this, R.id.fragment_container, MyObjectListFragment.newInstance());
     }
 
     @Override
     public void showMyObjectViewFragment(@NonNull String key) {
-        replaceFragmentAndAddToBackStack(MyObjectViewFragment.newInstance(key));
+        replaceFragmentAndAddToBackStack(this, R.id.fragment_container, MyObjectViewFragment.newInstance(key));
     }
 
     @Override
     public void showMyObjectEditFragment() {
-        replaceFragmentAndAddToBackStack(MyObjectEditFragment.newInstance());
+        replaceFragmentAndAddToBackStack(this, R.id.fragment_container, MyObjectEditFragment.newInstance());
     }
 
     @Override
     public void showMyObjectEditFragment(@NonNull String key) {
-        replaceFragmentAndAddToBackStack(MyObjectEditFragment.newInstanceWithKey(key));
+        replaceFragmentAndAddToBackStack(this, R.id.fragment_container, MyObjectEditFragment.newInstanceWithKey(key));
     }
 
     @Override
@@ -288,18 +289,5 @@ public final class MainActivity extends AppCompatActivity
             };
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
         }
-    }
-
-    private void replaceFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                                   .replace(R.id.fragment_container, fragment, fragment.getClass().getName())
-                                   .commit();
-    }
-
-    private void replaceFragmentAndAddToBackStack(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                                   .addToBackStack(fragment.getClass().getName())
-                                   .replace(R.id.fragment_container, fragment, fragment.getClass().getName())
-                                   .commit();
     }
 }

@@ -28,7 +28,6 @@ import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -39,6 +38,8 @@ import java.util.List;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.replaceFragment;
 
 public class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
+        getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity
                     });
 
         if (savedInstanceState == null) {
-            replaceFragment(NearbyAreaListFragment.newInstance());
+            replaceFragment(this, R.id.fragment_container, NearbyAreaListFragment.newInstance());
         }
     }
 
@@ -261,18 +262,5 @@ public class MainActivity extends AppCompatActivity
             };
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
         }
-    }
-
-    private void replaceFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                                   .replace(R.id.fragment_container, fragment, fragment.getClass().getName())
-                                   .commit();
-    }
-
-    private void replaceFragmentAndAddToBackStack(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                                   .addToBackStack(fragment.getClass().getName())
-                                   .replace(R.id.fragment_container, fragment, fragment.getClass().getName())
-                                   .commit();
     }
 }

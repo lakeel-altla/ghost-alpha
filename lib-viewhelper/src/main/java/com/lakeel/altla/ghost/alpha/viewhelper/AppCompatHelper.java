@@ -1,5 +1,6 @@
 package com.lakeel.altla.ghost.alpha.viewhelper;
 
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -52,6 +53,21 @@ public final class AppCompatHelper {
         } else {
             throw new IllegalStateException("'fragment.activity' isn't an instance of the AppCompatActivity class.");
         }
+    }
+
+    public static void replaceFragment(@NonNull AppCompatActivity activity,
+                                       @IdRes int containerViewId, @NonNull Fragment fragment) {
+        activity.getSupportFragmentManager().beginTransaction()
+                .replace(containerViewId, fragment, fragment.getClass().getName())
+                .commit();
+    }
+
+    public static void replaceFragmentAndAddToBackStack(@NonNull AppCompatActivity activity,
+                                                        @IdRes int containerViewId, @NonNull Fragment fragment) {
+        activity.getSupportFragmentManager().beginTransaction()
+                .addToBackStack(fragment.getClass().getName())
+                .replace(containerViewId, fragment, fragment.getClass().getName())
+                .commit();
     }
 }
 
