@@ -28,6 +28,7 @@ import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -205,21 +206,16 @@ public final class MyObjectEditFragment extends Fragment {
             googleMap.getUiSettings().setAllGesturesEnabled(false);
 
             if (location == null) {
-                if (fragmentContext.checkLocationPermission()) {
-                    fusedLocationProviderClient
-                            .getLastLocation()
-                            .addOnSuccessListener(getActivity(), location -> {
-                                updateLocation(new LatLng(location.getLatitude(), location.getLongitude()), true);
-                            })
-                            .addOnFailureListener(getActivity(), e -> {
-                                LOG.e("Failed to get the last location.", e);
-                            });
+                Location lastLocation = fragmentContext.getLastLocation();
+                if (lastLocation == null) {
+                    location = null;
+                    fragmentContext.checkLocationSettings();
                 } else {
-                    fragmentContext.requestLocationPermission();
+                    location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
                 }
-            } else {
-                updateLocation(location, true);
             }
+
+            updateLocation(true);
         });
 
         buttonLoadRichLink.setOnClickListener(v -> {
@@ -265,9 +261,9 @@ public final class MyObjectEditFragment extends Fragment {
                     LOG.e("No virtual object exists: key = %s", key);
                 } else {
                     textInputEditTextUri.setText(object.getRequiredUriString());
-                    LatLng location = new LatLng(object.getRequiredGeoPoint().getLatitude(),
-                                                 object.getRequiredGeoPoint().getLongitude());
-                    updateLocation(location, true);
+                    location = new LatLng(object.getRequiredGeoPoint().getLatitude(),
+                                          object.getRequiredGeoPoint().getLongitude());
+                    updateLocation(true);
                 }
 
                 validateUri();
@@ -352,6 +348,8 @@ public final class MyObjectEditFragment extends Fragment {
         AppCompatHelper.getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         setHasOptionsMenu(true);
         getActivity().invalidateOptionsMenu();
+
+        fragmentContext.startLocationUpdates();
     }
 
     @Override
@@ -359,6 +357,7 @@ public final class MyObjectEditFragment extends Fragment {
         super.onStop();
         mapView.onStop();
         compositeDisposable.clear();
+        fragmentContext.stopLocationUpdates();
     }
 
     @Override
@@ -391,7 +390,8 @@ public final class MyObjectEditFragment extends Fragment {
 
         if (requestCode == REQUEST_CODE_LOCATION_PICKER) {
             if (resultCode == Activity.RESULT_OK) {
-                updateLocation(LocationPickerActivity.getLocation(data), true);
+                location = LocationPickerActivity.getLocation(data);
+                updateLocation(true);
             } else {
                 LOG.d("Picking a location is cancelled.");
             }
@@ -434,8 +434,7 @@ public final class MyObjectEditFragment extends Fragment {
         buttonLoadRichLink.setEnabled(error == null);
     }
 
-    private void updateLocation(@Nullable LatLng location, boolean adjustZoomLevel) {
-        this.location = location;
+    private void updateLocation(boolean adjustZoomLevel) {
         getActivity().invalidateOptionsMenu();
 
         if (marker != null) {
@@ -459,9 +458,13 @@ public final class MyObjectEditFragment extends Fragment {
 
     public interface FragmentContext {
 
-        boolean checkLocationPermission();
+        void checkLocationSettings();
 
-        void requestLocationPermission();
+        void startLocationUpdates();
+
+        void stopLocationUpdates();
+
+        Location getLastLocation();
 
         void back();
     }

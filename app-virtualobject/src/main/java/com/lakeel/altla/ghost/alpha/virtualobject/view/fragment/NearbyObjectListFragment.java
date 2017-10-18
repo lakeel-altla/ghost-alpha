@@ -156,24 +156,17 @@ public final class NearbyObjectListFragment extends Fragment {
                 Intent intent = builder.build();
                 startActivityForResult(intent, REQUEST_CODE_LOCATION_PICKER);
             } else {
-                if (fragmentContext.checkLocationPermission()) {
-                    fusedLocationProviderClient
-                            .getLastLocation()
-                            .addOnSuccessListener(getActivity(), location -> {
-                                if (location == null) {
-                                    LOG.w("The last location could not be resolved.");
-                                } else {
-                                    updateLocation(location);
-                                }
-                            })
-                            .addOnFailureListener(getActivity(), e -> {
-                                LOG.e("Failed to get the last location.", e);
-                            });
+                Location lastLocation = fragmentContext.getLastLocation();
+                if (lastLocation == null) {
+                    LOG.w("The last location could not be resolved.");
+                    location = null;
+                    LOG.w("Trying to check location settings.");
+                    fragmentContext.checkLocationSettings();
                 } else {
-                    fragmentContext.requestLocationPermission();
+                    location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                    searchObjects();
                 }
             }
-
         });
     }
 
@@ -214,17 +207,13 @@ public final class NearbyObjectListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        if (fragmentContext.checkLocationPermission()) {
-            initializeLocationRequest();
-        } else {
-            fragmentContext.requestLocationPermission();
-        }
+        fragmentContext.startLocationUpdates();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        fragmentContext.stopLocationUpdates();
 
         if (objectQuery != null) {
             if (objectQueryEventListener != null) {
@@ -242,11 +231,11 @@ public final class NearbyObjectListFragment extends Fragment {
 
         if (requestCode == REQUEST_CODE_LOCATION_PICKER) {
             if (resultCode == Activity.RESULT_OK) {
-                LatLng location = LocationPickerActivity.getLocation(data);
+                location = LocationPickerActivity.getLocation(data);
                 if (location == null) {
                     LOG.w("LocationPickerActivity returns null as a location.");
                 } else {
-                    updateLocation(location);
+                    searchObjects();
                 }
             } else {
                 LOG.d("Picking a location is cancelled.");
@@ -254,30 +243,8 @@ public final class NearbyObjectListFragment extends Fragment {
         }
     }
 
-    private void initializeLocationRequest() {
-        locationRequest = new LocationRequest();
-
-        locationRequest.setPriority(preferences.getLocationRequestPriority());
-        locationRequest.setInterval(preferences.getLocationUpdatesInterval() * MILLIS_1000);
-        locationRequest.setFastestInterval(FASTEST_INTERVAL_SECONDS * MILLIS_1000);
-
-        fragmentContext.checkLocationSettings(locationRequest);
-    }
-
-    private void updateLocation(@NonNull Location location) {
-        updateLocation(new LatLng(location.getLatitude(), location.getLongitude()));
-    }
-
-    private void updateLocation(@NonNull LatLng location) {
-        boolean locationChanged = false;
-
-        if (this.location == null) {
-            this.location = location;
-            locationChanged = true;
-        } else if (this.location.latitude != location.latitude || this.location.longitude != location.longitude) {
-            this.location = location;
-            locationChanged = true;
-        }
+    private void searchObjects() {
+        if (location == null) return;
 
         if (objectQuery == null) {
             int radius = preferences.getSearchRadius();
@@ -337,25 +304,25 @@ public final class NearbyObjectListFragment extends Fragment {
             };
             objectQuery.addObjectQueryEventListener(objectQueryEventListener);
         } else {
-            if (locationChanged) {
-                for (Item item : items) {
-                    item.updateDistance(location);
-                }
-                recyclerView.getAdapter().notifyDataSetChanged();
-
-                GeoPoint center = new GeoPoint(location.latitude, location.longitude);
-                objectQuery.setCenter(center);
+            for (Item item : items) {
+                item.updateDistance(location);
             }
+            recyclerView.getAdapter().notifyDataSetChanged();
+
+            GeoPoint center = new GeoPoint(location.latitude, location.longitude);
+            objectQuery.setCenter(center);
         }
     }
 
     public interface FragmentContext {
 
-        boolean checkLocationPermission();
+        void checkLocationSettings();
 
-        void requestLocationPermission();
+        void startLocationUpdates();
 
-        void checkLocationSettings(LocationRequest locationRequest);
+        void stopLocationUpdates();
+
+        Location getLastLocation();
 
         void showMyObjectListFragment();
     }

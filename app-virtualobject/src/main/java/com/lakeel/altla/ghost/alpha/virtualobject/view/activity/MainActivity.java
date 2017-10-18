@@ -1,6 +1,11 @@
 package com.lakeel.altla.ghost.alpha.virtualobject.view.activity;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -14,6 +19,7 @@ import com.lakeel.altla.ghost.alpha.virtualobject.app.MyApplication;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.component.ActivityComponent;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.module.ActivityModule;
+import com.lakeel.altla.ghost.alpha.virtualobject.helper.Preferences;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectEditFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectListFragment;
 import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.MyObjectViewFragment;
@@ -21,6 +27,7 @@ import com.lakeel.altla.ghost.alpha.virtualobject.view.fragment.NearbyObjectList
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -51,11 +58,27 @@ public final class MainActivity extends AppCompatActivity
 
     private static final int REQUEST_CHECK_SETTINGS = 2;
 
+    private static final int MILLIS_1000 = 1000;
+
+    private static final int FASTEST_INTERVAL_SECONDS = 5;
+
     private ActivityComponent activityComponent;
+
+    private Preferences preferences;
 
     private FirebaseAuth firebaseAuth;
 
     private boolean locationPermissionRequested;
+
+    private LocationRequest locationRequest;
+
+    private boolean locationUpdatesEnabled;
+
+    private FusedLocationProviderClient fusedLocationProviderClient;
+
+    private LocationCallback locationCallback;
+
+    private Location lastLocation;
 
     @NonNull
     public static Intent createStartActivityIntent(@NonNull Context context) {
@@ -74,10 +97,13 @@ public final class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         PreferenceManager.setDefaultValues(this, R.xml.preference, false);
+        preferences = new Preferences(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuth.signInAnonymously()
@@ -110,22 +136,6 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean checkLocationPermission() {
-        return EasyPermissions.hasPermissions(this, ACCESS_FINE_LOCATION);
-    }
-
-    @Override
-    public void requestLocationPermission() {
-        if (locationPermissionRequested) return;
-
-        locationPermissionRequested = true;
-        EasyPermissions.requestPermissions(this,
-                                           getString(R.string.rationale_location),
-                                           REQUEST_LOCATION_PERMISSION,
-                                           ACCESS_FINE_LOCATION);
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -146,15 +156,49 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void checkLocationSettings(LocationRequest locationRequest) {
-        LocationSettingsRequest settingsRequest = new LocationSettingsRequest.Builder()
+    public void checkLocationSettings() {
+        locationRequest = new LocationRequest();
+        locationRequest.setPriority(preferences.getLocationRequestPriority());
+        locationRequest.setInterval(preferences.getLocationUpdatesInterval() * MILLIS_1000);
+        locationRequest.setFastestInterval(FASTEST_INTERVAL_SECONDS * MILLIS_1000);
+
+        LocationSettingsRequest locationSettingsRequest = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest)
                 .build();
-        LocationSettingsChecker.checkLocationSettings(this, settingsRequest, REQUEST_CHECK_SETTINGS, this);
+        LocationSettingsChecker.checkLocationSettings(this, locationSettingsRequest, REQUEST_CHECK_SETTINGS, this);
+    }
+
+    @Override
+    public void startLocationUpdates() {
+        locationUpdatesEnabled = true;
+
+        if (checkLocationPermission()) {
+            checkLocationSettings();
+        } else {
+            requestLocationPermission();
+        }
+    }
+
+    @Override
+    public void stopLocationUpdates() {
+        locationUpdatesEnabled = false;
+
+        if (locationCallback != null) {
+            fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+            locationCallback = null;
+        }
+    }
+
+    @Override
+    public Location getLastLocation() {
+        return lastLocation;
     }
 
     @Override
     public void onLocationSettingsSatisfied() {
+        if (locationUpdatesEnabled) {
+            requestLocationUpdates();
+        }
     }
 
     @Override
@@ -204,6 +248,45 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public void back() {
         AppCompatHelper.back(this);
+    }
+
+    private boolean checkLocationPermission() {
+        return EasyPermissions.hasPermissions(this, ACCESS_FINE_LOCATION);
+    }
+
+    private void requestLocationPermission() {
+        if (locationPermissionRequested) return;
+
+        locationPermissionRequested = true;
+        EasyPermissions.requestPermissions(this,
+                                           getString(R.string.rationale_location),
+                                           REQUEST_LOCATION_PERMISSION,
+                                           ACCESS_FINE_LOCATION);
+    }
+
+    private void requestLocationUpdates() {
+        if (checkLocationPermission()) {
+            locationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    super.onLocationResult(locationResult);
+                    lastLocation = locationResult.getLastLocation();
+                    LOG.v("A location is updated: location = %s", lastLocation);
+                }
+
+                @Override
+                public void onLocationAvailability(LocationAvailability locationAvailability) {
+                    super.onLocationAvailability(locationAvailability);
+                    if (locationAvailability.isLocationAvailable()) {
+                        LOG.i("A location is available.");
+                    } else {
+                        LOG.w("A location is not available.");
+                        lastLocation = null;
+                    }
+                }
+            };
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        }
     }
 
     private void replaceFragment(Fragment fragment) {
