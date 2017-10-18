@@ -29,7 +29,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -39,6 +38,7 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.replaceFragment;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.setToolbarAsSupportActionBar;
+import static com.lakeel.altla.ghost.alpha.viewhelper.ToastHelper.showShortToast;
 
 public class ShareActivity extends AppCompatActivity
         implements ActivityScopeContext,
@@ -103,7 +103,7 @@ public class ShareActivity extends AppCompatActivity
         Intent intent = getIntent();
         if (!Intent.ACTION_SEND.equals(intent.getAction())) {
             LOG.e("An invalid action: action = %s", intent.getAction());
-            Toast.makeText(this, R.string.toast_invalid_intent_received, Toast.LENGTH_SHORT).show();
+            showShortToast(this, R.string.toast_invalid_intent_received);
             finish();
             return;
         }
@@ -111,7 +111,7 @@ public class ShareActivity extends AppCompatActivity
         String extraText = intent.getExtras().getString(Intent.EXTRA_TEXT);
         if (extraText == null) {
             LOG.e("'Intent.EXTRA_TEXT' is null.");
-            Toast.makeText(this, R.string.toast_invalid_intent_received, Toast.LENGTH_SHORT).show();
+            showShortToast(this, R.string.toast_invalid_intent_received);
             finish();
             return;
         }
@@ -119,7 +119,7 @@ public class ShareActivity extends AppCompatActivity
         String uriString = PatternHelper.parseUriString(extraText);
         if (uriString == null) {
             LOG.e("'Intent.EXTRA_TEXT' is not a URL string: %s", extraText);
-            Toast.makeText(this, R.string.toast_invalid_intent_received, Toast.LENGTH_SHORT).show();
+            showShortToast(this, R.string.toast_invalid_intent_received);
             finish();
             return;
         }
@@ -211,7 +211,7 @@ public class ShareActivity extends AppCompatActivity
     @Override
     public void onLocationSettingsNeverFixed() {
         LOG.e("Location settings are not satisfied. However, we have no way to fix them.");
-        Toast.makeText(this, getString(R.string.toast_location_settings_never_fixed), Toast.LENGTH_LONG).show();
+        showShortToast(this, R.string.toast_location_settings_never_fixed);
         finish();
     }
 
@@ -222,7 +222,7 @@ public class ShareActivity extends AppCompatActivity
                 if (resultCode == RESULT_OK) {
                     onLocationSettingsSatisfied();
                 } else {
-                    Toast.makeText(this, R.string.toast_enable_location, Toast.LENGTH_SHORT).show();
+                    showShortToast(this, R.string.toast_enable_location);
                     finish();
                 }
                 break;

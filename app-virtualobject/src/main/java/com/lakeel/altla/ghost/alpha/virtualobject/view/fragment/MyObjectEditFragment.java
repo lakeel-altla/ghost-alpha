@@ -45,7 +45,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -57,6 +56,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
+import static com.lakeel.altla.ghost.alpha.viewhelper.ToastHelper.showShortToast;
 
 public final class MyObjectEditFragment extends Fragment {
 
@@ -320,11 +320,11 @@ public final class MyObjectEditFragment extends Fragment {
 
                 virtualObjectApi.saveUserObject(savedObject, aVoid -> {
                     LOG.v("Saved an object: key = %s", savedObject.getKey());
-                    Toast.makeText(getContext(), R.string.toast_saved, Toast.LENGTH_SHORT).show();
+                    showShortToast(getContext(), R.string.toast_saved);
                     fragmentContext.back();
                 }, e -> {
                     LOG.e("Failed to save an object.", e);
-                    Toast.makeText(getContext(), R.string.toast_save_error, Toast.LENGTH_SHORT).show();
+                    showShortToast(getContext(), R.string.toast_save_error);
                     fragmentContext.back();
                 });
                 return true;
@@ -419,8 +419,7 @@ public final class MyObjectEditFragment extends Fragment {
                         textViewRichLinkTitle.setText(richLink.getTitleOrUri());
                     }, e -> {
                         LOG.e("Failed to load a rich link.", e);
-                        Toast.makeText(getContext(), R.string.toast_failed_to_load_rich_link, Toast.LENGTH_SHORT)
-                             .show();
+                        showShortToast(getContext(), R.string.toast_failed_to_load_rich_link);
                     });
             compositeDisposable.add(disposable);
         }

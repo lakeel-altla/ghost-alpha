@@ -30,7 +30,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -40,6 +39,8 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.replaceFragment;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.setToolbarAsSupportActionBar;
+import static com.lakeel.altla.ghost.alpha.viewhelper.ToastHelper.showLongToast;
+import static com.lakeel.altla.ghost.alpha.viewhelper.ToastHelper.showShortToast;
 
 public class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
         LOG.e("onPermissionsDenied(): %d, %s", requestCode, perms);
-        Toast.makeText(this, R.string.toast_permission_required, Toast.LENGTH_SHORT).show();
+        showShortToast(this, R.string.toast_permission_required);
         finish();
     }
 
@@ -198,7 +199,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLocationSettingsNeverFixed() {
         LOG.e("Location settings are not satisfied. However, we have no way to fix them.");
-        Toast.makeText(this, getString(R.string.toast_location_settings_never_fixed), Toast.LENGTH_LONG).show();
+        showLongToast(this, R.string.toast_location_settings_never_fixed);
         finish();
     }
 
@@ -209,7 +210,7 @@ public class MainActivity extends AppCompatActivity
                 if (resultCode == RESULT_OK) {
                     onLocationSettingsSatisfied();
                 } else {
-                    Toast.makeText(this, R.string.toast_enable_location, Toast.LENGTH_SHORT).show();
+                    showShortToast(this, R.string.toast_enable_location);
                     finish();
                 }
                 break;

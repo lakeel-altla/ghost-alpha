@@ -32,7 +32,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import javax.inject.Inject;
 
@@ -46,6 +45,7 @@ import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequire
 import static com.lakeel.altla.ghost.alpha.viewhelper.BundleHelper.getRequiredString;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredArguments;
+import static com.lakeel.altla.ghost.alpha.viewhelper.ToastHelper.showShortToast;
 
 public class MyObjectViewFragment extends Fragment {
 
@@ -163,8 +163,7 @@ public class MyObjectViewFragment extends Fragment {
                             textViewRichLinkTitle.setText(richLink.getTitleOrUri());
                         }, e -> {
                             LOG.e("Failed to load a rich link.", e);
-                            Toast.makeText(getContext(), R.string.toast_failed_to_load_rich_link, Toast.LENGTH_SHORT)
-                                 .show();
+                            showShortToast(getContext(), R.string.toast_failed_to_load_rich_link);
                         });
                 compositeDisposable.add(disposable);
             }
@@ -200,7 +199,7 @@ public class MyObjectViewFragment extends Fragment {
                             CurrentUser.getInstance().getRequiredUserId(), object.getKey(),
                             aVoid -> {
                                 fragmentContext.back();
-                                Toast.makeText(getContext(), R.string.toast_deleted, Toast.LENGTH_SHORT).show();
+                                showShortToast(getContext(), R.string.toast_deleted);
                             }, e -> {
                                 LOG.e("Failed to delete a virtual object.", e);
                             });
