@@ -1,11 +1,12 @@
 package com.lakeel.altla.ghost.alpha.nearbysearch.view.activity;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.tasks.OnCompleteListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
@@ -61,13 +62,13 @@ public final class MainActivity extends AppCompatActivity
 
     private LocationRequest locationRequest;
 
-    private boolean locationSettingsSatisfied;
-
     private boolean locationUpdatesEnabled;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
     private LocationCallback locationCallback;
+
+    private Location lastLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,8 +131,6 @@ public final class MainActivity extends AppCompatActivity
 
     @Override
     public void checkLocationSettings() {
-        locationSettingsSatisfied = false;
-
         locationRequest = new LocationRequest();
         locationRequest.setPriority(preferences.getLocationRequestPriority());
         locationRequest.setInterval(preferences.getLocationUpdatesInterval() * MILLIS_1000);
@@ -165,19 +164,12 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void getLastLocation(OnCompleteListener<Location> onCompleteListener) {
-        if (checkLocationPermission()) {
-            fusedLocationProviderClient.getLastLocation()
-                                       .addOnCompleteListener(this, onCompleteListener);
-        } else {
-            requestLocationPermission();
-        }
+    public Location getLastLocation() {
+        return lastLocation;
     }
 
     @Override
     public void onLocationSettingsSatisfied() {
-        locationSettingsSatisfied = true;
-
         if (locationUpdatesEnabled) {
             requestLocationUpdates();
         }
@@ -228,7 +220,25 @@ public final class MainActivity extends AppCompatActivity
 
     private void requestLocationUpdates() {
         if (checkLocationPermission()) {
-            locationCallback = new LocationCallback();
+            locationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    super.onLocationResult(locationResult);
+                    lastLocation = locationResult.getLastLocation();
+                    LOG.v("A location is updated: location = %s", lastLocation);
+                }
+
+                @Override
+                public void onLocationAvailability(LocationAvailability locationAvailability) {
+                    super.onLocationAvailability(locationAvailability);
+                    if (locationAvailability.isLocationAvailable()) {
+                        LOG.i("A location is available.");
+                    } else {
+                        LOG.w("A location is not available.");
+                        lastLocation = null;
+                    }
+                }
+            };
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
         }
     }

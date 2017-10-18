@@ -1,7 +1,6 @@
 package com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
@@ -140,21 +139,16 @@ public final class NearbyPlaceListFragment extends Fragment {
                 Intent intent = builder.build();
                 startActivityForResult(intent, REQUEST_CODE_LOCATION_PICKER);
             } else {
-                fragmentContext.getLastLocation(task -> {
-                    if (task.isSuccessful()) {
-                        Location lastLocation = task.getResult();
-                        if (lastLocation == null) {
-                            location = null;
-                            LOG.w("The last location could not be resolved.");
-                            fragmentContext.checkLocationSettings();
-                        } else {
-                            location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
-                            searchPlaces();
-                        }
-                    } else {
-                        LOG.e("Failed to get the last location.", task.getException());
-                    }
-                });
+                Location lastLocation = fragmentContext.getLastLocation();
+                if (lastLocation == null) {
+                    LOG.w("The last location could not be resolved.");
+                    location = null;
+                    LOG.w("Trying to check location settings.");
+                    fragmentContext.checkLocationSettings();
+                } else {
+                    location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                    searchPlaces();
+                }
             }
         });
     }
@@ -272,7 +266,7 @@ public final class NearbyPlaceListFragment extends Fragment {
 
         void stopLocationUpdates();
 
-        void getLastLocation(OnCompleteListener<Location> onCompleteListener);
+        Location getLastLocation();
 
         void showPlaceFragment(@NonNull String placeId, @NonNull String name);
     }
