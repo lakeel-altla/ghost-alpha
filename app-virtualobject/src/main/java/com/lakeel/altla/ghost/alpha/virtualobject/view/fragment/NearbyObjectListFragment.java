@@ -1,8 +1,5 @@
 package com.lakeel.altla.ghost.alpha.virtualobject.view.fragment;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.GeoPoint;
 
@@ -60,10 +57,6 @@ public final class NearbyObjectListFragment extends Fragment {
 
     private static final Log LOG = LogFactory.getLog(NearbyObjectListFragment.class);
 
-    private static final int MILLIS_1000 = 1000;
-
-    private static final int FASTEST_INTERVAL_SECONDS = 5;
-
     private static final float[] TEMP_DISTANCE_RESULTS = new float[1];
 
     private static final int REQUEST_CODE_LOCATION_PICKER = 100;
@@ -82,10 +75,6 @@ public final class NearbyObjectListFragment extends Fragment {
     private FragmentContext fragmentContext;
 
     private Preferences preferences;
-
-    private FusedLocationProviderClient fusedLocationProviderClient;
-
-    private LocationRequest locationRequest;
 
     private final List<Item> items = new ArrayList<>();
 
@@ -128,7 +117,6 @@ public final class NearbyObjectListFragment extends Fragment {
         if (getView() == null) throw new IllegalStateException("The root view could not be found.");
 
         preferences = new Preferences(this);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         recyclerView = getView().findViewById(R.id.recycler_view);
         recyclerView.setAdapter(new Adapter());
@@ -247,6 +235,9 @@ public final class NearbyObjectListFragment extends Fragment {
         if (location == null) return;
 
         if (objectQuery == null) {
+            items.clear();
+            recyclerView.getAdapter().notifyDataSetChanged();
+
             int radius = preferences.getSearchRadius();
             GeoPoint center = new GeoPoint(location.latitude, location.longitude);
             objectQuery = virtualObjectApi.queryUserObjects(CurrentUser.getInstance().getRequiredUserId(),
