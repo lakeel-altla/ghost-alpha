@@ -40,7 +40,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         addPreferencesFromResource(R.xml.preference);
         bindPreferenceSummaryToValue(findPreference(Preferences.KEY_SEARCH_RADIUS));
         bindPreferenceSummaryToValue(findPreference(Preferences.KEY_LOCATION_UPDATES_INTERVAL));
-        bindPreferenceSummaryToValue(findPreference(Preferences.KEY_LOCATION_UPDATES_DISTANCE));
         bindPreferenceSummaryToValue(findPreference(Preferences.KEY_LOCATION_REQUEST_PRIORITY));
     }
 

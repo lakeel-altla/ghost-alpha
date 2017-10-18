@@ -1,9 +1,7 @@
 package com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
@@ -25,6 +23,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -38,6 +37,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -53,13 +53,12 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 public final class NearbyPlaceListFragment extends Fragment {
 
     private static final Log LOG = LogFactory.getLog(NearbyPlaceListFragment.class);
-
-    private static final int MILLIS_1000 = 1000;
-
-    private static final int FASTEST_INTERVAL_SECONDS = 5;
 
     private static final int REQUEST_CODE_LOCATION_PICKER = 100;
 
@@ -74,9 +73,7 @@ public final class NearbyPlaceListFragment extends Fragment {
 
     private RecyclerView recyclerView;
 
-    private FusedLocationProviderClient fusedLocationProviderClient;
-
-    private LocationRequest locationRequest;
+    private ProgressBar progressBar;
 
     @Nullable
     private LatLng location;
@@ -111,15 +108,17 @@ public final class NearbyPlaceListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (getView() == null) throw new IllegalStateException("The root view could not be found.");
 
         preferences = new Preferences(this);
 
-        recyclerView = getView().findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setAdapter(new Adapter());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        FloatingActionButton floatingActionButton = getView().findViewById(R.id.fab);
+        progressBar = findViewById(R.id.progress_bar);
+        progressBar.setVisibility(GONE);
+
+        FloatingActionButton floatingActionButton = findViewById(R.id.fab);
         floatingActionButton.setOnClickListener(v -> {
             if (preferences.isManualLocationUpdatesEnabled()) {
                 LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getContext())
@@ -142,25 +141,25 @@ public final class NearbyPlaceListFragment extends Fragment {
                 startActivityForResult(intent, REQUEST_CODE_LOCATION_PICKER);
             } else {
                 if (fragmentContext.checkLocationPermission()) {
-                    fusedLocationProviderClient
-                            .getLastLocation()
-                            .addOnSuccessListener(getActivity(), location -> {
-                                if (location == null) {
-                                    LOG.w("The last location could not be resolved.");
-                                } else {
-                                    updateLocation(location);
-                                }
-                            })
-                            .addOnFailureListener(getActivity(), e -> {
-                                LOG.e("Failed to get the last location.", e);
-                            });
+                    fragmentContext.getLastLocation(task -> {
+                        if (task.isSuccessful()) {
+                            Location lastLocation = task.getResult();
+                            if (lastLocation == null) {
+                                location = null;
+                                LOG.w("The last location could not be resolved.");
+                            } else {
+                                location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                                searchPlaces();
+                            }
+                        } else {
+                            LOG.e("Failed to get the last location.", task.getException());
+                        }
+                    });
                 } else {
                     fragmentContext.requestLocationPermission();
                 }
             }
         });
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
     }
 
     @Override
@@ -199,10 +198,19 @@ public final class NearbyPlaceListFragment extends Fragment {
         super.onResume();
 
         if (fragmentContext.checkLocationPermission()) {
-            initializeLocationRequest();
+            fragmentContext.checkLocationSettings();
         } else {
             fragmentContext.requestLocationPermission();
         }
+
+        fragmentContext.startLocationUpdates();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        fragmentContext.stopLocationUpdates();
     }
 
     @Override
@@ -211,88 +219,60 @@ public final class NearbyPlaceListFragment extends Fragment {
 
         if (requestCode == REQUEST_CODE_LOCATION_PICKER) {
             if (resultCode == Activity.RESULT_OK) {
-                LatLng location = LocationPickerActivity.getLocation(data);
-                if (location == null) {
-                    LOG.w("LocationPickerActivity returns null as a location.");
-                } else {
-                    updateLocation(location);
-                }
+                location = LocationPickerActivity.getLocation(data);
+                searchPlaces();
             } else {
                 LOG.d("Picking a location is cancelled.");
             }
         }
     }
 
-    private void initializeLocationRequest() {
-        locationRequest = new LocationRequest();
-        locationRequest.setPriority(preferences.getLocationRequestPriority());
-        locationRequest.setInterval(preferences.getLocationUpdatesInterval() * MILLIS_1000);
-        locationRequest.setFastestInterval(FASTEST_INTERVAL_SECONDS * MILLIS_1000);
+    private void searchPlaces() {
+        if (location == null) return;
+        if (quering) return;
 
-        fragmentContext.checkLocationSettings(locationRequest);
-    }
+        quering = true;
 
-    private void updateLocation(@NonNull Location location) {
-        updateLocation(new LatLng(location.getLatitude(), location.getLongitude()));
-    }
+        double latitude = location.latitude;
+        double longitude = location.longitude;
+        int radius = preferences.getSearchRadius();
 
-    private void updateLocation(@NonNull LatLng location) {
-        LOG.i("The location is resolved: latitude,longitude = %f,%f", location.latitude, location.longitude);
+        items.clear();
+        recyclerView.getAdapter().notifyDataSetChanged();
 
-        if (quering) {
-            LOG.d("Skip a new query because the previous query is not finished.");
-            return;
-        }
+        progressBar.setVisibility(VISIBLE);
 
-        boolean shouldSearch = false;
-
-        if (this.location == null) {
-            this.location = location;
-            shouldSearch = true;
-        } else {
-            float[] results = new float[1];
-            Location.distanceBetween(this.location.latitude, this.location.longitude,
-                                     location.latitude, location.longitude, results);
-            float distance = results[0];
-
-            LOG.v("The location is moved: distance = %f", distance);
-
-            if (preferences.getLocationUpdatesDistance() <= distance) {
-                this.location = location;
-                shouldSearch = true;
-            }
-        }
-
-        if (shouldSearch) {
-            quering = true;
-
-            double latitude = this.location.latitude;
-            double longitude = this.location.longitude;
-            int radius = preferences.getSearchRadius();
-
-            Disposable disposable = Single
-                    .<List<Place>>create(e -> {
-                        List<Place> places = placeWebApi.searchPlaces(latitude, longitude, radius, null);
-                        e.onSuccess(places);
-                    })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(places -> {
-                        items.clear();
-                        for (Place place : places) {
-                            if (!place.permanentlyClosed) {
-                                items.add(Item.newInstance(place, latitude, longitude));
-                            }
+        Disposable disposable = Single
+                .<List<Place>>create(e -> {
+                    List<Place> places = placeWebApi.searchPlaces(latitude, longitude, radius, null);
+                    e.onSuccess(places);
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(places -> {
+                    for (Place place : places) {
+                        if (!place.permanentlyClosed) {
+                            items.add(Item.newInstance(place, latitude, longitude));
                         }
-                        Collections.sort(items, ItemComparator.INSTANCE);
-                        recyclerView.getAdapter().notifyDataSetChanged();
-                        quering = false;
-                    }, e -> {
-                        LOG.e("Failed to search nearby places.", e);
-                        quering = false;
-                    });
-            compositeDisposable.add(disposable);
-        }
+                    }
+
+                    Collections.sort(items, ItemComparator.INSTANCE);
+                    recyclerView.getAdapter().notifyDataSetChanged();
+
+                    progressBar.setVisibility(GONE);
+                    quering = false;
+                }, e -> {
+                    LOG.e("Failed to search nearby places.", e);
+
+                    progressBar.setVisibility(GONE);
+                    quering = false;
+                });
+        compositeDisposable.add(disposable);
+    }
+
+    private <T extends View> T findViewById(@IdRes int id) {
+        if (getView() == null) throw new IllegalStateException("The root view could not be found.");
+        return getView().findViewById(id);
     }
 
     public interface FragmentContext {
@@ -301,7 +281,13 @@ public final class NearbyPlaceListFragment extends Fragment {
 
         void requestLocationPermission();
 
-        void checkLocationSettings(LocationRequest locationRequest);
+        void checkLocationSettings();
+
+        void startLocationUpdates();
+
+        void stopLocationUpdates();
+
+        void getLastLocation(OnCompleteListener<Location> onCompleteListener);
 
         void showPlaceFragment(@NonNull String placeId, @NonNull String name);
     }

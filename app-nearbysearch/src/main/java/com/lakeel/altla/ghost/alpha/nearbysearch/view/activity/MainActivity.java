@@ -1,7 +1,11 @@
 package com.lakeel.altla.ghost.alpha.nearbysearch.view.activity;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.tasks.OnCompleteListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
@@ -11,11 +15,13 @@ import com.lakeel.altla.ghost.alpha.nearbysearch.app.MyApplication;
 import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.nearbysearch.di.component.ActivityComponent;
 import com.lakeel.altla.ghost.alpha.nearbysearch.di.module.ActivityModule;
+import com.lakeel.altla.ghost.alpha.nearbysearch.helper.Preferences;
 import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.NearbyPlaceListFragment;
 import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.PlaceFragment;
 import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -43,9 +49,25 @@ public final class MainActivity extends AppCompatActivity
 
     private static final int REQUEST_CHECK_SETTINGS = 2;
 
+    private static final int MILLIS_1000 = 1000;
+
+    private static final int FASTEST_INTERVAL_SECONDS = 5;
+
     private ActivityComponent activityComponent;
 
+    private Preferences preferences;
+
     private boolean locationPermissionRequested;
+
+    private LocationRequest locationRequest;
+
+    private boolean locationSettingsSatisfied;
+
+    private boolean locationUpdatesEnabled;
+
+    private FusedLocationProviderClient fusedLocationProviderClient;
+
+    private LocationCallback locationCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +79,13 @@ public final class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         PreferenceManager.setDefaultValues(this, R.xml.preference, false);
+        preferences = new Preferences(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         if (savedInstanceState == null) {
             replaceFragment(NearbyPlaceListFragment.newInstance());
@@ -120,7 +145,14 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void checkLocationSettings(LocationRequest locationRequest) {
+    public void checkLocationSettings() {
+        locationSettingsSatisfied = false;
+
+        locationRequest = new LocationRequest();
+        locationRequest.setPriority(preferences.getLocationRequestPriority());
+        locationRequest.setInterval(preferences.getLocationUpdatesInterval() * MILLIS_1000);
+        locationRequest.setFastestInterval(FASTEST_INTERVAL_SECONDS * MILLIS_1000);
+
         LocationSettingsRequest locationSettingsRequest = new LocationSettingsRequest.Builder()
                 .addLocationRequest(locationRequest)
                 .build();
@@ -128,7 +160,39 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void startLocationUpdates() {
+        locationUpdatesEnabled = true;
+
+        if (locationSettingsSatisfied) {
+            requestLocationUpdates();
+        }
+    }
+
+    @Override
+    public void stopLocationUpdates() {
+        locationUpdatesEnabled = false;
+
+        if (locationCallback != null) {
+            fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+            locationCallback = null;
+        }
+    }
+
+    @Override
+    public void getLastLocation(OnCompleteListener<Location> onCompleteListener) {
+        if (checkLocationPermission()) {
+            fusedLocationProviderClient.getLastLocation()
+                                       .addOnCompleteListener(this, onCompleteListener);
+        }
+    }
+
+    @Override
     public void onLocationSettingsSatisfied() {
+        locationSettingsSatisfied = true;
+
+        if (locationUpdatesEnabled) {
+            requestLocationUpdates();
+        }
     }
 
     @Override
@@ -158,6 +222,13 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public void showPlaceFragment(@NonNull String placeId, @NonNull String name) {
         replaceFragmentAndAddToBackStack(PlaceFragment.newInstance(placeId, name));
+    }
+
+    private void requestLocationUpdates() {
+        if (checkLocationPermission()) {
+            locationCallback = new LocationCallback();
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        }
     }
 
     private void replaceFragment(Fragment fragment) {
