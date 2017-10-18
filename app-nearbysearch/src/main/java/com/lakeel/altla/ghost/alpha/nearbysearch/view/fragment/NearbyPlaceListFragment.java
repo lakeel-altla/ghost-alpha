@@ -13,7 +13,6 @@ import com.lakeel.altla.ghost.alpha.nearbysearch.R;
 import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.nearbysearch.helper.Preferences;
 import com.lakeel.altla.ghost.alpha.nearbysearch.view.activity.SettingsActivity;
-import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.squareup.picasso.Picasso;
 
 import android.app.Activity;
@@ -22,7 +21,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -54,6 +52,8 @@ import io.reactivex.schedulers.Schedulers;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
 
 public final class NearbyPlaceListFragment extends Fragment {
 
@@ -110,14 +110,14 @@ public final class NearbyPlaceListFragment extends Fragment {
 
         preferences = new Preferences(this);
 
-        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView = findViewById(this, R.id.recycler_view);
         recyclerView.setAdapter(new Adapter());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        progressBar = findViewById(R.id.progress_bar);
+        progressBar = findViewById(this, R.id.progress_bar);
         progressBar.setVisibility(GONE);
 
-        FloatingActionButton floatingActionButton = findViewById(R.id.fab);
+        FloatingActionButton floatingActionButton = findViewById(this, R.id.fab);
         floatingActionButton.setOnClickListener(v -> {
             if (preferences.isManualLocationUpdatesEnabled()) {
                 LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getContext())
@@ -174,7 +174,7 @@ public final class NearbyPlaceListFragment extends Fragment {
         super.onStart();
 
         getActivity().setTitle(R.string.title_nearby_place_list);
-        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(false);
+        getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(false);
         setHasOptionsMenu(true);
     }
 
@@ -251,11 +251,6 @@ public final class NearbyPlaceListFragment extends Fragment {
                     quering = false;
                 });
         compositeDisposable.add(disposable);
-    }
-
-    private <T extends View> T findViewById(@IdRes int id) {
-        if (getView() == null) throw new IllegalStateException("The root view could not be found.");
-        return getView().findViewById(id);
     }
 
     public interface FragmentContext {

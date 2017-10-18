@@ -15,9 +15,6 @@ import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.richlink.RichLink;
 import com.lakeel.altla.ghost.alpha.richlink.RichLinkLoader;
-import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
-import com.lakeel.altla.ghost.alpha.viewhelper.BundleHelper;
-import com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
@@ -44,6 +41,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
+import static com.lakeel.altla.ghost.alpha.viewhelper.BundleHelper.getRequiredString;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredArguments;
 
 public class MyObjectViewFragment extends Fragment {
 
@@ -111,8 +113,7 @@ public class MyObjectViewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle arguments = FragmentHelper.getRequiredArguments(this);
-        key = BundleHelper.getRequiredString(arguments, ARG_KEY);
+        key = getRequiredString(getRequiredArguments(this), ARG_KEY);
     }
 
     @Override
@@ -123,12 +124,11 @@ public class MyObjectViewFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (getView() == null) throw new IllegalStateException("The root view could not be found.");
 
-        textViewUri = getView().findViewById(R.id.text_view_uri);
-        mapView = getView().findViewById(R.id.map_view);
-        imageViewRichLinkImage = getView().findViewById(R.id.image_view_rich_link_image);
-        textViewRichLinkTitle = getView().findViewById(R.id.text_view_rich_link_title);
+        textViewUri = findViewById(this, R.id.text_view_uri);
+        mapView = findViewById(this, R.id.map_view);
+        imageViewRichLinkImage = findViewById(this, R.id.image_view_rich_link_image);
+        textViewRichLinkTitle = findViewById(this, R.id.text_view_rich_link_title);
 
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(googleMap -> {
@@ -223,8 +223,8 @@ public class MyObjectViewFragment extends Fragment {
         mapView.onStart();
 
         getActivity().setTitle(R.string.title_my_object_view);
-        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
-        AppCompatHelper.getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+        getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
+        getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         setHasOptionsMenu(true);
         getActivity().invalidateOptionsMenu();
     }

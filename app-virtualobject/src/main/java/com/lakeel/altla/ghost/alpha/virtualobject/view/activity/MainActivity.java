@@ -42,6 +42,7 @@ import java.util.List;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 
 public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
@@ -101,7 +102,7 @@ public final class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
+        getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 

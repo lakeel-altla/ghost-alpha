@@ -13,7 +13,6 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.location.LocationSettingsChecker;
-import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.app.MyApplication;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
@@ -39,6 +38,7 @@ import java.util.List;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 
 public class ShareActivity extends AppCompatActivity
         implements ActivityScopeContext,
@@ -88,7 +88,7 @@ public class ShareActivity extends AppCompatActivity
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
+        getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 

@@ -6,9 +6,6 @@ import com.lakeel.altla.ghost.alpha.google.place.web.Place;
 import com.lakeel.altla.ghost.alpha.google.place.web.PlaceWebApi;
 import com.lakeel.altla.ghost.alpha.nearbysearch.R;
 import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScopeContext;
-import com.lakeel.altla.ghost.alpha.viewhelper.BundleHelper;
-import com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper;
-import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -27,6 +24,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
+import static com.lakeel.altla.ghost.alpha.viewhelper.BundleHelper.getRequiredString;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredArguments;
 
 public final class PlaceFragment extends Fragment {
 
@@ -61,7 +63,7 @@ public final class PlaceFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Arguments arguments = new Arguments(FragmentHelper.getRequiredArguments(this));
+        Arguments arguments = new Arguments(getRequiredArguments(this));
         placeId = arguments.getRequiredPlaceId();
         name = arguments.getRequiredName();
     }
@@ -76,7 +78,7 @@ public final class PlaceFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         if (getView() == null) throw new IllegalStateException("The root view could not be found.");
 
-        textViewDetailsJson = getView().findViewById(R.id.text_view_details_json);
+        textViewDetailsJson = findViewById(this, R.id.text_view_details_json);
     }
 
     @Override
@@ -84,8 +86,8 @@ public final class PlaceFragment extends Fragment {
         super.onStart();
 
         getActivity().setTitle(name);
-        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
-        AppCompatHelper.getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
+        getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
+        getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
 
         Disposable disposable = Single
                 .<Place>create(e -> {
@@ -130,7 +132,7 @@ public final class PlaceFragment extends Fragment {
 
         @NonNull
         String getRequiredPlaceId() {
-            return BundleHelper.getRequiredString(bundle, PLACE_ID);
+            return getRequiredString(bundle, PLACE_ID);
         }
 
         @NonNull
@@ -141,7 +143,7 @@ public final class PlaceFragment extends Fragment {
 
         @NonNull
         String getRequiredName() {
-            return BundleHelper.getRequiredString(bundle, NAME);
+            return getRequiredString(bundle, NAME);
         }
 
         @NonNull

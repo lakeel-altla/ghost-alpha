@@ -15,16 +15,15 @@ public final class FragmentHelper {
 
     @NonNull
     public static Bundle getRequiredArguments(@NonNull Fragment fragment) {
-        Bundle bundle = fragment.getArguments();
-        if (bundle == null) throw new IllegalStateException("The fragment has no arguments.");
-
-        return bundle;
+        Bundle arguments = fragment.getArguments();
+        Objects.requireNonNull(arguments, "The fragment has no arguments.");
+        return arguments;
     }
 
     @NonNull
     public static <T extends View> T findViewById(@NonNull Fragment fragment, @IdRes int id) {
         View root = fragment.getView();
-        Objects.requireNonNull(root);
+        Objects.requireNonNull(root, "The fragment has no root view.");
         T view = root.findViewById(id);
         Objects.requireNonNull(view);
         return view;

@@ -11,7 +11,6 @@ import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity;
 import com.lakeel.altla.ghost.alpha.richlink.RichLink;
 import com.lakeel.altla.ghost.alpha.richlink.RichLinkLoader;
-import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.Preferences;
@@ -52,6 +51,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
 
 public final class NearbyObjectListFragment extends Fragment {
 
@@ -114,15 +116,14 @@ public final class NearbyObjectListFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (getView() == null) throw new IllegalStateException("The root view could not be found.");
 
         preferences = new Preferences(this);
 
-        recyclerView = getView().findViewById(R.id.recycler_view);
+        recyclerView = findViewById(this, R.id.recycler_view);
         recyclerView.setAdapter(new Adapter());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        FloatingActionButton floatingActionButton = getView().findViewById(R.id.fab);
+        FloatingActionButton floatingActionButton = findViewById(this, R.id.fab);
         floatingActionButton.setOnClickListener(v -> {
             if (preferences.isManualLocationUpdatesEnabled()) {
                 LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getContext())
@@ -182,7 +183,7 @@ public final class NearbyObjectListFragment extends Fragment {
         super.onStart();
 
         getActivity().setTitle(R.string.title_nearby_object_list);
-        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(false);
+        getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(false);
         setHasOptionsMenu(true);
     }
 

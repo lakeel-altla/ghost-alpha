@@ -19,7 +19,6 @@ import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity;
 import com.lakeel.altla.ghost.alpha.richlink.RichLink;
 import com.lakeel.altla.ghost.alpha.richlink.RichLinkLoader;
-import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.PatternHelper;
@@ -55,6 +54,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
 
 public final class MyObjectEditFragment extends Fragment {
 
@@ -170,16 +172,15 @@ public final class MyObjectEditFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (getView() == null) throw new IllegalStateException("The root view could not be found.");
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
-        textInputLayoutUri = getView().findViewById(R.id.text_input_layout_uri);
-        textInputEditTextUri = getView().findViewById(R.id.text_input_edit_text_uri);
-        mapView = getView().findViewById(R.id.map_view);
-        imageViewRichLinkImage = getView().findViewById(R.id.image_view_rich_link_image);
-        textViewRichLinkTitle = getView().findViewById(R.id.text_view_rich_link_title);
-        buttonLoadRichLink = getView().findViewById(R.id.button_load_rich_link);
+        textInputLayoutUri = findViewById(this, R.id.text_input_layout_uri);
+        textInputEditTextUri = findViewById(this, R.id.text_input_edit_text_uri);
+        mapView = findViewById(this, R.id.map_view);
+        imageViewRichLinkImage = findViewById(this, R.id.image_view_rich_link_image);
+        textViewRichLinkTitle = findViewById(this, R.id.text_view_rich_link_title);
+        buttonLoadRichLink = findViewById(this, R.id.button_load_rich_link);
 
         textInputEditTextUri.addTextChangedListener(new TextWatcher() {
             @Override
@@ -222,7 +223,7 @@ public final class MyObjectEditFragment extends Fragment {
             loadRichLink();
         });
 
-        Button buttonPickLocation = getView().findViewById(R.id.button_pick_location);
+        Button buttonPickLocation = findViewById(this, R.id.button_pick_location);
         buttonPickLocation.setOnClickListener(v -> {
             LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getContext())
                     .setMyLocationEnabled(true)
@@ -344,8 +345,8 @@ public final class MyObjectEditFragment extends Fragment {
         mapView.onStart();
 
         getActivity().setTitle(R.string.title_my_object_edit);
-        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
-        AppCompatHelper.getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+        getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
+        getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         setHasOptionsMenu(true);
         getActivity().invalidateOptionsMenu();
 

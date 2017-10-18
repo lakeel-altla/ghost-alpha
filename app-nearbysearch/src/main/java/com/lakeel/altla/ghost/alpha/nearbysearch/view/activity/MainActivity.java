@@ -19,7 +19,6 @@ import com.lakeel.altla.ghost.alpha.nearbysearch.di.module.ActivityModule;
 import com.lakeel.altla.ghost.alpha.nearbysearch.helper.Preferences;
 import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.NearbyPlaceListFragment;
 import com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment.PlaceFragment;
-import com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper;
 
 import android.content.Intent;
 import android.location.Location;
@@ -37,6 +36,8 @@ import java.util.List;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.back;
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 
 public final class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
@@ -84,7 +85,7 @@ public final class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
+        getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -97,7 +98,7 @@ public final class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                AppCompatHelper.back(this);
+                back(this);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
