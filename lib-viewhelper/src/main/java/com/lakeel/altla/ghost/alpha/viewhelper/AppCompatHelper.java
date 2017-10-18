@@ -8,6 +8,9 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.widget.Toolbar;
+
+import java.util.Objects;
 
 public final class AppCompatHelper {
 
@@ -24,6 +27,12 @@ public final class AppCompatHelper {
         } else {
             NavUtils.navigateUpFromSameTask(activity);
         }
+    }
+
+    public static void setToolbarAsSupportActionBar(@NonNull AppCompatActivity activity, @IdRes int toolbarId) {
+        Toolbar toolbar = activity.findViewById(toolbarId);
+        Objects.requireNonNull(toolbar);
+        activity.setSupportActionBar(toolbar);
     }
 
     @NonNull

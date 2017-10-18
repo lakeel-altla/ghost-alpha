@@ -29,7 +29,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -40,6 +39,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.replaceFragment;
+import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.setToolbarAsSupportActionBar;
 
 public class MainActivity extends AppCompatActivity
         implements ActivityScopeContext,
@@ -94,8 +94,7 @@ public class MainActivity extends AppCompatActivity
         PreferenceManager.setDefaultValues(this, R.xml.preference, false);
         preferences = new Preferences(this);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setToolbarAsSupportActionBar(this, R.id.toolbar);
         getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
