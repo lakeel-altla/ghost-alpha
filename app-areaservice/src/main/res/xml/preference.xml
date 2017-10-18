@@ -1,0 +1,31 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference android:key="search_radius"
+                    android:title="@string/pref_title_search_radius"
+                    android:defaultValue="30"
+                    android:entries="@array/pref_entries_search_radius"
+                    android:entryValues="@array/pref_values_search_radius"
+                    android:negativeButtonText="@null"
+                    android:positiveButtonText="@null"/>
+
+    <ListPreference android:key="location_update_interval"
+                    android:title="@string/pref_title_location_update_interval"
+                    android:defaultValue="5"
+                    android:entries="@array/pref_entries_location_update_interval"
+                    android:entryValues="@array/pref_values_location_update_interval"
+                    android:negativeButtonText="@null"
+                    android:positiveButtonText="@null"/>
+
+    <SwitchPreference android:key="manual_location_updates_enabled"
+                      android:title="@string/pref_title_manual_location_updates_enabled"
+                      android:defaultValue="false"/>
+
+    <ListPreference android:key="location_request_priority"
+                    android:title="@string/pref_title_location_request_priority"
+                    android:defaultValue="0"
+                    android:entries="@array/pref_entries_location_request_priority"
+                    android:entryValues="@array/pref_values_location_request_priority"
+                    android:negativeButtonText="@null"
+                    android:positiveButtonText="@null"/>
+
+</PreferenceScreen>
