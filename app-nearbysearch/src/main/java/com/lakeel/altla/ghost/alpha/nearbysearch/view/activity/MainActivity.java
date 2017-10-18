@@ -109,22 +109,6 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean checkLocationPermission() {
-        return EasyPermissions.hasPermissions(this, ACCESS_FINE_LOCATION);
-    }
-
-    @Override
-    public void requestLocationPermission() {
-        if (locationPermissionRequested) return;
-
-        locationPermissionRequested = true;
-        EasyPermissions.requestPermissions(this,
-                                           getString(R.string.rationale_location),
-                                           REQUEST_LOCATION_PERMISSION,
-                                           ACCESS_FINE_LOCATION);
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -163,8 +147,10 @@ public final class MainActivity extends AppCompatActivity
     public void startLocationUpdates() {
         locationUpdatesEnabled = true;
 
-        if (locationSettingsSatisfied) {
-            requestLocationUpdates();
+        if (checkLocationPermission()) {
+            checkLocationSettings();
+        } else {
+            requestLocationPermission();
         }
     }
 
@@ -183,6 +169,8 @@ public final class MainActivity extends AppCompatActivity
         if (checkLocationPermission()) {
             fusedLocationProviderClient.getLastLocation()
                                        .addOnCompleteListener(this, onCompleteListener);
+        } else {
+            requestLocationPermission();
         }
     }
 
@@ -222,6 +210,20 @@ public final class MainActivity extends AppCompatActivity
     @Override
     public void showPlaceFragment(@NonNull String placeId, @NonNull String name) {
         replaceFragmentAndAddToBackStack(PlaceFragment.newInstance(placeId, name));
+    }
+
+    private boolean checkLocationPermission() {
+        return EasyPermissions.hasPermissions(this, ACCESS_FINE_LOCATION);
+    }
+
+    private void requestLocationPermission() {
+        if (locationPermissionRequested) return;
+
+        locationPermissionRequested = true;
+        EasyPermissions.requestPermissions(this,
+                                           getString(R.string.rationale_location),
+                                           REQUEST_LOCATION_PERMISSION,
+                                           ACCESS_FINE_LOCATION);
     }
 
     private void requestLocationUpdates() {

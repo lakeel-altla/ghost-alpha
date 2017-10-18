@@ -140,24 +140,21 @@ public final class NearbyPlaceListFragment extends Fragment {
                 Intent intent = builder.build();
                 startActivityForResult(intent, REQUEST_CODE_LOCATION_PICKER);
             } else {
-                if (fragmentContext.checkLocationPermission()) {
-                    fragmentContext.getLastLocation(task -> {
-                        if (task.isSuccessful()) {
-                            Location lastLocation = task.getResult();
-                            if (lastLocation == null) {
-                                location = null;
-                                LOG.w("The last location could not be resolved.");
-                            } else {
-                                location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
-                                searchPlaces();
-                            }
+                fragmentContext.getLastLocation(task -> {
+                    if (task.isSuccessful()) {
+                        Location lastLocation = task.getResult();
+                        if (lastLocation == null) {
+                            location = null;
+                            LOG.w("The last location could not be resolved.");
+                            fragmentContext.checkLocationSettings();
                         } else {
-                            LOG.e("Failed to get the last location.", task.getException());
+                            location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                            searchPlaces();
                         }
-                    });
-                } else {
-                    fragmentContext.requestLocationPermission();
-                }
+                    } else {
+                        LOG.e("Failed to get the last location.", task.getException());
+                    }
+                });
             }
         });
     }
@@ -196,20 +193,12 @@ public final class NearbyPlaceListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        if (fragmentContext.checkLocationPermission()) {
-            fragmentContext.checkLocationSettings();
-        } else {
-            fragmentContext.requestLocationPermission();
-        }
-
         fragmentContext.startLocationUpdates();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
         fragmentContext.stopLocationUpdates();
     }
 
@@ -276,10 +265,6 @@ public final class NearbyPlaceListFragment extends Fragment {
     }
 
     public interface FragmentContext {
-
-        boolean checkLocationPermission();
-
-        void requestLocationPermission();
 
         void checkLocationSettings();
 
