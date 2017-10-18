@@ -14,8 +14,6 @@ public final class Preferences {
 
     public static final String KEY_LOCATION_UPDATES_INTERVAL = "location_update_interval";
 
-    public static final String KEY_LOCATION_UPDATES_DISTANCE = "location_update_distance";
-
     public static final String KEY_MANUAL_LOCATION_UPDATES_ENABLED = "manual_location_updates_enabled";
 
     public static final String KEY_LOCATION_REQUEST_PRIORITY = "location_request_priority";
@@ -43,10 +41,6 @@ public final class Preferences {
 
     public int getLocationUpdatesInterval() {
         return Integer.parseInt(preferences.getString(KEY_LOCATION_UPDATES_INTERVAL, null));
-    }
-
-    public int getLocationUpdatesDistance() {
-        return Integer.parseInt(preferences.getString(KEY_LOCATION_UPDATES_DISTANCE, null));
     }
 
     public boolean isManualLocationUpdatesEnabled() {
