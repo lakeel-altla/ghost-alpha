@@ -64,7 +64,7 @@ public final class NearbySearchFragment extends Fragment {
     @BindView(R.id.recyclerViewVirtualObject)
     RecyclerView recyclerViewVirtualObject;
 
-    //    @BindView(R.id.fabSearch)
+    @BindView(R.id.fabSearch)
     FloatingActionButton fabSearch;
 
     private static final Log LOG = LogFactory.getLog(NearbySearchFragment.class);
@@ -104,6 +104,11 @@ public final class NearbySearchFragment extends Fragment {
             actionBar.setHomeButtonEnabled(false);
         }
 
+        fabSearch.setOnClickListener(v -> {
+            fabSearch.setClickable(false);
+            refreshItems();
+        });
+
         // VirtualObjects
         recyclerViewVirtualObject.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerViewVirtualObject.addItemDecoration(new ItemSpaceDecoration(24, Orientation.VERTICAL));
@@ -111,8 +116,6 @@ public final class NearbySearchFragment extends Fragment {
         virtualObjectAdapter = new VirtualObjectAdapter();
         AlphaAnimatorAdapter<VirtualObjectAdapter.ViewHolder> animatorAdapter = new AlphaAnimatorAdapter<>(virtualObjectAdapter, recyclerViewVirtualObject);
         recyclerViewVirtualObject.setAdapter(animatorAdapter);
-
-        refreshItems();
     }
 
     @Override
@@ -135,13 +138,6 @@ public final class NearbySearchFragment extends Fragment {
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    //    @OnClick(R.id.fabSearch)
-    public void onClickRefresh() {
-        fabSearch.setClickable(false);
-
-        refreshItems();
     }
 
     private void refreshItems() {
@@ -170,7 +166,7 @@ public final class NearbySearchFragment extends Fragment {
             virtualObjectAdapter.notifyDataSetChanged();
         }).always((state, resolved, rejected) -> {
             hideProgressBar();
-//            fabSearch.setClickable(true);
+            fabSearch.setClickable(true);
         });
     }
 
