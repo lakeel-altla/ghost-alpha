@@ -21,10 +21,9 @@ import javax.inject.Inject;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.lakeel.altla.ghost.alpha.rxhelper.RxHelper.disposeOnStop;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.BundleHelper.getRequiredString;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
@@ -36,8 +35,6 @@ public final class PlaceFragment extends Fragment {
 
     @Inject
     PlaceWebApi placeWebApi;
-
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private String placeId;
 
@@ -89,7 +86,7 @@ public final class PlaceFragment extends Fragment {
         getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
         getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
 
-        Disposable disposable = Single
+        disposeOnStop(this, Single
                 .<Place>create(e -> {
                     Place place = placeWebApi.getPlace(placeId, null);
                     e.onSuccess(place);
@@ -104,14 +101,8 @@ public final class PlaceFragment extends Fragment {
                     }
                 }, e -> {
                     LOG.e("Failed to get a place.", e);
-                });
-        compositeDisposable.add(disposable);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        compositeDisposable.clear();
+                })
+        );
     }
 
     private static final class Arguments {

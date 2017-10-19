@@ -43,6 +43,7 @@ dependencies {
     compile project(path: ':lib-api-virtualobject')
     compile project(path: ':lib-richlink')
     compile project(path: ':lib-viewhelper')
+    compile project(path: ':lib-rxhelper')
     compile "com.google.dagger:dagger:$daggerVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'

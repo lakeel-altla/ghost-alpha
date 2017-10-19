@@ -46,12 +46,11 @@ import javax.inject.Inject;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static com.lakeel.altla.ghost.alpha.rxhelper.RxHelper.disposeOnStop;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
 
@@ -63,8 +62,6 @@ public final class NearbyPlaceListFragment extends Fragment {
 
     @Inject
     PlaceWebApi placeWebApi;
-
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private FragmentContext fragmentContext;
 
@@ -179,12 +176,6 @@ public final class NearbyPlaceListFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        compositeDisposable.clear();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         fragmentContext.startLocationUpdates();
@@ -225,7 +216,7 @@ public final class NearbyPlaceListFragment extends Fragment {
 
         progressBar.setVisibility(VISIBLE);
 
-        Disposable disposable = Single
+        disposeOnStop(this, Single
                 .<List<Place>>create(e -> {
                     List<Place> places = placeWebApi.searchPlaces(latitude, longitude, radius, null);
                     e.onSuccess(places);
@@ -249,8 +240,8 @@ public final class NearbyPlaceListFragment extends Fragment {
 
                     progressBar.setVisibility(GONE);
                     quering = false;
-                });
-        compositeDisposable.add(disposable);
+                })
+        );
     }
 
     public interface FragmentContext {

@@ -48,10 +48,9 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.lakeel.altla.ghost.alpha.rxhelper.RxHelper.disposeOnStop;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
 
@@ -71,8 +70,6 @@ public final class NearbyObjectListFragment extends Fragment {
 
     @Inject
     RichLinkImageLoader richLinkImageLoader;
-
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private FragmentContext fragmentContext;
 
@@ -188,12 +185,6 @@ public final class NearbyObjectListFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        compositeDisposable.clear();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         fragmentContext.startLocationUpdates();
@@ -249,7 +240,8 @@ public final class NearbyObjectListFragment extends Fragment {
                     LOG.v("onObjectEntered: key = %s", object.getKey());
 
                     Item item = new Item(object);
-                    Disposable disposable = Completable
+
+                    disposeOnStop(NearbyObjectListFragment.this, Completable
                             .create(e -> {
                                 item.updateDistance(location);
                                 item.loadRichLink();
@@ -263,8 +255,8 @@ public final class NearbyObjectListFragment extends Fragment {
                                 recyclerView.getAdapter().notifyDataSetChanged();
                             }, e -> {
                                 LOG.w("Failed to load the rich link: " + object.getRequiredUriString(), e);
-                            });
-                    compositeDisposable.add(disposable);
+                            })
+                    );
                 }
 
                 @Override

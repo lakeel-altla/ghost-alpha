@@ -35,10 +35,9 @@ import javax.inject.Inject;
 
 import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.lakeel.altla.ghost.alpha.rxhelper.RxHelper.disposeOnStop;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
 
@@ -54,8 +53,6 @@ public class MyObjectListFragment extends Fragment {
 
     @Inject
     RichLinkImageLoader richLinkImageLoader;
-
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private FragmentContext fragmentContext;
 
@@ -122,12 +119,6 @@ public class MyObjectListFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        compositeDisposable.clear();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
 
@@ -153,7 +144,7 @@ public class MyObjectListFragment extends Fragment {
 
                         final int index = i;
 
-                        Disposable disposable = Completable
+                        disposeOnStop(this, Completable
                                 .create(e -> {
                                     item.loadRichLink();
                                     e.onComplete();
@@ -165,8 +156,8 @@ public class MyObjectListFragment extends Fragment {
                                 }, e -> {
                                     LOG.e(String.format("Failed to load the rich link: uri = %s",
                                                         object.getRequiredUriString()), e);
-                                });
-                        compositeDisposable.add(disposable);
+                                })
+                        );
                     }
                 },
                 e -> {

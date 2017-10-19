@@ -50,10 +50,9 @@ import javax.inject.Inject;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.lakeel.altla.ghost.alpha.rxhelper.RxHelper.disposeOnStop;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
 import static com.lakeel.altla.ghost.alpha.viewhelper.ToastHelper.showShortToast;
@@ -78,8 +77,6 @@ public final class MyObjectEditFragment extends Fragment {
 
     @Inject
     RichLinkImageLoader richLinkImageLoader;
-
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private FragmentContext fragmentContext;
 
@@ -357,7 +354,6 @@ public final class MyObjectEditFragment extends Fragment {
     public void onStop() {
         super.onStop();
         mapView.onStop();
-        compositeDisposable.clear();
         fragmentContext.stopLocationUpdates();
     }
 
@@ -407,7 +403,7 @@ public final class MyObjectEditFragment extends Fragment {
         String text = editable.toString();
         String uriString = PatternHelper.parseUriString(text);
         if (uriString != null) {
-            Disposable disposable = Single
+            disposeOnStop(this, Single
                     .<RichLink>create(e -> {
                         RichLink richLink = richLinkLoader.load(uriString);
                         e.onSuccess(richLink);
@@ -420,8 +416,8 @@ public final class MyObjectEditFragment extends Fragment {
                     }, e -> {
                         LOG.e("Failed to load a rich link.", e);
                         showShortToast(getContext(), R.string.toast_failed_to_load_rich_link);
-                    });
-            compositeDisposable.add(disposable);
+                    })
+            );
         }
     }
 

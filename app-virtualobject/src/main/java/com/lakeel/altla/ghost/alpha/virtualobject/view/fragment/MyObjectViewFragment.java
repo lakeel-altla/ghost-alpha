@@ -37,10 +37,9 @@ import javax.inject.Inject;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.lakeel.altla.ghost.alpha.rxhelper.RxHelper.disposeOnStop;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.BundleHelper.getRequiredString;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
@@ -63,8 +62,6 @@ public class MyObjectViewFragment extends Fragment {
 
     @Inject
     RichLinkImageLoader richLinkImageLoader;
-
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private String key;
 
@@ -151,7 +148,7 @@ public class MyObjectViewFragment extends Fragment {
                 textViewUri.setText(object.getRequiredUriString());
                 updateMapView();
 
-                Disposable disposable = Single
+                disposeOnStop(this, Single
                         .<RichLink>create(e -> {
                             RichLink richLink = richLinkLoader.load(object.getRequiredUriString());
                             e.onSuccess(richLink);
@@ -164,8 +161,8 @@ public class MyObjectViewFragment extends Fragment {
                         }, e -> {
                             LOG.e("Failed to load a rich link.", e);
                             showShortToast(getContext(), R.string.toast_failed_to_load_rich_link);
-                        });
-                compositeDisposable.add(disposable);
+                        })
+                );
             }
         }, e -> {
             LOG.e("Failed to find a virtual object.", e);
@@ -232,7 +229,6 @@ public class MyObjectViewFragment extends Fragment {
     public void onStop() {
         super.onStop();
         mapView.onStop();
-        compositeDisposable.clear();
     }
 
     @Override

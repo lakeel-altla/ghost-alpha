@@ -36,8 +36,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.disposables.CompositeDisposable;
-
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
 
 public final class NearbyAreaListFragment extends Fragment {
@@ -51,8 +49,6 @@ public final class NearbyAreaListFragment extends Fragment {
 
     @Inject
     RichLinkImageLoader richLinkImageLoader;
-
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private FragmentContext fragmentContext;
 
@@ -108,12 +104,6 @@ public final class NearbyAreaListFragment extends Fragment {
         getActivity().setTitle(R.string.title_nearby_area_list);
         AppCompatHelper.getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(false);
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        compositeDisposable.clear();
     }
 
     @Override
