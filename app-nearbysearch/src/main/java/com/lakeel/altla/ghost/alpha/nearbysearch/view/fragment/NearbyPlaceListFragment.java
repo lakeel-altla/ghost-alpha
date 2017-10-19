@@ -173,6 +173,9 @@ public final class NearbyPlaceListFragment extends Fragment {
         getActivity().setTitle(R.string.title_nearby_place_list);
         getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(false);
         setHasOptionsMenu(true);
+
+        quering = false;
+        progressBar.setVisibility(GONE);
     }
 
     @Override
