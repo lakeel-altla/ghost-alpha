@@ -25,7 +25,7 @@ public final class InitialDrawableBuilder {
         this.text = Objects.requireNonNull(text);
         if (this.text.length() < 0)
             throw new IllegalArgumentException("Length of argument 'text' must be greater than zero.");
-        this.configuration = Objects.requireNonNull(configuration);
+        this.configuration = configuration;
     }
 
     @NonNull

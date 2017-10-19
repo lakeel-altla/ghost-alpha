@@ -12,11 +12,6 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.Main" parent="AppTheme.Base">
-        <!-- Change status bar color to transparent when app launch. -->
-        <item name="android:statusBarColor">@color/transparent</item>
-    </style>
-
     <style name="AppTheme.NoTitleBar" parent="AppTheme.Base">
         <!-- Change status bar color to transparent when app launch. -->
         <item name="android:statusBarColor">@color/transparent</item>

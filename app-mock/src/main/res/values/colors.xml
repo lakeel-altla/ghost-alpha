@@ -8,6 +8,7 @@
 
     <color name="placeholder">#b4b4b4</color>
     <color name="transparent">#00000000</color>
+    <color name="toolbarTransparent">#15000000</color>
     <color name="cardViewOverlay">#70000000</color>
     <color name="icon">#54000000</color>
 

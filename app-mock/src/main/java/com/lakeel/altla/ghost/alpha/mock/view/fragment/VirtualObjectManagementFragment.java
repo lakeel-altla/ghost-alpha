@@ -126,7 +126,7 @@ public final class VirtualObjectManagementFragment extends Fragment {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_virtual_object_management, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_my_virtual_object, parent, false);
             return new ViewHolder(view);
         }
 

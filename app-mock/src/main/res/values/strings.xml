@@ -2,6 +2,7 @@
 
     <string name="app_name">ghost-alpha-mock</string>
     <string name="menu_other">Others</string>
+    <string name="menu_filter">Filter</string>
 
     <string name="title_others">Others</string>
     <string name="title_open_source_libraries">Open source libraries</string>
@@ -27,6 +28,7 @@
     <string name="textView_terms_of_service">Terms of Service</string>
     <string name="textView_open_source_libraries">Open source libraries</string>
     <string name="textView_privacy_policy">Privacy policy</string>
+    <string name="textView_format_distance">%d m</string>
 
     <string name="transition_imageView">transitionImageView</string>
     <string name="transition_textView">transitionTextView</string>

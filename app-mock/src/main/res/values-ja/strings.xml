@@ -2,6 +2,7 @@
 <resources>
 
     <string name="menu_other">その他</string>
+    <string name="menu_filter">フィルタ</string>
 
     <string name="title_others">その他</string>
     <string name="title_settings">設定</string>

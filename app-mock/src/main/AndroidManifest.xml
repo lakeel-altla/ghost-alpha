@@ -19,9 +19,9 @@
             android:value="@string/google_api_key" />
 
         <activity
-            android:name=".view.activity.MainActivity"
+            android:name=".view.activity.NearbySearchActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.Main">
+            android:theme="@style/AppTheme.TitleBar">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

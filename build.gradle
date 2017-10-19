@@ -43,9 +43,9 @@ allprojects {
         parcelerVersion = '1.1.9'
         jdeferredVersion = '1.2.6'
         aboutlibrariesVersion = '5.9.7@aar'
-        materialishprogressVersion = '1.7'
         chatmessageviewVersion = '1.3.5'
         materialstepperVersion = '4.3.1'
+        recyclerviewanimatorsVersion = '0.3.0-SNAPSHOT@aar'
     }
     repositories {
         jcenter()
