@@ -2,6 +2,7 @@ package com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.google.maps.urls.SearchUrlBuilder;
@@ -11,6 +12,7 @@ import com.lakeel.altla.ghost.alpha.google.place.web.PlaceWebApi;
 import com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity;
 import com.lakeel.altla.ghost.alpha.nearbysearch.R;
 import com.lakeel.altla.ghost.alpha.nearbysearch.di.ActivityScopeContext;
+import com.lakeel.altla.ghost.alpha.nearbysearch.helper.ObjectColorSource;
 import com.lakeel.altla.ghost.alpha.nearbysearch.helper.Preferences;
 import com.lakeel.altla.ghost.alpha.nearbysearch.view.activity.SettingsActivity;
 import com.squareup.picasso.Picasso;
@@ -62,6 +64,9 @@ public final class NearbyPlaceListFragment extends Fragment {
 
     @Inject
     PlaceWebApi placeWebApi;
+
+    @Inject
+    ObjectColorSource objectColorSource;
 
     private FragmentContext fragmentContext;
 
@@ -298,6 +303,18 @@ public final class NearbyPlaceListFragment extends Fragment {
         }
 
         @Override
+        public void onViewRecycled(ViewHolder holder) {
+            super.onViewRecycled(holder);
+
+            Picasso picasso = Picasso.with(getContext());
+            picasso.cancelRequest(holder.imageViewIcon);
+            picasso.cancelRequest(holder.imageViewPhoto);
+
+            holder.imageViewIcon.setImageDrawable(null);
+            holder.imageViewPhoto.setImageDrawable(null);
+        }
+
+        @Override
         public void onBindViewHolder(Adapter.ViewHolder holder, int position) {
             Item item = items.get(position);
 
@@ -311,7 +328,10 @@ public final class NearbyPlaceListFragment extends Fragment {
                 picasso.load(uri)
                        .into(holder.imageViewPhoto);
             } else {
-                holder.imageViewPhoto.setImageDrawable(null);
+                String letter = item.place.name.substring(0, 1);
+                int color = objectColorSource.get(item.place.name);
+                TextDrawable drawable = TextDrawable.builder().buildRect(letter, color);
+                holder.imageViewPhoto.setImageDrawable(drawable);
             }
 
             holder.textViewName.setText(item.place.name);

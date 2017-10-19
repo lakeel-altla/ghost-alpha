@@ -2,7 +2,9 @@ package com.lakeel.altla.ghost.alpha.nearbysearch.di.module;
 
 import com.lakeel.altla.ghost.alpha.google.place.web.PlaceWebApi;
 import com.lakeel.altla.ghost.alpha.nearbysearch.BuildConfig;
+import com.lakeel.altla.ghost.alpha.nearbysearch.R;
 import com.lakeel.altla.ghost.alpha.nearbysearch.app.MyApplication;
+import com.lakeel.altla.ghost.alpha.nearbysearch.helper.ObjectColorSource;
 
 import android.support.annotation.NonNull;
 
@@ -44,5 +46,12 @@ public class ApplicationModule {
     @Provides
     PlaceWebApi providePlaceWebApi(@Named(Names.GOOGLE_API_KEY) String key, OkHttpClient httpClient) {
         return new PlaceWebApi(key, httpClient);
+    }
+
+    @Singleton
+    @Provides
+    ObjectColorSource provideObjectColorSource() {
+        int[] colors = application.getResources().getIntArray(R.array.letter_tile_colors);
+        return new ObjectColorSource(colors);
     }
 }

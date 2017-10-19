@@ -44,7 +44,8 @@ dependencies {
     compile project(path: ':lib-rxhelper')
     compile "com.google.dagger:dagger:$daggerVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+    compile "com.amulyakhare:com.amulyakhare.textdrawable:$textdrawableVersion"
     compile "io.reactivex.rxjava2:rxandroid:$rxandroidVersion"
     compile "io.reactivex.rxjava2:rxjava:$rxjavaVersion"
-    compile 'com.android.support:multidex:1.0.1'
+    compile "com.android.support:multidex:$multidexVersion"
 }

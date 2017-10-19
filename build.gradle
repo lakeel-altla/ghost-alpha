@@ -20,6 +20,7 @@ allprojects {
         buildToolsVersion = "26.0.1"
         minSdkVersion = 19
         targetSdkVersion = 26
+        multidexVersion = '1.0.1'
         supportVersion = '26.1.0'
         gmsVersion = '11.4.2'
         retrofitVersion = '2.3.0'
@@ -32,6 +33,7 @@ allprojects {
         jsoupVersion = '1.9.2'
         rxjavaVersion = '2.1.5'
         rxandroidVersion = '2.0.1'
+        textdrawableVersion = '1.0.1'
         junitVersion = '4.12'
     }
     repositories {

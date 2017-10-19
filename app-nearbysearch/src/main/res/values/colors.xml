@@ -5,4 +5,15 @@
     <color name="app_theme_primary_dark">#303F9F</color>
     <color name="app_theme_accent">#FF4081</color>
 
+    <array name="letter_tile_colors">
+        <item>#f16364</item>
+        <item>#f58559</item>
+        <item>#f9a43e</item>
+        <item>#e4c62e</item>
+        <item>#67bf74</item>
+        <item>#59a2be</item>
+        <item>#2093cd</item>
+        <item>#ad62a7</item>
+    </array>
+
 </resources>
