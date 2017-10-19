@@ -9,17 +9,16 @@
 
     <string name="format_nearby_place_distance">%.1f m</string>
 
-    <string name="toast_permission_required">The permission is required.</string>
+    <string name="toast_permission_required">Permission required</string>
     <string name="toast_location_settings_never_fixed">Location settings are inadequate, and cannot be fixed here. Fix
-        in
-        Settings.
+        in Settings.
     </string>
-    <string name="toast_enable_location">Enable the location.</string>
+    <string name="toast_enable_location">Enable location settings</string>
 
     <string name="rationale_location">This app would like to access this device\'s location to search places.
     </string>
 
-    <string name="pref_title_search_radius">The search radius</string>
+    <string name="pref_title_search_radius">Search radius</string>
     <string-array name="pref_entries_search_radius">
         <item>30 meters</item>
         <item>50 meters</item>
@@ -30,7 +29,7 @@
         <item>50</item>
         <item>100</item>
     </string-array>
-    <string name="pref_title_location_update_interval">The location updates interval</string>
+    <string name="pref_title_location_update_interval">Location updates interval</string>
     <string-array name="pref_entries_location_update_interval">
         <item>5 sec</item>
         <item>10 sec</item>
@@ -43,8 +42,8 @@
         <item>30</item>
         <item>60</item>
     </string-array>
-    <string name="pref_title_manual_location_updates_enabled">Enable the manual location updates</string>
-    <string name="pref_title_location_request_priority">The location request priority</string>
+    <string name="pref_title_manual_location_updates_enabled">Enable manual location updates</string>
+    <string name="pref_title_location_request_priority">Location request priority</string>
     <string-array name="pref_entries_location_request_priority">
         <item>High accuracy</item>
         <item>Balanced power accuracy</item>
@@ -57,6 +56,6 @@
         <item>2</item>
         <item>3</item>
     </string-array>
-    <string name="pref_title_place_details_view_enabled">Enable the place details view</string>
+    <string name="pref_title_place_details_view_enabled">Enable place details view</string>
 
 </resources>

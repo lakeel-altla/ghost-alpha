@@ -17,14 +17,13 @@
 
     <string name="toast_saved">Saved.</string>
     <string name="toast_deleted">Deleted.</string>
-    <string name="toast_save_error">Failed to save.</string>
-    <string name="toast_failed_to_load_rich_link">Failed to load the rich link.</string>
-    <string name="toast_permission_required">The permission is required.</string>
-    <string name="toast_enable_location">Enable the location.</string>
-    <string name="toast_invalid_intent_received">Received an invalid data</string>
+    <string name="toast_save_error">Failed to save</string>
+    <string name="toast_failed_to_load_rich_link">Failed to load rich link</string>
+    <string name="toast_permission_required">Permission required</string>
+    <string name="toast_enable_location">Enable Location Settings</string>
+    <string name="toast_invalid_intent_received">Received invalid data</string>
     <string name="toast_location_settings_never_fixed">Location settings are inadequate, and cannot be fixed here. Fix
-        in
-        Settings.
+        in Settings.
     </string>
     <string name="rationale_location">This app would like to access this device\'s location to manage virtual objects.
     </string>
@@ -35,12 +34,12 @@
     <string name="format_nearby_object_distance">%.1f m</string>
 
     <string name="hint_uri">URL (required)</string>
-    <string name="input_error_uri">Input a valid URL.</string>
+    <string name="input_error_uri">Input valid URL</string>
 
-    <string name="button_pick_location">Pick a location</string>
-    <string name="button_load_rich_link">Load the rich link</string>
+    <string name="button_pick_location">Pick Location</string>
+    <string name="button_load_rich_link">Load Rich Link</string>
 
-    <string name="pref_title_search_radius">The search radius</string>
+    <string name="pref_title_search_radius">Search radius</string>
     <string-array name="pref_entries_search_radius">
         <item>30 meters</item>
         <item>50 meters</item>
@@ -51,7 +50,7 @@
         <item>50</item>
         <item>100</item>
     </string-array>
-    <string name="pref_title_location_update_interval">The location updates interval</string>
+    <string name="pref_title_location_update_interval">Location updates interval</string>
     <string-array name="pref_entries_location_update_interval">
         <item>5 sec</item>
         <item>10 sec</item>
@@ -64,8 +63,8 @@
         <item>30</item>
         <item>60</item>
     </string-array>
-    <string name="pref_title_manual_location_updates_enabled">Enable the manual location updates</string>
-    <string name="pref_title_location_request_priority">The location request priority</string>
+    <string name="pref_title_manual_location_updates_enabled">Enable manual location updates</string>
+    <string name="pref_title_location_request_priority">Location request priority</string>
     <string-array name="pref_entries_location_request_priority">
         <item>High accuracy</item>
         <item>Balanced power accuracy</item>
