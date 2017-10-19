@@ -8,7 +8,7 @@ import android.transition.TransitionInflater;
 
 import com.lakeel.altla.ghost.alpha.mock.R;
 import com.lakeel.altla.ghost.alpha.mock.helper.FragmentHelper;
-import com.lakeel.altla.ghost.alpha.mock.view.fragment.VirtualObjectManagementFragment;
+import com.lakeel.altla.ghost.alpha.mock.view.fragment.MyObjectsFragment;
 
 public class ObjectManagementActivity extends AppCompatActivity {
 
@@ -28,7 +28,7 @@ public class ObjectManagementActivity extends AppCompatActivity {
         // Enable window transition for activity.
         getWindow().setExitTransition(TransitionInflater.from(getApplicationContext()).inflateTransition(R.transition.move));
 
-        FragmentHelper.showFragment(getSupportFragmentManager(), VirtualObjectManagementFragment.newInstance());
+        FragmentHelper.showFragment(getSupportFragmentManager(), MyObjectsFragment.newInstance());
     }
 
     @Override
