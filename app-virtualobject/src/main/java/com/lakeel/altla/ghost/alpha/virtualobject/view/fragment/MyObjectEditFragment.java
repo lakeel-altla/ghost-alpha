@@ -1,7 +1,5 @@
 package com.lakeel.altla.ghost.alpha.virtualobject.view.fragment;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -16,6 +14,7 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObject;
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
+import com.lakeel.altla.ghost.alpha.google.maps.MapViewLifecycle;
 import com.lakeel.altla.ghost.alpha.locationpicker.LocationPickerActivity;
 import com.lakeel.altla.ghost.alpha.richlink.RichLink;
 import com.lakeel.altla.ghost.alpha.richlink.RichLinkLoader;
@@ -92,13 +91,9 @@ public final class MyObjectEditFragment extends Fragment {
     @Nullable
     private LatLng location;
 
-    private FusedLocationProviderClient fusedLocationProviderClient;
-
     private TextInputLayout textInputLayoutUri;
 
     private TextInputEditText textInputEditTextUri;
-
-    private MapView mapView;
 
     private Button buttonLoadRichLink;
 
@@ -170,11 +165,8 @@ public final class MyObjectEditFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
-
         textInputLayoutUri = findViewById(this, R.id.text_input_layout_uri);
         textInputEditTextUri = findViewById(this, R.id.text_input_edit_text_uri);
-        mapView = findViewById(this, R.id.map_view);
         imageViewRichLinkImage = findViewById(this, R.id.image_view_rich_link_image);
         textViewRichLinkTitle = findViewById(this, R.id.text_view_rich_link_title);
         buttonLoadRichLink = findViewById(this, R.id.button_load_rich_link);
@@ -195,7 +187,8 @@ public final class MyObjectEditFragment extends Fragment {
             }
         });
 
-        mapView.onCreate(savedInstanceState);
+        MapView mapView = findViewById(this, R.id.map_view);
+        MapViewLifecycle.manage(this, mapView);
         mapView.getMapAsync(googleMap -> {
             this.googleMap = googleMap;
 
@@ -331,15 +324,8 @@ public final class MyObjectEditFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-    }
-
-    @Override
     public void onStart() {
         super.onStart();
-        mapView.onStart();
 
         getActivity().setTitle(R.string.title_my_object_edit);
         getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
@@ -353,32 +339,7 @@ public final class MyObjectEditFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        mapView.onStop();
         fragmentContext.stopLocationUpdates();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mapView.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
     }
 
     @Override

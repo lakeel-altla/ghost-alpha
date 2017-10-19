@@ -17,6 +17,7 @@ import com.lakeel.altla.ghost.alpha.richlink.RichLink;
 import com.lakeel.altla.ghost.alpha.richlink.RichLinkLoader;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
+import com.lakeel.altla.ghost.alpha.google.maps.MapViewLifecycle;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
 
 import android.content.Context;
@@ -68,8 +69,6 @@ public class MyObjectViewFragment extends Fragment {
     private FragmentContext fragmentContext;
 
     private TextView textViewUri;
-
-    private MapView mapView;
 
     private ImageView imageViewRichLinkImage;
 
@@ -123,11 +122,11 @@ public class MyObjectViewFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         textViewUri = findViewById(this, R.id.text_view_uri);
-        mapView = findViewById(this, R.id.map_view);
         imageViewRichLinkImage = findViewById(this, R.id.image_view_rich_link_image);
         textViewRichLinkTitle = findViewById(this, R.id.text_view_rich_link_title);
 
-        mapView.onCreate(savedInstanceState);
+        MapView mapView = findViewById(this, R.id.map_view);
+        MapViewLifecycle.manage(this, mapView);
         mapView.getMapAsync(googleMap -> {
             this.googleMap = googleMap;
 
@@ -208,51 +207,14 @@ public class MyObjectViewFragment extends Fragment {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-    }
-
-    @Override
     public void onStart() {
         super.onStart();
-        mapView.onStart();
 
         getActivity().setTitle(R.string.title_my_object_view);
         getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
         getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         setHasOptionsMenu(true);
         getActivity().invalidateOptionsMenu();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mapView.onStop();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mapView.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
     }
 
     private void updateMapView() {
