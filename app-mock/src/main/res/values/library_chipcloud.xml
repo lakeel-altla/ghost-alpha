@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <!-- Author section -->
+    <string name="library_chipcloud_author">Jonathan Fisher</string>
+    <string name="library_chipcloud_authorWebsite">https://www.birmingham.ac.uk/schools/government-society/departments/international-development/staff/profiles/fisher-jonathan.aspx</string>
+    <!-- Library section -->
+    <string name="library_chipcloud_libraryName">ChipCloud</string>
+    <string name="library_chipcloud_libraryDescription">An easy to use implementation of Google\'s Material Design \'Chip\' ui element. Version 3 was a fresh rewrite of the original quickly hacked together library, version 3.0.4 introduces support for images/avatars and the close icon and matches the Google spec. The previous iteration was becoming popular as an easy replacement for a dropdown/spinner with improved UX and more efficient use of screen real estate. Versions 3+ have an improved API with a fraction of the code. The biggest change is it\'s now not a custom Layout, it\'s a simple helper class that adds Chips to a supplied ViewGroup, complex layout is delegated to dedicated layout libraries such as FlexboxLayout.</string>
+    <string name="library_chipcloud_libraryWebsite">https://github.com/fiskurgit/ChipCloud</string>
+    <string name="library_chipcloud_libraryVersion">3.0.5</string>
+    <!-- OpenSource section -->
+    <string name="library_chipcloud_isOpenSource">true</string>
+    <string name="library_chipcloud_repositoryLink">https://github.com/fiskurgit/ChipCloud</string>
+    <!-- ClassPath for autoDetect section -->
+    <!-- License section -->
+    <string name="library_chipcloud_licenseId">mit</string>
+</resources>

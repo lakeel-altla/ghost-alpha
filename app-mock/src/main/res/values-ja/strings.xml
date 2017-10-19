@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="menu_other">その他</string>
+
+    <string name="title_others">その他</string>
+    <string name="title_settings">設定</string>
+    <string name="title_send_feedback">フィードバックを送信</string>
+    <string name="title_object_management">オブジェクト管理</string>
+    <string name="title_open_source_libraries">オープンソース ライブラリ</string>
+    <string name="title_type_url">URL を入力</string>
+    <string name="title_select_place">場所を選択</string>
+
+    <string name="textView_nearby_objects">近くのオブジェクト</string>
+    <string name="textView_area">エリア</string>
+    <string name="textView_areas">あなたが今いるエリア</string>
+    <string name="textView_area_services">エリアのサービス</string>
+    <string name="textView_object_management">オブジェクト管理</string>
+    <string name="textView_settings">設定</string>
+    <string name="textView_send_feedback">フィードバックを送信</string>
+    <string name="textView_terms_of_service">利用規約</string>
+    <string name="textView_open_source_libraries">オープンソース ライブラリ</string>
+    <string name="textView_privacy_policy">プライバシー ポリシー</string>
+
+    <string name="message_feedback">問題の詳細またはご意見を送信してください。</string>
+    <string name="message_feedback_reply">フィードバックをいただきありがとうございます。皆様のご意見は、Ghost をより良くするために役立ちます。</string>
+
+    <string name="hint_feedback_message">フィードバック メッセージ</string>
+
+    <string name="button_remove">削除する</string>
+
+    <string name="error_required">必須です。</string>
+    <string name="error_invalid_url">URL が正しくありません。</string>
+    <string name="button_show_preview">プレビューを表示</string>
+
+</resources>
