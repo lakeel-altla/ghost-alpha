@@ -1,6 +1,7 @@
 package com.lakeel.altla.ghost.alpha.mock.view.fragment;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -74,8 +75,10 @@ public final class MyObjectFragment extends Fragment implements OnMapReadyCallba
 
         setHasOptionsMenu(true);
 
-        imageViewObject.setTransitionName(getString(R.string.transition_imageView));
-        textViewObjectName.setTransitionName(getString(R.string.transition_textView));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            imageViewObject.setTransitionName(getString(R.string.transition_imageView));
+            textViewObjectName.setTransitionName(getString(R.string.transition_textView));
+        }
 
         return view;
     }

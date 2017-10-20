@@ -3,6 +3,7 @@ package com.lakeel.altla.ghost.alpha.mock.view.fragment;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -128,14 +129,16 @@ public final class AddObjectFragment extends Fragment implements EasyPermissions
 
         setHasOptionsMenu(true);
 
-        RevealAnimationSettings animationSettings = Parcels.unwrap(FragmentHelper.getArguments(this).getParcelable(BUNDLE_ANIMATION_SETTINGS));
-        RevealAnimationHelper
-                .startCircularRevealAnimation(
-                        getContext(),
-                        view,
-                        animationSettings,
-                        ContextCompat.getColor(getContext(), R.color.colorPrimary),
-                        ContextCompat.getColor(getContext(), R.color.white));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            RevealAnimationSettings animationSettings = Parcels.unwrap(FragmentHelper.getArguments(this).getParcelable(BUNDLE_ANIMATION_SETTINGS));
+            RevealAnimationHelper
+                    .startCircularRevealAnimation(
+                            getContext(),
+                            view,
+                            animationSettings,
+                            ContextCompat.getColor(getContext(), R.color.colorPrimary),
+                            ContextCompat.getColor(getContext(), R.color.white));
+        }
 
         return view;
     }

@@ -1,7 +1,9 @@
 package com.lakeel.altla.ghost.alpha.mock.helper;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -38,6 +40,7 @@ public final class FragmentHelper {
         showFragment(fragmentTransaction, target, target.getClass().getSimpleName());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public static void showFragmentWithAnimation(@NonNull FragmentManager fragmentManager, @NonNull Fragment target, @NonNull ArrayMap<View, String> sharedElements) {
         String tag = target.getClass().getSimpleName();
 

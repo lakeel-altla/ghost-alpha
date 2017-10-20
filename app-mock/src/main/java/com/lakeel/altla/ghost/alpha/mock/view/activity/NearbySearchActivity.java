@@ -1,5 +1,6 @@
 package com.lakeel.altla.ghost.alpha.mock.view.activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.ActionBar;
@@ -42,7 +43,10 @@ public final class NearbySearchActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
         }
-        appBarLayout.setOutlineProvider(null);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            appBarLayout.setOutlineProvider(null);
+        }
 
         FragmentHelper.showFragment(getSupportFragmentManager(), NearbySearchFragment.newInstance());
     }

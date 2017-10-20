@@ -1,5 +1,6 @@
 package com.lakeel.altla.ghost.alpha.mock.view.activity;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -26,7 +27,9 @@ public class ObjectManagementActivity extends AppCompatActivity {
         }
 
         // Enable window transition for activity.
-        getWindow().setExitTransition(TransitionInflater.from(getApplicationContext()).inflateTransition(R.transition.move));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setExitTransition(TransitionInflater.from(getApplicationContext()).inflateTransition(R.transition.move));
+        }
 
         FragmentHelper.showFragment(getSupportFragmentManager(), MyObjectsFragment.newInstance());
     }

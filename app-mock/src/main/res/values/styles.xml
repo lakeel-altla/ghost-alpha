@@ -12,11 +12,11 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="ToolbarTheme.Transparent" parent="@style/ThemeOverlay.AppCompat.Light">
-        <item name="android:windowActionBarOverlay">true</item>
-        <!-- Support Library compability -->
-        <item name="windowActionBarOverlay">true</item>
-    </style>
+    <style name="AppTheme.NoTitleBar" parent="AppTheme.Base" />
+
+    <style name="AppTheme.TitleBar" parent="AppTheme.Base" />
+
+    <style name="ToolbarTheme.Transparent" parent="@style/ThemeOverlay.AppCompat.Light" />
 
     <style name="EditTextStyle" parent="@style/Widget.AppCompat.EditText">
         <item name="android:importantForAutofill" tools:ignore="NewApi">noExcludeDescendants</item>

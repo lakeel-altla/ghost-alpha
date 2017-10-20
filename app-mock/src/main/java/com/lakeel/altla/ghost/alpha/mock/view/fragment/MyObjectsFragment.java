@@ -1,5 +1,6 @@
 package com.lakeel.altla.ghost.alpha.mock.view.fragment;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -226,7 +227,11 @@ public final class MyObjectsFragment extends Fragment {
                     sharedElements.put(imageViewPhoto, getString(R.string.transition_imageView));
                     sharedElements.put(textViewLinkTitle, getString(R.string.transition_textView));
 
-                    FragmentHelper.showFragmentWithAnimation(getFragmentManager(), target, sharedElements);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        FragmentHelper.showFragmentWithAnimation(getFragmentManager(), target, sharedElements);
+                    } else {
+                        FragmentHelper.showFragment(getFragmentManager(), target);
+                    }
                 });
             }
         }

@@ -4,10 +4,13 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.IntRange;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -19,6 +22,7 @@ public final class RevealAnimationHelper {
     private RevealAnimationHelper() {
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public static void startCircularRevealAnimation(@NonNull final Context context,
                                                     @NonNull final View view,
                                                     @NonNull final RevealAnimationSettings animationSettings,
@@ -30,6 +34,7 @@ public final class RevealAnimationHelper {
 
         view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
 
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 v.removeOnLayoutChangeListener(this);
@@ -47,6 +52,7 @@ public final class RevealAnimationHelper {
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public static void startCircularExitAnimation(@NonNull Context context,
                                                   @NonNull View view,
                                                   @NonNull RevealAnimationSettings animationSettings,
