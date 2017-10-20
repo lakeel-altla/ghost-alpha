@@ -86,7 +86,6 @@
                         android:ellipsize="end"
                         android:gravity="top"
                         android:maxLines="1"
-                        android:text="@string/dummy"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:textColor="@android:color/white" />
 

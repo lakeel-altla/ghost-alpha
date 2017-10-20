@@ -49,6 +49,7 @@
         app:layout_anchor="@+id/mainView"
         app:layout_anchorGravity="bottom|end"
         app:layout_behavior="com.lakeel.altla.ghost.alpha.mock.view.behavior.FabBehavior"
+        app:rippleColor="@color/white"
         app:srcCompat="@drawable/ic_add" />
 
 </android.support.design.widget.CoordinatorLayout>

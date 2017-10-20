@@ -29,7 +29,7 @@ public final class OthersActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        setTitle(getString(R.string.title_others));
+        setTitle(getString(R.string.title_option));
 
         ButterKnife.bind(this);
     }

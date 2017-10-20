@@ -11,8 +11,8 @@
 
     <item
         android:id="@+id/action_other"
-        android:icon="@drawable/ic_more_horizontal"
-        android:title="@string/menu_other"
+        android:icon="@drawable/ic_more_vert"
+        android:title="@string/menu_option"
         app:showAsAction="ifRoom" />
 
 </menu>

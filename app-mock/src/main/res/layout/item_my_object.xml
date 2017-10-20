@@ -87,7 +87,6 @@
                         android:ellipsize="end"
                         android:gravity="center_vertical"
                         android:maxLines="1"
-                        android:text="@string/dummy"
                         android:textColor="@android:color/white" />
 
                     <com.wang.avi.AVLoadingIndicatorView

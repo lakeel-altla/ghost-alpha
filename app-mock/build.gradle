@@ -1,15 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    compileSdkVersion project.ext.compileSdkVersion
+    buildToolsVersion project.ext.buildToolsVersion
     defaultConfig {
         applicationId "com.lakeel.altla.ghost.alpha.mock"
-        minSdkVersion 25
-        targetSdkVersion 26
+        minSdkVersion  project.ext.minSdkVersion
+        targetSdkVersion project.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
         jackOptions {
             enabled true
         }
@@ -24,6 +25,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
 }
 
 dependencies {
@@ -35,6 +37,8 @@ dependencies {
     compile project(':lib-animation-helper')
     compile project(':lib-richlink')
     compile project(':lib-res')
+    compile project(path: ':lib-locationpicker')
+    compile project(path: ':lib-maps')
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'

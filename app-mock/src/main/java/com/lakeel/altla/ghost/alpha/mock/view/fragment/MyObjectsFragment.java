@@ -21,6 +21,7 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.mock.R;
 import com.lakeel.altla.ghost.alpha.mock.helper.FragmentHelper;
+import com.lakeel.altla.ghost.alpha.mock.lib.animation.helper.RevealAnimationSettings;
 import com.lakeel.altla.ghost.alpha.mock.view.imageloader.TextDrawableImageLoader;
 import com.lakeel.altla.ghost.alpha.mock.view.itemspace.ItemSpaceDecoration;
 import com.lakeel.altla.ghost.alpha.richlink.RichLinkLoader;
@@ -111,12 +112,11 @@ public final class MyObjectsFragment extends Fragment {
         int centerX = (int) (fabAdd.getX() + fabAdd.getWidth() / 2);
         int centerY = (int) (fabAdd.getY() + fabAdd.getHeight() / 2);
 
-        Objects.requireNonNull(getView());
+        View view = Objects.requireNonNull(getView());
+        int width = view.getWidth();
+        int height = view.getHeight();
 
-        int width = getView().getWidth();
-        int height = getView().getHeight();
-
-        FragmentHelper.showFragment(getFragmentManager(), RegisterVirtualObjectFragment.newInstance(centerX, centerY, width, height));
+        FragmentHelper.showFragment(getFragmentManager(), AddObjectFragment.newInstance(new RevealAnimationSettings(centerX, centerY, width, height)));
     }
 
     final class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {

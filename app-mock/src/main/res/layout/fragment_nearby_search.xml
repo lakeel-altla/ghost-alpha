@@ -10,10 +10,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="center"
-        android:elevation="10dp"
         android:indeterminate="true"
-        android:progressBackgroundTint="@android:color/white"
-        android:progressTint="@android:color/white"
         android:visibility="invisible"
         app:cpb_colors="@array/google_colors"
         app:cpb_max_sweep_angle="300"
@@ -26,8 +23,8 @@
         android:id="@+id/mainView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp">
+        android:paddingEnd="24dp"
+        android:paddingStart="24dp">
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -54,7 +51,6 @@
                     android:id="@+id/recyclerViewVirtualObject"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="true"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textViewVirtualObjectTitle" />
@@ -77,6 +73,7 @@
         app:layout_anchor="@+id/mainView"
         app:layout_anchorGravity="bottom|end"
         app:layout_behavior="com.lakeel.altla.ghost.alpha.mock.view.behavior.FabBehavior"
+        app:rippleColor="@color/white"
         app:srcCompat="@drawable/ic_search" />
 
 </android.support.design.widget.CoordinatorLayout>

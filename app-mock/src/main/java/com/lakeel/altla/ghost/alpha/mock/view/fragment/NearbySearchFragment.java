@@ -44,7 +44,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -198,14 +197,17 @@ public final class NearbySearchFragment extends Fragment {
             protected List<Item> execute(@NonNull List<Item> items, @NonNull List<Item.Type> types) {
                 if (types.isEmpty()) return Collections.unmodifiableList(items);
 
-                return items.stream().filter(item -> {
+                List<Item> filteredItems = new ArrayList<>();
+
+                for (Item item : items) {
                     for (Item.Type type : types) {
                         if (item.type == type) {
-                            return true;
+                            filteredItems.add(item);
                         }
                     }
-                    return false;
-                }).collect(Collectors.toList());
+                }
+
+                return filteredItems;
             }
 
             @Override

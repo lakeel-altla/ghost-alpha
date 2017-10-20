@@ -162,12 +162,12 @@ public final class RegisterVirtualObjectFragment extends Fragment implements Ste
             switch (position) {
                 case 0:
                     return new StepViewModel.Builder(context)
-                            .setTitle(R.string.title_type_url)
+                            .setTitle(R.string.textView_type_url)
                             .create();
-                case 1:
-                    return new StepViewModel.Builder(context)
-                            .setTitle(R.string.title_select_place)
-                            .create();
+//                case 1:
+//                    return new StepViewModel.Builder(context)
+//                            .setTitle(R.string.title_select_place)
+//                            .create();
                 case 2:
                     return new StepViewModel.Builder(context)
                             .setTitle(R.string.title_create_object)
