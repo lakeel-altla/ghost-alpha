@@ -30,7 +30,7 @@
         </activity>
 
         <activity
-            android:name=".view.activity.OthersActivity"
+            android:name=".view.activity.OptionsActivity"
             android:exported="false"
             android:theme="@style/AppTheme.TitleBar" />
 

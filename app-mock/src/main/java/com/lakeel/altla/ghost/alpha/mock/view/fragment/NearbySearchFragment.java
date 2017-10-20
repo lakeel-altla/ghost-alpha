@@ -26,7 +26,7 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.google.maps.urls.SearchUrlBuilder;
 import com.lakeel.altla.ghost.alpha.mock.R;
-import com.lakeel.altla.ghost.alpha.mock.view.activity.OthersActivity;
+import com.lakeel.altla.ghost.alpha.mock.view.activity.OptionsActivity;
 import com.lakeel.altla.ghost.alpha.mock.view.filter.Filter;
 import com.lakeel.altla.ghost.alpha.mock.view.filter.Filterable;
 import com.lakeel.altla.ghost.alpha.mock.view.imageloader.TextDrawableImageLoader;
@@ -127,7 +127,7 @@ public final class NearbySearchFragment extends Fragment {
         int id = item.getItemId();
         switch (id) {
             case R.id.action_other:
-                Intent intent = new Intent(getContext(), OthersActivity.class);
+                Intent intent = new Intent(getContext(), OptionsActivity.class);
                 startActivity(intent);
                 break;
             case R.id.action_filter:
