@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -34,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -57,7 +56,7 @@ public final class MyObjectsFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_virtual_object_management, container, false);
+        View view = inflater.inflate(R.layout.fragment_my_objects, container, false);
 
         setHasOptionsMenu(true);
 
@@ -106,9 +105,8 @@ public final class MyObjectsFragment extends Fragment {
         int centerX = (int) (fabAdd.getX() + fabAdd.getWidth() / 2);
         int centerY = (int) (fabAdd.getY() + fabAdd.getHeight() / 2);
 
-        if (getView() == null) {
-            throw new IllegalStateException("Fragment has been destroyed.");
-        }
+        Objects.requireNonNull(getView());
+
         int width = getView().getWidth();
         int height = getView().getHeight();
 
@@ -126,7 +124,7 @@ public final class MyObjectsFragment extends Fragment {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_my_virtual_object, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_my_object, parent, false);
             return new ViewHolder(view);
         }
 
@@ -167,9 +165,6 @@ public final class MyObjectsFragment extends Fragment {
             @BindView(R.id.textViewObjectManager)
             TextView textViewObjectManager;
 
-            @BindView(R.id.buttonRemove)
-            Button buttonRemove;
-
             ViewHolder(View itemView) {
                 super(itemView);
 
@@ -186,9 +181,6 @@ public final class MyObjectsFragment extends Fragment {
                 layoutItem.setOnClickListener(v -> {
 
                 });
-
-                // remove
-                buttonRemove.setOnClickListener(v -> Snackbar.make(getView(), "", Snackbar.LENGTH_SHORT).show());
 
                 indicatorView.setVisibility(View.VISIBLE);
                 indicatorView.show();
