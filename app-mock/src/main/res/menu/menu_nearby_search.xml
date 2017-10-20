@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presentation.activity.MainActivity">
+
+    <item
+        android:id="@+id/action_filter"
+        android:icon="@drawable/ic_filter"
+        android:title="@string/menu_filter"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_other"
+        android:icon="@drawable/ic_more_horizontal"
+        android:title="@string/menu_other"
+        app:showAsAction="ifRoom" />
+
+</menu>
