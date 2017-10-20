@@ -40,6 +40,7 @@ public final class TextDrawableImageLoader {
             Picasso.with(imageView.getContext())
                     .load(imageUri)
                     .into(imageView, new Callback.EmptyCallback() {
+
                         @Override
                         public void onError() {
                             if (failedText != null && !failedText.isEmpty()) {
@@ -49,5 +50,9 @@ public final class TextDrawableImageLoader {
                         }
                     });
         }
+    }
+
+    public void cancel() {
+        Picasso.with(imageView.getContext()).cancelRequest(imageView);
     }
 }

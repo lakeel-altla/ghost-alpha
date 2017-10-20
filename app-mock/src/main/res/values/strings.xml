@@ -3,6 +3,7 @@
     <string name="app_name">ghost-alpha-mock</string>
     <string name="menu_other">Others</string>
     <string name="menu_filter">Filter</string>
+    <string name="menu_remove">Remove</string>
 
     <string name="title_others">Others</string>
     <string name="title_open_source_libraries">Open source libraries</string>
@@ -11,11 +12,10 @@
     <string name="title_my_objects">My objects</string>
     <string name="title_type_url">Type a URL</string>
 
-    <string name="dummy">dummy</string>
-
     <string name="chip_google">Google</string>
     <string name="chip_altla">Altla</string>
 
+    <string name="textView_url">URL</string>
     <string name="textView_altla">altla</string>
     <string name="textView_areas">Areas</string>
     <string name="textView_nearby_objects">Nearby objects</string>
@@ -29,6 +29,8 @@
     <string name="textView_open_source_libraries">Open source libraries</string>
     <string name="textView_privacy_policy">Privacy policy</string>
     <string name="textView_format_distance">%d m</string>
+    <string name="textView_place">Place</string>
+    <string name="textView_preview">Preview</string>
 
     <string name="transition_imageView">transitionImageView</string>
     <string name="transition_textView">transitionTextView</string>
@@ -41,13 +43,18 @@
     <string name="hint_feedback_message">Feedback message</string>
     <string name="hint_url">URL*</string>
 
-    <string name="button_remove">Remove</string>
     <string name="title_select_place">Select a place</string>
     <string name="title_create_object">Create an object</string>
-    <string name="textView_preview">Preview</string>
 
     <string name="error_required">Required.</string>
     <string name="error_invalid_url">Invalid URL.</string>
     <string name="button_show_preview">Show preview</string>
+
+    <string name="rationale_location">This app would like to access this device\'s location to search places.</string>
+
+    <string name="dummy">dummy</string>
+
+    <string name="snackbar_removed">Removed.</string>
+    <string name="snackbar_action_undo">Undo</string>
 
 </resources>

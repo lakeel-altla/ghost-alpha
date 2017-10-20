@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/layoutHeader"
+            android:layout_width="match_parent"
+            android:layout_height="200dp">
+
+            <ImageView
+                android:id="@+id/imageViewObject"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="0dp" />
+
+            <FrameLayout
+                android:id="@+id/layoutObject"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:background="@color/cardViewOverlay"
+                app:layout_constraintBottom_toBottomOf="@+id/imageViewObject"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:layout_editor_absoluteX="0dp">
+
+                <TextView
+                    android:id="@+id/textViewObjectName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:textColor="@color/white" />
+
+            </FrameLayout>
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/layoutHeader"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp">
+
+            <LinearLayout
+                android:id="@+id/layoutUrl"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_marginTop="24dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:layout_editor_absoluteX="0dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="4dp"
+                    android:text="@string/textView_url"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:id="@+id/textViewUrl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dummy" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textViewPlaceTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/textView_place"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/layoutUrl"
+                tools:layout_editor_absoluteX="0dp" />
+
+            <RelativeLayout
+                android:id="@+id/map"
+                android:layout_width="0dp"
+                android:layout_height="300dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textViewPlaceTitle"
+                tools:layout_editor_absoluteX="0dp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/map"
+                tools:layout_editor_absoluteX="0dp" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/buttonEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/layoutHeader"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="-30dp"
+            android:layout_marginEnd="10dp"
+            app:rippleColor="#ffffff"
+            app:srcCompat="@drawable/ic_edit" />
+
+    </RelativeLayout>
+
+</android.support.v4.widget.NestedScrollView>

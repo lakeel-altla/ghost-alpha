@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,6 +24,7 @@ import com.lakeel.altla.ghost.alpha.mock.helper.FragmentHelper;
 import com.lakeel.altla.ghost.alpha.mock.view.imageloader.TextDrawableImageLoader;
 import com.lakeel.altla.ghost.alpha.mock.view.itemspace.ItemSpaceDecoration;
 import com.lakeel.altla.ghost.alpha.richlink.RichLinkLoader;
+import com.squareup.picasso.Picasso;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import org.jdeferred.DeferredManager;
@@ -69,8 +71,6 @@ public final class MyObjectsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getActivity().setTitle(getString(R.string.title_my_objects));
-
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -88,6 +88,12 @@ public final class MyObjectsFragment extends Fragment {
         adapter.setItems(getVirtualObjectItems());
         adapter.sort();
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getActivity().setTitle(getString(R.string.title_my_objects));
     }
 
     @Override
@@ -134,6 +140,19 @@ public final class MyObjectsFragment extends Fragment {
         }
 
         @Override
+        public void onViewRecycled(ViewHolder holder) {
+            // ViewHolder uses previous instance, initialize it here.
+
+            Picasso.with(getContext()).cancelRequest(holder.imageViewPhoto);
+            Picasso.with(getContext()).cancelRequest(holder.imageViewLinkThumbnail);
+
+            holder.imageViewPhoto.setImageDrawable(null);
+            holder.imageViewLinkThumbnail.setImageDrawable(null);
+            holder.textViewLinkTitle.setText(null);
+            holder.textViewNoImage.setVisibility(View.INVISIBLE);
+        }
+
+        @Override
         public int getItemCount() {
             return items.size();
         }
@@ -172,16 +191,6 @@ public final class MyObjectsFragment extends Fragment {
             }
 
             void showItem(@NonNull Item item) {
-                // These values are included in the OGP data. ViewHolder uses previous instance, initialize it here.
-                textViewLinkTitle.setText(null);
-                imageViewLinkThumbnail.setImageDrawable(null);
-                textViewNoImage.setVisibility(View.INVISIBLE);
-
-                textViewObjectManager.setText(getString(R.string.textView_altla));
-                layoutItem.setOnClickListener(v -> {
-
-                });
-
                 indicatorView.setVisibility(View.VISIBLE);
                 indicatorView.show();
 
@@ -203,11 +212,22 @@ public final class MyObjectsFragment extends Fragment {
                         .fail(e -> {
                             LOG.e("Failed to fetch rich link.", e);
 
-                            imageViewPhoto.setImageDrawable(null);
                             textViewNoImage.setVisibility(View.VISIBLE);
                             textViewLinkTitle.setText(item.linkUri);
                         })
                         .always((state, resolved, rejected) -> indicatorView.smoothToHide());
+
+                textViewObjectManager.setText(getString(R.string.textView_altla));
+
+                layoutItem.setOnClickListener(v -> {
+                    MyObjectFragment target = MyObjectFragment.newInstance(getContext(), item.objectId);
+
+                    ArrayMap<View, String> sharedElements = new ArrayMap<>();
+                    sharedElements.put(imageViewPhoto, getString(R.string.transition_imageView));
+                    sharedElements.put(textViewLinkTitle, getString(R.string.transition_textView));
+
+                    FragmentHelper.showFragmentWithAnimation(getFragmentManager(), target, sharedElements);
+                });
             }
         }
     }
@@ -215,11 +235,15 @@ public final class MyObjectsFragment extends Fragment {
     private static final class Item {
 
         @NonNull
+        final String objectId;
+
+        @NonNull
         final String linkUri;
 
         private final long createdAt;
 
-        Item(@NonNull String linkUri, long createdAt) {
+        Item(@NonNull String objectId, @NonNull String linkUri, long createdAt) {
+            this.objectId = objectId;
             this.linkUri = linkUri;
             this.createdAt = createdAt;
         }
@@ -242,13 +266,13 @@ public final class MyObjectsFragment extends Fragment {
 
         {
             // Instagram
-            Item item = new Item("https://www.instagram.com/p/BTtgNJMgYpY/?hl=ja&taken-by=sunada.chan", System.currentTimeMillis());
+            Item item = new Item("objectA", "https://www.instagram.com/p/BTtgNJMgYpY/?hl=ja&taken-by=sunada.chan", System.currentTimeMillis());
             items.add(item);
         }
 
         {
             // インビスハライコ
-            Item item = new Item("https://tabelog.com/tokyo/A1307/A130701/13110227/", System.currentTimeMillis());
+            Item item = new Item("objectB", "https://tabelog.com/tokyo/A1307/A130701/13110227/", System.currentTimeMillis());
             items.add(item);
         }
 

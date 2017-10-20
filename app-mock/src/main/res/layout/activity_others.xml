@@ -32,30 +32,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
 
-        <!--<ImageView-->
-        <!--android:id="@+id/imageViewEditLocation"-->
-        <!--android:layout_width="32dp"-->
-        <!--android:layout_height="32dp"-->
-        <!--android:layout_marginBottom="8dp"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:src="@drawable/ic_link"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textViewObjectManagement"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="72dp"-->
-        <!--android:layout_marginStart="72dp"-->
-        <!--android:gravity="center_vertical"-->
-        <!--android:text="@string/textView_object_management"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent"-->
-        <!--app:layout_constraintVertical_bias="0.5" />-->
-
         <TextView
             android:id="@+id/textViewObjectManagement"
             android:layout_width="0dp"
@@ -63,6 +39,7 @@
             android:layout_marginStart="16dp"
             android:gravity="center_vertical"
             android:text="@string/textView_object_management"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -85,34 +62,11 @@
             android:layout_marginStart="16dp"
             android:gravity="center_vertical"
             android:text="@string/textView_settings"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.5" />
-
-        <!--<ImageView-->
-        <!--android:id="@+id/imageViewSettings"-->
-        <!--android:layout_width="32dp"-->
-        <!--android:layout_height="32dp"-->
-        <!--android:layout_marginBottom="8dp"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:src="@drawable/ic_settings"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textViewSettings"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="72dp"-->
-        <!--android:layout_marginStart="72dp"-->
-        <!--android:gravity="center_vertical"-->
-        <!--android:text="@string/textView_settings"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent"-->
-        <!--app:layout_constraintVertical_bias="0.5" />-->
 
     </android.support.constraint.ConstraintLayout>
 
@@ -124,29 +78,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutSettings">
 
-        <!--<ImageView-->
-        <!--android:id="@+id/imageViewFeedback"-->
-        <!--android:layout_width="32dp"-->
-        <!--android:layout_height="32dp"-->
-        <!--android:layout_marginBottom="8dp"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:src="@drawable/ic_feedback"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textViewFeedback"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="72dp"-->
-        <!--android:layout_marginStart="72dp"-->
-        <!--android:gravity="center_vertical"-->
-        <!--android:text="@string/textView_send_feedback"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
-
         <TextView
             android:id="@+id/textViewFeedback"
             android:layout_width="0dp"
@@ -154,6 +85,7 @@
             android:layout_marginStart="16dp"
             android:gravity="center_vertical"
             android:text="@string/textView_send_feedback"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
