@@ -1,6 +1,5 @@
 package com.lakeel.altla.ghost.alpha.mock.view.fragment;
 
-import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -21,25 +20,23 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.lakeel.altla.android.log.Log;
-import com.lakeel.altla.android.log.LogFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.lakeel.altla.ghost.alpha.mock.R;
 import com.lakeel.altla.ghost.alpha.mock.helper.FragmentHelper;
 import com.lakeel.altla.ghost.alpha.mock.view.imageloader.TextDrawableImageLoader;
 
-import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import pub.devrel.easypermissions.AfterPermissionGranted;
-import pub.devrel.easypermissions.AppSettingsDialog;
-import pub.devrel.easypermissions.EasyPermissions;
 
-public final class MyObjectFragment extends Fragment implements OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
+public final class MyObjectFragment extends Fragment implements OnMapReadyCallback {
 
     @BindView(R.id.imageViewObject)
     ImageView imageViewObject;
@@ -50,15 +47,11 @@ public final class MyObjectFragment extends Fragment implements OnMapReadyCallba
     @BindView(R.id.textViewUrl)
     TextView textViewUrl;
 
-    private static final Log LOG = LogFactory.getLog(MyObjectFragment.class);
-
-    private static final int RC_LOCATION_PERMISSION = 1;
-
     private static final String BUNDLE_KEY_OBJECT_ID = "objectId";
 
     private TextDrawableImageLoader imageLoader;
 
-    private GoogleMap map;
+    private VirtualObject object;
 
     public static MyObjectFragment newInstance(@NonNull Context context, @NonNull String objectId) {
         MyObjectFragment fragment = new MyObjectFragment();
@@ -98,7 +91,7 @@ public final class MyObjectFragment extends Fragment implements OnMapReadyCallba
         }
 
         String objectId = FragmentHelper.getBundleString(this, BUNDLE_KEY_OBJECT_ID);
-        VirtualObject object = getVirtualObject(objectId);
+        object = getVirtualObject(objectId);
 
         textViewObjectName.setText(object.objectName);
 
@@ -151,45 +144,17 @@ public final class MyObjectFragment extends Fragment implements OnMapReadyCallba
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
+        CameraUpdate cameraUpdate = CameraUpdateFactory.zoomTo(14);
+        googleMap.moveCamera(cameraUpdate);
 
-        if (checkLocationPermission()) {
-            map.setMyLocationEnabled(true);
-        } else {
-            requestLocationPermission();
-        }
-    }
+        VirtualObject.Location location = object.location;
+        LatLng latLng = new LatLng(location.latitude, location.longitude);
 
-    @Override
-    public void onPermissionsGranted(int requestCode, List<String> perms) {
-        if (checkLocationPermission()) {
-            map.setMyLocationEnabled(true);
-        }
-    }
+        googleMap.addMarker(new MarkerOptions()
+                .position(latLng)
+                .draggable(true));
 
-    @Override
-    public void onPermissionsDenied(int requestCode, List<String> perms) {
-        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            new AppSettingsDialog.Builder(this).build().show();
-        }
-    }
-
-    @AfterPermissionGranted(RC_LOCATION_PERMISSION)
-    private void requestLocationPermission() {
-        if (checkLocationPermission()) {
-            map.setMyLocationEnabled(true);
-        } else {
-            EasyPermissions
-                    .requestPermissions(
-                            this,
-                            getString(R.string.rationale_location),
-                            RC_LOCATION_PERMISSION,
-                            Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-    }
-
-    private boolean checkLocationPermission() {
-        return EasyPermissions.hasPermissions(getContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
     }
 
     private VirtualObject getVirtualObject(@NonNull String objectId) {
@@ -201,7 +166,7 @@ public final class MyObjectFragment extends Fragment implements OnMapReadyCallba
         }
 
         {
-            VirtualObject object = new VirtualObject("objectB", "インビスハライコ", "https://tabelog.com/tokyo/A1307/A130701/13110227/", new VirtualObject.Location(35.667113, 139.740165));
+            VirtualObject object = new VirtualObject("objectB", "インビスハライコ", "https://tabelog.com/tokyo/A1307/A130701/13110227/", new VirtualObject.Location(35.666468, 139.73775));
             objectMap.put(object.objectId, object);
         }
 
