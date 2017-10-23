@@ -55,6 +55,5 @@
         <item>2</item>
         <item>3</item>
     </string-array>
-    <string name="pref_title_place_details_view_enabled">Enable place details view</string>
 
 </resources>

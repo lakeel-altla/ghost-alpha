@@ -280,24 +280,26 @@ public final class NearbyPlaceListFragment extends Fragment {
             itemView.setOnClickListener(v -> {
                 int position = recyclerView.getChildAdapterPosition(v);
                 Item item = items.get(position);
+                String placeId = item.place.placeId;
+                double latitude = item.place.geometry.location.lat;
+                double longitude = item.place.geometry.location.lng;
 
-                if (preferences.isPlaceDetailsViewEnabled()) {
-                    String placeId = item.place.placeId;
-                    String name = item.place.name;
+                String uriString = new SearchUrlBuilder(latitude, longitude).setPlaceId(placeId).build();
+                Uri uri = Uri.parse(uriString);
 
-                    fragmentContext.showPlaceFragment(placeId, name);
-                    getActivity().invalidateOptionsMenu();
-                } else {
-                    String placeId = item.place.placeId;
-                    double latitude = item.place.geometry.location.lat;
-                    double longitude = item.place.geometry.location.lng;
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(intent);
+            });
+            itemView.setOnLongClickListener(v -> {
+                int position = recyclerView.getChildAdapterPosition(v);
+                Item item = items.get(position);
+                String placeId = item.place.placeId;
+                String name = item.place.name;
 
-                    String uriString = new SearchUrlBuilder(latitude, longitude).setPlaceId(placeId).build();
-                    Uri uri = Uri.parse(uriString);
+                fragmentContext.showPlaceFragment(placeId, name);
+                getActivity().invalidateOptionsMenu();
 
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                    startActivity(intent);
-                }
+                return true;
             });
 
             return new Adapter.ViewHolder(itemView);
