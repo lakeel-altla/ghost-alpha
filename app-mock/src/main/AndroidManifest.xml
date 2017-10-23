@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
-        android:name=".view.application.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -35,14 +34,22 @@
             android:theme="@style/AppTheme.TitleBar" />
 
         <activity
-            android:name=".view.activity.ObjectManagementActivity"
+            android:name=".view.activity.MyObjectListActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.TitleBar" />
 
+        <activity
+            android:name=".view.activity.MyObjectActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.TitleBar" />
+
+        <activity
+            android:name=".view.activity.EditObjectActivity"
             android:exported="false"
             android:theme="@style/AppTheme.TitleBar" />
 
         <activity
             android:name=".view.activity.SettingsActivity"
-
             android:exported="false"
             android:theme="@style/AppTheme.TitleBar" />
 

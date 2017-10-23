@@ -4,94 +4,51 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.SpannableStringBuilder;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.MultiAutoCompleteTextView;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.WindowManager;
 
-import com.github.bassaer.chatmessageview.models.Message;
-import com.github.bassaer.chatmessageview.models.User;
-import com.github.bassaer.chatmessageview.views.MessageView;
 import com.lakeel.altla.ghost.alpha.mock.R;
-import com.lakeel.altla.ghost.alpha.mock.helper.ContextHelper;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public final class FeedbackActivity extends AppCompatActivity {
 
-    @BindView(R.id.messageView)
-    MessageView messageView;
-
-    @BindView(R.id.textViewInput)
-    MultiAutoCompleteTextView textViewInput;
-
-    @BindView(R.id.layoutSend)
-    View layoutSend;
-
-    private static final int USER_ID_OTHER = 99;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_feedback);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        toolbar.setNavigationOnClickListener(v -> finish());
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
-
-        setTitle(getString(R.string.title_send_feedback));
+        setContentView(R.layout.activity_send_feedback);
 
         ButterKnife.bind(this);
 
-        User you = new User(USER_ID_OTHER, null, null);
-        Message message = new Message.Builder()
-                .setUser(you)
-                .setRightMessage(false)
-                .setMessageText(getString(R.string.message_feedback))
-                .hideIcon(true)
-                .build();
+        setSupportActionBar(toolbar);
 
-        messageView.setMessage(message);
+        toolbar.setNavigationIcon(R.drawable.ic_clear);
+        toolbar.setNavigationOnClickListener(v -> finish());
 
-        layoutSend.setOnClickListener(v -> {
-            layoutSend.setClickable(false);
+        setTitle(getString(R.string.title_send_feedback));
 
-            SpannableStringBuilder builder = (SpannableStringBuilder) textViewInput.getText();
-            String inputtedText = builder.toString();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+    }
 
-            textViewInput.setText(null);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_send_feedback, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-            InputMethodManager inputMethodManager = ContextHelper.getInputMethodManager(getApplicationContext());
-            inputMethodManager.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-
-            // userId/userName/icon
-            final User me = new User(2, null, null);
-            Message myMessage = new Message.Builder()
-                    .setUser(me)
-                    .setRightMessage(true)
-                    .setMessageText(inputtedText)
-                    .hideIcon(true)
-                    .build();
-
-            final User other = new User(USER_ID_OTHER, null, null);
-            Message otherMessage = new Message.Builder()
-                    .setUser(other)
-                    .setRightMessage(false)
-                    .setMessageText(getString(R.string.message_feedback_reply))
-                    .hideIcon(true)
-                    .build();
-
-            messageView.setMessage(myMessage);
-            messageView.setMessage(otherMessage);
-
-            layoutSend.setClickable(true);
-        });
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_send:
+                setResult(RESULT_OK);
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

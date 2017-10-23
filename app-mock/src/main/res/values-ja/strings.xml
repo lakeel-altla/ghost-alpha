@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="menu_option">その他</string>
-
+    <string name="title_nearby_objects">近くのオブジェクト</string>
+    <string name="menu_option">オプション</string>
     <string name="menu_filter">フィルター</string>
     <string name="menu_remove">削除</string>
     <string name="menu_save">保存</string>
+    <string name="menu_add">追加</string>
+    <string name="menu_send">送信</string>
 
     <string name="title_option">オプション</string>
     <string name="title_settings">設定</string>
     <string name="title_send_feedback">フィードバックを送信</string>
     <string name="title_my_objects">オブジェクト</string>
     <string name="title_open_source_libraries">オープンソース ライブラリ</string>
-    <string name="title_add_object">オブジェクトの追加</string>
 
     <string name="textView_type_url">URL を入力</string>
     <string name="textView_select_location">場所を選択</string>
@@ -29,16 +30,14 @@
     <string name="textView_open_source_libraries">オープンソース ライブラリ</string>
     <string name="textView_privacy_policy">プライバシー ポリシー</string>
 
-    <string name="message_feedback">問題の詳細またはご意見を送信してください。</string>
-    <string name="message_feedback_reply">フィードバックをいただきありがとうございます。皆様のご意見は、Ghost をより良くするために役立ちます。</string>
-
-    <string name="hint_feedback_message">フィードバック メッセージ</string>
-
-    <string name="button_remove">削除する</string>
+    <string name="textView_feedback">問題の詳細またはご意見を送信してください。</string>
+    <string name="snackbar_feedback_reply">フィードバックをいただきありがとうございます。</string>
 
     <string name="error_required">必須です。</string>
-    <string name="error_invalid_url">URL が正しくありません。</string>
+    <string name="error_incorrect_url">URL が正しくありません。</string>
+
     <string name="button_show_preview">プレビューを表示</string>
+    <string name="button_select_location">場所を選択</string>
 
     <string name="rationale_location">場所を検索するために端末のロケーション情報にアクセスします。</string>
 
