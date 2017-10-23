@@ -121,37 +121,38 @@ public final class NearbyPlaceListFragment extends Fragment {
 
         FloatingActionButton floatingActionButton = findViewById(this, R.id.fab);
         floatingActionButton.setOnClickListener(v -> {
-            if (preferences.isManualLocationUpdatesEnabled()) {
-                LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getContext())
-                        .setMyLocationEnabled(true)
-                        .setBuildingsEnabled(false)
-                        .setIndoorEnabled(true)
-                        .setTrafficEnabled(false)
-                        .setMapToolbarEnabled(false)
-                        .setZoomControlsEnabled(true)
-                        .setMyLocationButtonEnabled(true)
-                        .setCompassEnabled(true)
-                        .setIndoorLevelPickerEnabled(true)
-                        .setAllGesturesEnabled(true);
-
-                if (location != null) {
-                    builder.setLocation(location.latitude, location.longitude);
-                }
-
-                Intent intent = builder.build();
-                startActivityForResult(intent, REQUEST_CODE_LOCATION_PICKER);
+            Location lastLocation = fragmentContext.getLastLocation();
+            if (lastLocation == null) {
+                LOG.w("The last location could not be resolved.");
+                location = null;
+                LOG.w("Trying to check location settings.");
+                fragmentContext.checkLocationSettings();
             } else {
-                Location lastLocation = fragmentContext.getLastLocation();
-                if (lastLocation == null) {
-                    LOG.w("The last location could not be resolved.");
-                    location = null;
-                    LOG.w("Trying to check location settings.");
-                    fragmentContext.checkLocationSettings();
-                } else {
-                    location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
-                    searchPlaces();
-                }
+                location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                searchPlaces();
             }
+        });
+        floatingActionButton.setOnLongClickListener(v -> {
+            LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getContext())
+                    .setMyLocationEnabled(true)
+                    .setBuildingsEnabled(false)
+                    .setIndoorEnabled(true)
+                    .setTrafficEnabled(false)
+                    .setMapToolbarEnabled(false)
+                    .setZoomControlsEnabled(true)
+                    .setMyLocationButtonEnabled(true)
+                    .setCompassEnabled(true)
+                    .setIndoorLevelPickerEnabled(true)
+                    .setAllGesturesEnabled(true);
+
+            if (location != null) {
+                builder.setLocation(location.latitude, location.longitude);
+            }
+
+            Intent intent = builder.build();
+            startActivityForResult(intent, REQUEST_CODE_LOCATION_PICKER);
+
+            return true;
         });
     }
 
