@@ -31,7 +31,7 @@
     <string name="textView_privacy_policy">プライバシー ポリシー</string>
 
     <string name="textView_feedback">問題の詳細またはご意見を送信してください。</string>
-    <string name="snackbar_feedback_reply">フィードバックをいただきありがとうございます。</string>
+    <string name="snackbar_feedback_reply">フィードバックをいただきありがとうございました。</string>
 
     <string name="error_required">必須です。</string>
     <string name="error_incorrect_url">URL が正しくありません。</string>
