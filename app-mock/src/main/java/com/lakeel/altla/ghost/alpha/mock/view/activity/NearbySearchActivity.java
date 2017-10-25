@@ -369,7 +369,7 @@ public final class NearbySearchActivity extends AppCompatActivity {
             Item item = new Item(linkUri, Item.Type.GOOGLE, 50);
 
             Item.GoogleObject googleObject = new Item.GoogleObject("アパホテル <六本木一丁目駅前> ", "https://maps.gstatic.com/mapfiles/place_api/icons/lodging-71.png");
-            googleObject.photo = BitmapFactory.decodeResource(getResources(), R.drawable.apa_hotel);
+            googleObject.photo = BitmapFactory.decodeResource(getResources(), R.drawable.apa_hotel_dummy);
 
             item.googleObject = googleObject;
 
@@ -385,7 +385,7 @@ public final class NearbySearchActivity extends AppCompatActivity {
             Item item = new Item(linkUri, Item.Type.GOOGLE, 10);
 
             Item.GoogleObject googleObject = new Item.GoogleObject("ステーキてっぺい×六本木バフ", "https://maps.gstatic.com/mapfiles/place_api/icons/generic_business-71.png");
-            googleObject.photo = BitmapFactory.decodeResource(getResources(), R.drawable.steak_teppei);
+            googleObject.photo = BitmapFactory.decodeResource(getResources(), R.drawable.steak_teppei_dummy);
 
             item.googleObject = googleObject;
 
@@ -413,7 +413,7 @@ public final class NearbySearchActivity extends AppCompatActivity {
             Item item = new Item(linkUri, Item.Type.GOOGLE, 40);
 
             Item.GoogleObject googleObject = new Item.GoogleObject("まぐろだけボーノ 白川", "https://maps.gstatic.com/mapfiles/place_api/icons/restaurant-71.png");
-            googleObject.photo = BitmapFactory.decodeResource(getResources(), R.drawable.maguro_takebono);
+            googleObject.photo = BitmapFactory.decodeResource(getResources(), R.drawable.maguro_takebono_dummy);
 
             item.googleObject = googleObject;
 
