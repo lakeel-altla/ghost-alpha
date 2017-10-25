@@ -62,6 +62,8 @@ public final class NearbyPlaceListFragment extends Fragment {
 
     private static final int REQUEST_CODE_LOCATION_PICKER = 100;
 
+    private static final int PHOTO_WIDTH = 512;
+
     @Inject
     PlaceWebApi placeWebApi;
 
@@ -326,7 +328,7 @@ public final class NearbyPlaceListFragment extends Fragment {
 
             if (item.place.photos != null && 0 < item.place.photos.size()) {
                 Photo photo = item.place.photos.get(0);
-                Uri uri = placeWebApi.createPhotoUri(photo.photoReference, photo.width, photo.height);
+                Uri uri = placeWebApi.createPhotoUri(photo.photoReference, PHOTO_WIDTH, 0);
                 LOG.v("Loading the photo: %s", uri);
                 picasso.load(uri)
                        .into(holder.imageViewPhoto);
