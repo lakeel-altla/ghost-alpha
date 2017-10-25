@@ -31,8 +31,8 @@ dependencies {
     compile project(':lib-android-widget')
     compile project(':lib-res')
     compile project(':lib-android-view')
-    compile project(path: ':lib-locationpicker')
-    compile project(path: ':lib-maps')
+    compile project(':lib-locationpicker')
+    compile project(':lib-maps')
 
     compile "com.android.support:appcompat-v7:$supportVersion"
     compile "com.android.support:cardview-v7:$supportVersion"

@@ -35,13 +35,13 @@ dependencies {
     compile "pub.devrel:easypermissions:$easypermissionsVersion"
     compile "org.adw.library:discrete-seekbar:$discreteSeekbarVersion"
     compile 'com.squareup.okhttp3:logging-interceptor:3.8.0'
-    compile project(path: ':lib-res')
-    compile project(path: ':lib-location')
-    compile project(path: ':lib-locationpicker')
-    compile project(path: ':lib-google-place-web-service')
-    compile project(path: ':lib-google-maps-urls')
-    compile project(path: ':lib-viewhelper')
-    compile project(path: ':lib-rxhelper')
+    compile project(':lib-res')
+    compile project(':lib-location')
+    compile project(':lib-locationpicker')
+    compile project(':lib-google-place-web-service')
+    compile project(':lib-google-maps-urls')
+    compile project(':lib-viewhelper')
+    compile project(':lib-rxhelper')
     compile "com.google.dagger:dagger:$daggerVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
     compile "com.amulyakhare:com.amulyakhare.textdrawable:$textdrawableVersion"
