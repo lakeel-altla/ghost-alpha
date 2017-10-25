@@ -45,8 +45,18 @@
 
         <activity
             android:name=".view.activity.EditObjectActivity"
-            android:exported="false"
             android:theme="@style/AppTheme.TitleBar" />
+
+        <activity
+            android:name=".view.activity.ShareActivity"
+            android:theme="@style/AppTheme.TitleBar">
+
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+                <action android:name="android.intent.action.SEND" />
+            </intent-filter>
+        </activity>
 
         <activity
             android:name=".view.activity.SettingsActivity"

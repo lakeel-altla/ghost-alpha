@@ -49,19 +49,19 @@ public final class OptionsActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.layoutObjectManagement)
-    public void onClickObjectManagement(View view) {
+    public void onClickObjectManagement() {
         Intent intent = new Intent(getApplicationContext(), MyObjectListActivity.class);
         startActivity(intent);
     }
 
     @OnClick(R.id.layoutSettings)
-    public void onClickSettings(View view) {
+    public void onClickSettings() {
         Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
         startActivity(intent);
     }
 
     @OnClick(R.id.layoutFeedback)
-    public void onClickFeedback(View view) {
+    public void onClickFeedback() {
         Intent intent = new Intent(getApplicationContext(), FeedbackActivity.class);
         startActivityForResult(intent, REQUEST_SEND_FEEDBACK);
     }

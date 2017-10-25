@@ -105,7 +105,6 @@ public class MyObjectListActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_REMOVE_OBJECT) {
             if (resultCode == RESULT_OK) {
-                String removedObjectId = data.getStringExtra(BUNDLE_REMOVED_OBJECT_ID);
                 Snackbar
                         .make(container, R.string.snackbar_removed, Snackbar.LENGTH_SHORT)
                         .setAction(R.string.snackbar_action_undo, v -> {
