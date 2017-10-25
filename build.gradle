@@ -24,7 +24,7 @@ allprojects {
         supportVersion = '26.1.0'
         gmsVersion = '11.4.2'
         retrofitVersion = '2.3.0'
-        androidLogVersion = '0.0.2'
+        androidLogVersion = '1.0.0@aar'
         daggerVersion = '2.10'
         easypermissionsVersion = '1.0.1'
         discreteSeekbarVersion = '1.0.1'

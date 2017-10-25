@@ -23,6 +23,7 @@ android {
 }
 
 dependencies {
+    compile "com.android.support:appcompat-v7:$supportVersion"
     compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
     compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     compile "com.lakeel.altla:android-log:$androidLogVersion"
