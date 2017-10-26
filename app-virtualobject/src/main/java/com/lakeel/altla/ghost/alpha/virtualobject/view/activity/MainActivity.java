@@ -7,6 +7,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.lakeel.altla.android.log.Log;
@@ -188,6 +190,18 @@ public final class MainActivity extends AppCompatActivity
         if (locationCallback != null) {
             fusedLocationProviderClient.removeLocationUpdates(locationCallback);
             locationCallback = null;
+        }
+    }
+
+    @Override
+    public void getLastLocation(@NonNull OnSuccessListener<Location> onSuccessListener,
+                                @NonNull OnFailureListener onFailureListener) {
+        if (checkLocationPermission()) {
+            fusedLocationProviderClient.getLastLocation()
+                                       .addOnSuccessListener(this, onSuccessListener)
+                                       .addOnFailureListener(this, onFailureListener);
+        } else {
+            requestLocationPermission();
         }
     }
 

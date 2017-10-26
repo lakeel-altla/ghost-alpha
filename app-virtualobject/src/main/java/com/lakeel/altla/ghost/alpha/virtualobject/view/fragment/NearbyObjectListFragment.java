@@ -1,6 +1,8 @@
 package com.lakeel.altla.ghost.alpha.virtualobject.view.fragment;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.GeoPoint;
 
 import com.lakeel.altla.android.log.Log;
@@ -124,16 +126,19 @@ public final class NearbyObjectListFragment extends Fragment {
 
         FloatingActionButton floatingActionButton = findViewById(this, R.id.fab);
         floatingActionButton.setOnClickListener(v -> {
-            Location lastLocation = fragmentContext.getLastLocation();
-            if (lastLocation == null) {
-                LOG.w("The last location could not be resolved.");
-                location = null;
-                LOG.w("Trying to check location settings.");
-                fragmentContext.checkLocationSettings();
-            } else {
-                location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
-                searchObjects();
-            }
+            fragmentContext.getLastLocation(lastLocation -> {
+                if (lastLocation == null) {
+                    LOG.w("The last location could not be resolved.");
+                    location = null;
+                    LOG.w("Trying to check location settings.");
+                    fragmentContext.checkLocationSettings();
+                } else {
+                    location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                    searchObjects();
+                }
+            }, e -> {
+                LOG.e("Failed to get last location.", e);
+            });
         });
         floatingActionButton.setOnLongClickListener(v -> {
             items.clear();
@@ -312,7 +317,8 @@ public final class NearbyObjectListFragment extends Fragment {
 
         void stopLocationUpdates();
 
-        Location getLastLocation();
+        void getLastLocation(@NonNull OnSuccessListener<Location> onSuccessListener,
+                             @NonNull OnFailureListener onFailureListener);
 
         void showMyObjectListFragment();
     }

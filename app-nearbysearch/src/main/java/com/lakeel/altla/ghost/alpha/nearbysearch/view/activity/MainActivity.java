@@ -7,6 +7,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
@@ -70,8 +72,6 @@ public final class MainActivity extends AppCompatActivity
     private FusedLocationProviderClient fusedLocationProviderClient;
 
     private LocationCallback locationCallback;
-
-    private Location lastLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,8 +166,15 @@ public final class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public Location getLastLocation() {
-        return lastLocation;
+    public void getLastLocation(@NonNull OnSuccessListener<Location> onSuccessListener,
+                                @NonNull OnFailureListener onFailureListener) {
+        if (checkLocationPermission()) {
+            fusedLocationProviderClient.getLastLocation()
+                                       .addOnSuccessListener(this, onSuccessListener)
+                                       .addOnFailureListener(this, onFailureListener);
+        } else {
+            requestLocationPermission();
+        }
     }
 
     @Override
@@ -226,8 +233,7 @@ public final class MainActivity extends AppCompatActivity
                 @Override
                 public void onLocationResult(LocationResult locationResult) {
                     super.onLocationResult(locationResult);
-                    lastLocation = locationResult.getLastLocation();
-                    LOG.v("A location is updated: location = %s", lastLocation);
+                    LOG.v("Location updated: location = %s", locationResult.getLastLocation());
                 }
 
                 @Override
@@ -237,7 +243,6 @@ public final class MainActivity extends AppCompatActivity
                         LOG.i("A location is available.");
                     } else {
                         LOG.w("A location is not available.");
-                        lastLocation = null;
                     }
                 }
             };

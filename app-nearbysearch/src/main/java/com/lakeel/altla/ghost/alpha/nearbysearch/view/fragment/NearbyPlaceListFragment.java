@@ -1,6 +1,8 @@
 package com.lakeel.altla.ghost.alpha.nearbysearch.view.fragment;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.lakeel.altla.android.log.Log;
@@ -125,16 +127,19 @@ public final class NearbyPlaceListFragment extends Fragment {
 
         FloatingActionButton floatingActionButton = findViewById(this, R.id.fab);
         floatingActionButton.setOnClickListener(v -> {
-            Location lastLocation = fragmentContext.getLastLocation();
-            if (lastLocation == null) {
-                LOG.w("The last location could not be resolved.");
-                location = null;
-                LOG.w("Trying to check location settings.");
-                fragmentContext.checkLocationSettings();
-            } else {
-                location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
-                searchPlaces();
-            }
+            fragmentContext.getLastLocation(lastLocation -> {
+                if (lastLocation == null) {
+                    LOG.w("The last location could not be resolved.");
+                    location = null;
+                    LOG.w("Trying to check location settings.");
+                    fragmentContext.checkLocationSettings();
+                } else {
+                    location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+                    searchPlaces();
+                }
+            }, e -> {
+                LOG.e("Failed to get last location.", e);
+            });
         });
         floatingActionButton.setOnLongClickListener(v -> {
             LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getRequiredContext(this))
@@ -265,7 +270,8 @@ public final class NearbyPlaceListFragment extends Fragment {
 
         void stopLocationUpdates();
 
-        Location getLastLocation();
+        void getLastLocation(@NonNull OnSuccessListener<Location> onSuccessListener,
+                             @NonNull OnFailureListener onFailureListener);
 
         void showPlaceFragment(@NonNull String placeId, @NonNull String name);
     }
