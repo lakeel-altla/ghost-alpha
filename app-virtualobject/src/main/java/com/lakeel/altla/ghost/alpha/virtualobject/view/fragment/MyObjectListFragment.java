@@ -40,6 +40,7 @@ import io.reactivex.schedulers.Schedulers;
 import static com.lakeel.altla.ghost.alpha.rxhelper.RxHelper.disposeOnStop;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredActivity;
 
 public class MyObjectListFragment extends Fragment {
 
@@ -79,7 +80,7 @@ public class MyObjectListFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_my_object_list, container, false);
     }
 
@@ -112,7 +113,7 @@ public class MyObjectListFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        getActivity().setTitle(R.string.title_my_object_list);
+        getRequiredActivity(this).setTitle(R.string.title_my_object_list);
         getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
         getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
         setHasOptionsMenu(true);

@@ -1,9 +1,11 @@
 package com.lakeel.altla.ghost.alpha.viewhelper;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
 import java.util.Objects;
@@ -11,6 +13,20 @@ import java.util.Objects;
 public final class FragmentHelper {
 
     private FragmentHelper() {
+    }
+
+    @NonNull
+    public static Context getRequiredContext(@NonNull Fragment fragment) {
+        Context context = fragment.getContext();
+        Objects.requireNonNull(context);
+        return context;
+    }
+
+    @NonNull
+    public static FragmentActivity getRequiredActivity(@NonNull Fragment fragment) {
+        FragmentActivity activity = fragment.getActivity();
+        Objects.requireNonNull(activity);
+        return activity;
     }
 
     @NonNull

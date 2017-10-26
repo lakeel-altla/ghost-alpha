@@ -54,6 +54,8 @@ import io.reactivex.schedulers.Schedulers;
 import static com.lakeel.altla.ghost.alpha.rxhelper.RxHelper.disposeOnStop;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredActivity;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredContext;
 import static com.lakeel.altla.ghost.alpha.viewhelper.ToastHelper.showShortToast;
 
 public final class MyObjectEditFragment extends Fragment {
@@ -157,7 +159,7 @@ public final class MyObjectEditFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_my_object_edit, container, false);
     }
 
@@ -183,7 +185,7 @@ public final class MyObjectEditFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
                 validateUri();
-                getActivity().invalidateOptionsMenu();
+                getRequiredActivity(MyObjectEditFragment.this).invalidateOptionsMenu();
             }
         });
 
@@ -206,16 +208,14 @@ public final class MyObjectEditFragment extends Fragment {
                 }
             }
 
-            updateLocation(true);
+            updateLocation();
         });
 
-        buttonLoadRichLink.setOnClickListener(v -> {
-            loadRichLink();
-        });
+        buttonLoadRichLink.setOnClickListener(v -> loadRichLink());
 
         Button buttonPickLocation = findViewById(this, R.id.button_pick_location);
         buttonPickLocation.setOnClickListener(v -> {
-            LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getContext())
+            LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getRequiredContext(this))
                     .setMyLocationEnabled(true)
                     .setBuildingsEnabled(false)
                     .setIndoorEnabled(true)
@@ -246,7 +246,7 @@ public final class MyObjectEditFragment extends Fragment {
             // This is a view to edit an existing object.
             virtualObjectApi.findUserObject(CurrentUser.getInstance().getRequiredUserId(), key, object -> {
                 this.object = object;
-                getActivity().invalidateOptionsMenu();
+                getRequiredActivity(this).invalidateOptionsMenu();
 
                 if (object == null) {
                     LOG.e("No virtual object exists: key = %s", key);
@@ -254,7 +254,7 @@ public final class MyObjectEditFragment extends Fragment {
                     textInputEditTextUri.setText(object.getRequiredUriString());
                     location = new LatLng(object.getRequiredGeoPoint().getLatitude(),
                                           object.getRequiredGeoPoint().getLongitude());
-                    updateLocation(true);
+                    updateLocation();
                 }
 
                 validateUri();
@@ -295,7 +295,7 @@ public final class MyObjectEditFragment extends Fragment {
                 if (location == null) throw new IllegalStateException("'location' is null.");
 
                 saving = true;
-                getActivity().invalidateOptionsMenu();
+                getRequiredActivity(this).invalidateOptionsMenu();
 
                 VirtualObject savedObject;
                 if (object == null) {
@@ -310,11 +310,11 @@ public final class MyObjectEditFragment extends Fragment {
 
                 virtualObjectApi.saveUserObject(savedObject, aVoid -> {
                     LOG.v("Saved an object: key = %s", savedObject.getKey());
-                    showShortToast(getContext(), R.string.toast_saved);
+                    showShortToast(getRequiredContext(this), R.string.toast_saved);
                     fragmentContext.back();
                 }, e -> {
                     LOG.e("Failed to save an object.", e);
-                    showShortToast(getContext(), R.string.toast_save_error);
+                    showShortToast(getRequiredContext(this), R.string.toast_save_error);
                     fragmentContext.back();
                 });
                 return true;
@@ -327,11 +327,11 @@ public final class MyObjectEditFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        getActivity().setTitle(R.string.title_my_object_edit);
+        getRequiredActivity(this).setTitle(R.string.title_my_object_edit);
         getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
         getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         setHasOptionsMenu(true);
-        getActivity().invalidateOptionsMenu();
+        getRequiredActivity(this).invalidateOptionsMenu();
 
         fragmentContext.startLocationUpdates();
     }
@@ -349,7 +349,7 @@ public final class MyObjectEditFragment extends Fragment {
         if (requestCode == REQUEST_CODE_LOCATION_PICKER) {
             if (resultCode == Activity.RESULT_OK) {
                 location = LocationPickerActivity.getLocation(data);
-                updateLocation(true);
+                updateLocation();
             } else {
                 LOG.d("Picking a location is cancelled.");
             }
@@ -376,7 +376,7 @@ public final class MyObjectEditFragment extends Fragment {
                         textViewRichLinkTitle.setText(richLink.getTitleOrUri());
                     }, e -> {
                         LOG.e("Failed to load a rich link.", e);
-                        showShortToast(getContext(), R.string.toast_failed_to_load_rich_link);
+                        showShortToast(getRequiredContext(this), R.string.toast_failed_to_load_rich_link);
                     })
             );
         }
@@ -391,8 +391,8 @@ public final class MyObjectEditFragment extends Fragment {
         buttonLoadRichLink.setEnabled(error == null);
     }
 
-    private void updateLocation(boolean adjustZoomLevel) {
-        getActivity().invalidateOptionsMenu();
+    private void updateLocation() {
+        getRequiredActivity(this).invalidateOptionsMenu();
 
         if (marker != null) {
             marker.remove();
@@ -401,13 +401,7 @@ public final class MyObjectEditFragment extends Fragment {
 
         if (location != null && googleMap != null) {
 
-            CameraUpdate cameraUpdate;
-            if (adjustZoomLevel) {
-                cameraUpdate = CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM_LEVEL);
-            } else {
-                cameraUpdate = CameraUpdateFactory.newLatLng(location);
-            }
-
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(location, DEFAULT_ZOOM_LEVEL);
             googleMap.moveCamera(cameraUpdate);
             marker = googleMap.addMarker(new MarkerOptions().position(location));
         }

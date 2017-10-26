@@ -18,7 +18,9 @@ public final class AppCompatHelper {
     }
 
     public static void back(@NonNull Fragment fragment) {
-        back(fragment.getActivity());
+        FragmentActivity activity = fragment.getActivity();
+        Objects.requireNonNull(activity);
+        back(activity);
     }
 
     public static void back(@NonNull FragmentActivity activity) {

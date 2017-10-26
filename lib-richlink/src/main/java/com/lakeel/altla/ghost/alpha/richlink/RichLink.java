@@ -33,7 +33,7 @@ public class RichLink {
     @Nullable
     public String html;
 
-    public RichLink(String documentUri) {
+    public RichLink(@NonNull String documentUri) {
         this.documentUri = documentUri;
     }
 

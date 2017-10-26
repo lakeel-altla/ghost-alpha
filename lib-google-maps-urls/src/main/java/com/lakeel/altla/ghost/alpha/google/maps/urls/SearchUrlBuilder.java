@@ -23,7 +23,7 @@ public class SearchUrlBuilder {
 
     @NonNull
     public SearchUrlBuilder setPlaceId(@Nullable String placeId) {
-        this.queryPlaceId = encode(placeId);
+        this.queryPlaceId = placeId == null ? null : encode(placeId);
         return this;
     }
 

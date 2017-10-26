@@ -53,6 +53,8 @@ import io.reactivex.schedulers.Schedulers;
 import static com.lakeel.altla.ghost.alpha.rxhelper.RxHelper.disposeOnStop;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredActivity;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredContext;
 
 public final class NearbyObjectListFragment extends Fragment {
 
@@ -106,7 +108,7 @@ public final class NearbyObjectListFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_nearby_object_list, container, false);
     }
 
@@ -137,7 +139,7 @@ public final class NearbyObjectListFragment extends Fragment {
             items.clear();
             recyclerView.getAdapter().notifyDataSetChanged();
 
-            LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getContext())
+            LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getRequiredContext(this))
                     .setMyLocationEnabled(true)
                     .setBuildingsEnabled(false)
                     .setIndoorEnabled(true)
@@ -172,7 +174,7 @@ public final class NearbyObjectListFragment extends Fragment {
                 fragmentContext.showMyObjectListFragment();
                 return true;
             case R.id.action_settings:
-                getActivity().startActivity(new Intent(getActivity(), SettingsActivity.class));
+                getRequiredActivity(this).startActivity(new Intent(getActivity(), SettingsActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -183,7 +185,7 @@ public final class NearbyObjectListFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        getActivity().setTitle(R.string.title_nearby_object_list);
+        getRequiredActivity(this).setTitle(R.string.title_nearby_object_list);
         getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(false);
         setHasOptionsMenu(true);
     }

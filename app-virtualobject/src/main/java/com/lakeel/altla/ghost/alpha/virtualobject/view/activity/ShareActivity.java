@@ -13,6 +13,7 @@ import com.lakeel.altla.android.log.Log;
 import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
 import com.lakeel.altla.ghost.alpha.location.LocationSettingsChecker;
+import com.lakeel.altla.ghost.alpha.viewhelper.IntentHelper;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.app.MyApplication;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
@@ -108,7 +109,7 @@ public class ShareActivity extends AppCompatActivity
             return;
         }
 
-        String extraText = intent.getExtras().getString(Intent.EXTRA_TEXT);
+        String extraText = IntentHelper.getRequiredExtras(intent).getString(Intent.EXTRA_TEXT);
         if (extraText == null) {
             LOG.e("'Intent.EXTRA_TEXT' is null.");
             showShortToast(this, R.string.toast_invalid_intent_received);

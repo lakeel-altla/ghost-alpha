@@ -27,6 +27,7 @@ import static com.lakeel.altla.ghost.alpha.rxhelper.RxHelper.disposeOnStop;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.BundleHelper.getRequiredString;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredActivity;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredArguments;
 
 public final class PlaceFragment extends Fragment {
@@ -66,7 +67,7 @@ public final class PlaceFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_place, container, false);
     }
 
@@ -82,7 +83,7 @@ public final class PlaceFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        getActivity().setTitle(name);
+        getRequiredActivity(this).setTitle(name);
         getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
         getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_arrow_back_white_24dp);
 

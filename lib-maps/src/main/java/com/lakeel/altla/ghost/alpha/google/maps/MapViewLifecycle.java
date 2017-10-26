@@ -3,11 +3,15 @@ package com.lakeel.altla.ghost.alpha.google.maps;
 import com.google.android.gms.maps.MapView;
 
 import android.content.ComponentCallbacks;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+
+import java.util.Objects;
 
 public final class MapViewLifecycle {
 
@@ -26,9 +30,13 @@ public final class MapViewLifecycle {
                 mapView.onLowMemory();
             }
         };
-        fragment.getContext().registerComponentCallbacks(componentCallbacks);
+        Context context = fragment.getContext();
+        Objects.requireNonNull(context);
+        context.registerComponentCallbacks(componentCallbacks);
 
-        final FragmentManager fragmentManager = fragment.getActivity().getSupportFragmentManager();
+        FragmentActivity activity = fragment.getActivity();
+        Objects.requireNonNull(activity);
+        final FragmentManager fragmentManager = activity.getSupportFragmentManager();
         fragmentManager.registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
             @Override
             public void onFragmentActivityCreated(FragmentManager fm, Fragment f, Bundle savedInstanceState) {

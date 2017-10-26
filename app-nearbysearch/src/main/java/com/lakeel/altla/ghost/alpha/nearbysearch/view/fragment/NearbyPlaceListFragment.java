@@ -55,6 +55,8 @@ import static android.view.View.VISIBLE;
 import static com.lakeel.altla.ghost.alpha.rxhelper.RxHelper.disposeOnStop;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredActivity;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredContext;
 
 public final class NearbyPlaceListFragment extends Fragment {
 
@@ -104,7 +106,7 @@ public final class NearbyPlaceListFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_nearby_place_list, container, false);
     }
 
@@ -135,7 +137,7 @@ public final class NearbyPlaceListFragment extends Fragment {
             }
         });
         floatingActionButton.setOnLongClickListener(v -> {
-            LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getContext())
+            LocationPickerActivity.Builder builder = new LocationPickerActivity.Builder(getRequiredContext(this))
                     .setMyLocationEnabled(true)
                     .setBuildingsEnabled(false)
                     .setIndoorEnabled(true)
@@ -167,7 +169,7 @@ public final class NearbyPlaceListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                getActivity().startActivity(new Intent(getActivity(), SettingsActivity.class));
+                getRequiredActivity(this).startActivity(new Intent(getActivity(), SettingsActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -178,7 +180,7 @@ public final class NearbyPlaceListFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        getActivity().setTitle(R.string.title_nearby_place_list);
+        getRequiredActivity(this).setTitle(R.string.title_nearby_place_list);
         getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(false);
         setHasOptionsMenu(true);
 
@@ -299,7 +301,7 @@ public final class NearbyPlaceListFragment extends Fragment {
                 String name = item.place.name;
 
                 fragmentContext.showPlaceFragment(placeId, name);
-                getActivity().invalidateOptionsMenu();
+                getRequiredActivity(NearbyPlaceListFragment.this).invalidateOptionsMenu();
 
                 return true;
             });

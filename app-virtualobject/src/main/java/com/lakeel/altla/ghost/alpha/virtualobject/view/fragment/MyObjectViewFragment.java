@@ -13,11 +13,11 @@ import com.lakeel.altla.android.log.LogFactory;
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObject;
 import com.lakeel.altla.ghost.alpha.api.virtualobject.VirtualObjectApi;
 import com.lakeel.altla.ghost.alpha.auth.CurrentUser;
+import com.lakeel.altla.ghost.alpha.google.maps.MapViewLifecycle;
 import com.lakeel.altla.ghost.alpha.richlink.RichLink;
 import com.lakeel.altla.ghost.alpha.richlink.RichLinkLoader;
 import com.lakeel.altla.ghost.alpha.virtualobject.R;
 import com.lakeel.altla.ghost.alpha.virtualobject.di.ActivityScopeContext;
-import com.lakeel.altla.ghost.alpha.google.maps.MapViewLifecycle;
 import com.lakeel.altla.ghost.alpha.virtualobject.helper.RichLinkImageLoader;
 
 import android.content.Context;
@@ -44,7 +44,9 @@ import static com.lakeel.altla.ghost.alpha.rxhelper.RxHelper.disposeOnStop;
 import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequiredSupportActionBar;
 import static com.lakeel.altla.ghost.alpha.viewhelper.BundleHelper.getRequiredString;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredActivity;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredArguments;
+import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredContext;
 import static com.lakeel.altla.ghost.alpha.viewhelper.ToastHelper.showShortToast;
 
 public class MyObjectViewFragment extends Fragment {
@@ -113,7 +115,7 @@ public class MyObjectViewFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_my_object_view, container, false);
     }
 
@@ -139,7 +141,7 @@ public class MyObjectViewFragment extends Fragment {
 
         virtualObjectApi.findUserObject(CurrentUser.getInstance().getRequiredUserId(), key, object -> {
             this.object = object;
-            getActivity().invalidateOptionsMenu();
+            getRequiredActivity(this).invalidateOptionsMenu();
 
             if (object == null) {
                 LOG.e("No virtual object exists: key = %s", key);
@@ -159,7 +161,7 @@ public class MyObjectViewFragment extends Fragment {
                             textViewRichLinkTitle.setText(richLink.getTitleOrUri());
                         }, e -> {
                             LOG.e("Failed to load a rich link.", e);
-                            showShortToast(getContext(), R.string.toast_failed_to_load_rich_link);
+                            showShortToast(getRequiredContext(this), R.string.toast_failed_to_load_rich_link);
                         })
                 );
             }
@@ -195,7 +197,7 @@ public class MyObjectViewFragment extends Fragment {
                             CurrentUser.getInstance().getRequiredUserId(), object.getKey(),
                             aVoid -> {
                                 fragmentContext.back();
-                                showShortToast(getContext(), R.string.toast_deleted);
+                                showShortToast(getRequiredContext(this), R.string.toast_deleted);
                             }, e -> {
                                 LOG.e("Failed to delete a virtual object.", e);
                             });
@@ -210,11 +212,11 @@ public class MyObjectViewFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        getActivity().setTitle(R.string.title_my_object_view);
+        getRequiredActivity(this).setTitle(R.string.title_my_object_view);
         getRequiredSupportActionBar(this).setDisplayHomeAsUpEnabled(true);
         getRequiredSupportActionBar(this).setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         setHasOptionsMenu(true);
-        getActivity().invalidateOptionsMenu();
+        getRequiredActivity(this).invalidateOptionsMenu();
     }
 
     private void updateMapView() {

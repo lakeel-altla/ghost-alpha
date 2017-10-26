@@ -2,6 +2,8 @@ package com.lakeel.altla.ghost.alpha.nearbysearch.helper;
 
 import com.google.android.gms.location.LocationRequest;
 
+import com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -26,7 +28,7 @@ public final class Preferences {
     private SharedPreferences preferences;
 
     public Preferences(@NonNull Fragment fragment) {
-        this(fragment.getContext());
+        this(FragmentHelper.getRequiredContext(fragment));
     }
 
     public Preferences(@NonNull Context context) {
