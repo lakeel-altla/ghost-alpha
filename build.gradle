@@ -20,7 +20,7 @@ allprojects {
         minSdkVersion = 19
         targetSdkVersion = 26
         multidexVersion = '1.0.1'
-        supportVersion = '26.1.0'
+        supportVersion = '27.0.0'
         gmsVersion = '11.4.2'
         retrofitVersion = '2.3.0'
         androidLogVersion = '1.0.0@aar'
