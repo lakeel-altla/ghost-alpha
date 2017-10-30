@@ -20,7 +20,8 @@
     <string name="textView_type_url">URL を入力</string>
     <string name="textView_select_location">場所を選択</string>
     <string name="textView_location">場所</string>
-
+    <string name="textView_empty_title_nearby_objects">オブジェクトがありません。</string>
+    <string name="textView_empty_body_nearby_objects">検索アイコンをタップして、近くのオブジェクトを検索してください。</string>
     <string name="textView_nearby_objects">近くのオブジェクト</string>
     <string name="textView_area">エリア</string>
     <string name="textView_areas">あなたが今いるエリア</string>

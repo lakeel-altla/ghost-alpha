@@ -58,7 +58,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:gravity="center_horizontal" />
+            android:layout_margin="8dp"
+            android:gravity="center_horizontal"
+            android:text="@string/textView_empty_body_nearby_objects"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small" />
 
     </RelativeLayout>
 

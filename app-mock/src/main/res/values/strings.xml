@@ -40,7 +40,7 @@
     <string name="textView_type_url">Type URL</string>
     <string name="textView_feedback">Send an issue or share your ideas.</string>
     <string name="textView_empty_title_nearby_objects">No nearby objects</string>
-    <string name="textView_empty_body_nearby_objects">Tap on the  icon to search nearby objects.</string>
+    <string name="textView_empty_body_nearby_objects">Tap on the search icon to search nearby objects.</string>
     <string name="textView_label_type">Type</string>
 
     <string name="transition_imageView">transitionImageView</string>

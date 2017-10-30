@@ -86,12 +86,6 @@ public final class NearbySearchActivity extends AppCompatActivity {
 
         setTitle(R.string.title_nearby_objects);
 
-        SpannableStringBuilder builder = new SpannableStringBuilder();
-        builder.append(getString(R.string.textView_empty_body_nearby_objects));
-        builder.setSpan(new ImageSpan(getApplicationContext(), R.drawable.ic_search_for_empty),
-                10, 11, 0);
-        textViewEmptyBody.setText(builder);
-
         fabSearch.setOnClickListener(v -> {
             layoutEmpty.setVisibility(View.INVISIBLE);
             fabSearch.setClickable(false);
