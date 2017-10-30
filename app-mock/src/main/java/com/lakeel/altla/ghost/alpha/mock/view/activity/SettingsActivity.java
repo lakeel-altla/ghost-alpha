@@ -56,6 +56,6 @@ public final class SettingsActivity extends AppCompatActivity {
                 .withAboutIconShown(true)
                 .withActivityTitle(getString(R.string.title_open_source_libraries))
                 .withAboutVersionShown(true)
-                .start(getApplicationContext());
+                .start(this);
     }
 }
