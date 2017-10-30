@@ -41,6 +41,7 @@ allprojects {
         jdeferredVersion = '1.2.6'
         aboutlibrariesVersion = '5.9.7@aar'
         recyclerviewanimatorsVersion = '0.3.0-SNAPSHOT@aar'
+        materialChipViewVersion = "1.1.1"
     }
     repositories {
         jcenter()

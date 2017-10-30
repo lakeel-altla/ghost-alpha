@@ -117,10 +117,10 @@ public final class NearbySearchActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case R.id.action_other:
-                Intent intent = new Intent(getApplicationContext(), OptionsActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(getApplicationContext(), OptionsActivity.class));
                 break;
             case R.id.action_filter:
+                startActivity(new Intent(getApplicationContext(), FilterActivity.class));
                 break;
             default:
                 break;

@@ -8,12 +8,14 @@
     <string name="menu_save">保存</string>
     <string name="menu_add">追加</string>
     <string name="menu_send">送信</string>
+    <string name="menu_done">決定</string>
 
     <string name="title_option">オプション</string>
     <string name="title_settings">設定</string>
     <string name="title_send_feedback">フィードバックを送信</string>
     <string name="title_my_objects">オブジェクト</string>
     <string name="title_open_source_libraries">オープンソース ライブラリ</string>
+    <string name="title_filter">フィルター</string>
 
     <string name="textView_type_url">URL を入力</string>
     <string name="textView_select_location">場所を選択</string>
@@ -29,9 +31,8 @@
     <string name="textView_terms_of_service">利用規約</string>
     <string name="textView_open_source_libraries">オープンソース ライブラリ</string>
     <string name="textView_privacy_policy">プライバシー ポリシー</string>
-
     <string name="textView_feedback">問題の詳細またはご意見を送信してください。</string>
-    <string name="snackbar_feedback_reply">フィードバックをいただきありがとうございました。</string>
+    <string name="textView_label_type">タイプ</string>
 
     <string name="error_required">必須です。</string>
     <string name="error_incorrect_url">URL が正しくありません。</string>
@@ -43,6 +44,7 @@
 
     <string name="snackbar_removed">削除しました。</string>
     <string name="snackbar_saved">保存しました。</string>
+    <string name="snackbar_feedback_reply">フィードバックをいただきありがとうございました。</string>
     <string name="snackbar_action_undo">元に戻す</string>
 
 </resources>

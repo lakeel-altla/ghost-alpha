@@ -8,6 +8,7 @@
     <string name="menu_save">Save</string>
     <string name="menu_add">Add</string>
     <string name="menu_send">Send</string>
+    <string name="menu_done">Done</string>
 
     <string name="title_nearby_objects">Nearby objects</string>
     <string name="title_option">Options</string>
@@ -15,6 +16,7 @@
     <string name="title_send_feedback">Send feedback</string>
     <string name="title_settings">Settings</string>
     <string name="title_my_objects">My objects</string>
+    <string name="title_filter">Filter</string>
 
     <string name="chip_google">Google</string>
     <string name="chip_altla">Altla</string>
@@ -39,6 +41,7 @@
     <string name="textView_feedback">Send an issue or share your ideas.</string>
     <string name="textView_empty_title_nearby_objects">No nearby objects</string>
     <string name="textView_empty_body_nearby_objects">Tap on the  icon to search nearby objects.</string>
+    <string name="textView_label_type">Type</string>
 
     <string name="transition_imageView">transitionImageView</string>
     <string name="transition_textView">transitionTextView</string>

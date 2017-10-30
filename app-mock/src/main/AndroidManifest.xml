@@ -29,6 +29,11 @@
         </activity>
 
         <activity
+            android:name=".view.activity.FilterActivity"
+            android:exported="false"
+            android:theme="@style/AppTheme.TitleBar" />
+
+        <activity
             android:name=".view.activity.OptionsActivity"
             android:exported="false"
             android:theme="@style/AppTheme.TitleBar" />
@@ -45,6 +50,7 @@
 
         <activity
             android:name=".view.activity.EditObjectActivity"
+            android:exported="false"
             android:theme="@style/AppTheme.TitleBar" />
 
         <activity
