@@ -59,6 +59,7 @@ import static com.lakeel.altla.ghost.alpha.viewhelper.AppCompatHelper.getRequire
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.findViewById;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredActivity;
 import static com.lakeel.altla.ghost.alpha.viewhelper.FragmentHelper.getRequiredContext;
+import static java.lang.String.format;
 
 public final class NearbyPlaceListFragment extends Fragment {
 
@@ -78,12 +79,16 @@ public final class NearbyPlaceListFragment extends Fragment {
 
     private Preferences preferences;
 
+    private TextView textViewBearing;
+
     private RecyclerView recyclerView;
 
     private ProgressBar progressBar;
 
     @Nullable
     private LatLng location;
+
+    private float bearing;
 
     private boolean quering;
 
@@ -118,6 +123,9 @@ public final class NearbyPlaceListFragment extends Fragment {
 
         preferences = new Preferences(this);
 
+        textViewBearing = findViewById(this, R.id.text_view_bearing);
+        textViewBearing.setText(R.string.not_available);
+
         recyclerView = findViewById(this, R.id.recycler_view);
         recyclerView.setAdapter(new Adapter());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -130,11 +138,25 @@ public final class NearbyPlaceListFragment extends Fragment {
             fragmentContext.getLastLocation(lastLocation -> {
                 if (lastLocation == null) {
                     LOG.w("The last location could not be resolved.");
+
                     location = null;
+                    bearing = 0;
+                    textViewBearing.setText(R.string.not_available);
+
                     LOG.w("Trying to check location settings.");
                     fragmentContext.checkLocationSettings();
                 } else {
                     location = new LatLng(lastLocation.getLatitude(), lastLocation.getLongitude());
+
+                    if (lastLocation.hasBearing()) {
+                        bearing = lastLocation.getBearing();
+                        textViewBearing.setText(
+                                format(getString(R.string.format_nearby_place_initial_bearing), bearing));
+                    } else {
+                        bearing = 0;
+                        textViewBearing.setText(R.string.not_available);
+                    }
+
                     searchPlaces();
                 }
             }, e -> {
@@ -227,6 +249,7 @@ public final class NearbyPlaceListFragment extends Fragment {
 
         double latitude = location.latitude;
         double longitude = location.longitude;
+        float bearing = this.bearing;
         int radius = preferences.getSearchRadius();
 
         items.clear();
@@ -244,11 +267,11 @@ public final class NearbyPlaceListFragment extends Fragment {
                 .subscribe(places -> {
                     for (Place place : places) {
                         if (!place.permanentlyClosed) {
-                            items.add(Item.newInstance(place, latitude, longitude));
+                            items.add(Item.newInstance(place, latitude, longitude, bearing));
                         }
                     }
 
-                    Collections.sort(items, ItemComparator.INSTANCE);
+                    Collections.sort(items, new ItemComparator(preferences.isSortByBearingOrder()));
                     recyclerView.getAdapter().notifyDataSetChanged();
 
                     progressBar.setVisibility(GONE);
@@ -348,8 +371,9 @@ public final class NearbyPlaceListFragment extends Fragment {
             }
 
             holder.textViewName.setText(item.place.name);
-            holder.textViewDistance.setText(String.format(getString(R.string.format_nearby_place_distance),
-                                                          item.distance));
+            holder.textViewDistance.setText(format(getString(R.string.format_nearby_place_distance), item.distance));
+            holder.textViewInitialBearing.setText(
+                    format(getString(R.string.format_nearby_place_initial_bearing), item.initialBearing));
 
             picasso.load(item.place.icon).into(holder.imageViewIcon);
         }
@@ -369,47 +393,67 @@ public final class NearbyPlaceListFragment extends Fragment {
 
             TextView textViewDistance;
 
+            TextView textViewInitialBearing;
+
             ViewHolder(@NonNull View itemView) {
                 super(itemView);
                 imageViewPhoto = itemView.findViewById(R.id.image_view_photo);
                 imageViewIcon = itemView.findViewById(R.id.image_view_icon);
                 textViewName = itemView.findViewById(R.id.text_view_name);
                 textViewDistance = itemView.findViewById(R.id.text_view_distance);
+                textViewInitialBearing = itemView.findViewById(R.id.text_view_initial_bearing);
             }
         }
     }
 
     private static final class Item {
 
-        private static final float[] DISTANCE_RESULTS = new float[1];
+        private static final float[] DISTANCE_RESULTS = new float[3];
 
-        private Place place;
+        private final Place place;
 
-        private float distance;
+        private final float distance;
 
-        private Item(Place place, float distance) {
+        private final float initialBearing;
+
+        private final float finalBearing;
+
+        private Item(Place place, float distance, float initialBearing, float finalBearing) {
             this.place = place;
             this.distance = distance;
+            this.initialBearing = initialBearing;
+            this.finalBearing = finalBearing;
         }
 
         @NonNull
-        static Item newInstance(Place place, double latitude, double longitude) {
+        static Item newInstance(Place place, double latitude, double longitude, float bearing) {
             Location.distanceBetween(latitude, longitude, place.geometry.location.lat,
                                      place.geometry.location.lng,
                                      DISTANCE_RESULTS);
-            return new Item(place, DISTANCE_RESULTS[0]);
+            return new Item(place, DISTANCE_RESULTS[0], DISTANCE_RESULTS[1] - bearing, DISTANCE_RESULTS[2] - bearing);
         }
     }
 
     private static final class ItemComparator implements Comparator<Item> {
 
-        static final ItemComparator INSTANCE = new ItemComparator();
+        private final boolean sortByBearingOrder;
 
-        private ItemComparator() {
+        private ItemComparator(boolean sortByBearingOrder) {
+            this.sortByBearingOrder = sortByBearingOrder;
         }
 
         @Override
         public int compare(Item o1, Item o2) {
+            if (sortByBearingOrder) {
+                float absInitialBearing1 = Math.abs(o1.initialBearing);
+                float absInitialBearing2 = Math.abs(o2.initialBearing);
+                if (absInitialBearing1 <= 90 && 90 < absInitialBearing2) {
+                    return -1;
+                } else if (absInitialBearing2 <= 90 && 90 < absInitialBearing1) {
+                    return 1;
+                }
+            }
+
             if (o1.distance < o2.distance) {
                 return -1;
             } else if (o2.distance < o1.distance) {
